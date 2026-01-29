@@ -1,8 +1,17 @@
-import { Heart, ShoppingCart, Star, TrendingUp, Award } from "lucide-react";
+"use client";
+
+import { useState } from "react";
+import {
+  Star,
+  TrendingUp,
+  Award,
+  Loader2,
+} from "lucide-react";
 import { Button } from "@/app/components/ui/button";
 import { Badge } from "@/app/components/ui/badge";
 import { ImageWithFallback } from "@/app/components/figma/ImageWithFallback";
 import { Card } from "@/app/components/ui/card";
+
 const sponsoredProducts = [
   {
     id: 1,
@@ -11,12 +20,8 @@ const sponsoredProducts = [
     price: 2499,
     originalPrice: 3999,
     rating: 4.9,
-    reviews: 1247,
-    image: "https://images.unsplash.com/photo-1568371600021-36b968768c30?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxoYW5kbWFkZSUyMGNsb3RoaW5nfGVufDF8fHx8MTc2ODk4MDg4Mnww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
+    image: "https://images.unsplash.com/photo-1568371600021-36b968768c30",
     badge: "Bestseller",
-    sponsored: true,
-    inStock: true,
-    soldCount: "2.5K+ sold",
   },
   {
     id: 2,
@@ -25,12 +30,8 @@ const sponsoredProducts = [
     price: 3299,
     originalPrice: 4999,
     rating: 5.0,
-    reviews: 2103,
-    image: "https://images.unsplash.com/photo-1748141951488-9c9fb9603daf?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxoYW5kd292ZW4lMjB0ZXh0aWxlc3xlbnwxfHx8fDE3Njg5ODA4ODN8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
+    image: "https://images.unsplash.com/photo-1748141951488-9c9fb9603daf",
     badge: "Bestseller",
-    sponsored: true,
-    inStock: true,
-    soldCount: "5K+ sold",
   },
   {
     id: 3,
@@ -39,12 +40,8 @@ const sponsoredProducts = [
     price: 1899,
     originalPrice: 2999,
     rating: 4.8,
-    reviews: 892,
-    image: "https://images.unsplash.com/photo-1612208141706-2fbd2d45a143?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjcm9jaGV0JTIwaGFuZG1hZGV8ZW58MXx8fHwxNzY4OTUzMDc4fDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
+    image: "https://images.unsplash.com/photo-1612208141706-2fbd2d45a143",
     badge: "Trending",
-    sponsored: true,
-    inStock: true,
-    soldCount: "1.8K+ sold",
   },
   {
     id: 4,
@@ -53,123 +50,158 @@ const sponsoredProducts = [
     price: 2799,
     originalPrice: 3999,
     rating: 4.9,
-    reviews: 1567,
-    image: "https://images.unsplash.com/photo-1611152171907-886a565484b5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwb3R0ZXJ5JTIwYXJ0aXNhbnxlbnwxfHx8fDE3Njg5ODA4ODF8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
+    image: "https://images.unsplash.com/photo-1611152171907-886a565484b5",
     badge: "Bestseller",
-    sponsored: true,
-    inStock: true,
-    soldCount: "3.2K+ sold",
   },
 ];
 
 export function SponsoredProducts() {
-  const discount = (original: number, current: number) => {
-    return Math.round(((original - current) / original) * 100);
-  };
+  const [loading, setLoading] = useState<{
+    id: number | null;
+    type: "cart" | "buy" | null;
+  }>({ id: null, type: null });
+
+  const discount = (original: number, current: number) =>
+    Math.round(((original - current) / original) * 100);
 
   return (
-    <section className="py-12 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-blue-50/30 to-white dark:from-gray-800/30 dark:to-gray-900 transition-colors duration-300">
+    <section className="py-12 px-4 bg-gradient-to-b from-blue-50/30 to-white dark:from-gray-950 dark:to-gray-900">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-3">
-            <div className="bg-gradient-to-r from-blue-900 to-blue-800 text-white px-4 py-2 rounded-lg flex items-center gap-2">
-              <Award className="h-5 w-5" />
-              <span className="font-semibold">Sponsored</span>
-            </div>
-            <div>
-              <h2 className="text-2xl md:text-3xl dark:text-gray-100">Top Rated Products</h2>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Highly recommended by our community</p>
-            </div>
+        {/* HEADER */}
+        <div className="flex items-center gap-3 mb-8">
+          <div className="bg-gradient-to-r from-blue-900 to-blue-800 text-white px-4 py-2 rounded-lg flex items-center gap-2">
+            <Award className="h-5 w-5" />
+            <span className="font-semibold">Sponsored</span>
+          </div>
+          <div>
+            <h2 className="text-2xl md:text-3xl dark:text-gray-100">
+              Top Rated Products
+            </h2>
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              Highly recommended by our community
+            </p>
           </div>
         </div>
 
-        {/* Products Grid */}
+        {/* GRID */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {sponsoredProducts.map((product) => (
-            <Card 
-              key={product.id} 
-              className="group overflow-hidden hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border-2 border-transparent hover:border-blue-200 dark:hover:border-blue-800 bg-white dark:bg-gray-800"
+            <Card
+              key={product.id}
+              className="group overflow-hidden bg-white dark:bg-gray-800 transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl"
             >
-              <div className="relative aspect-square overflow-hidden bg-gradient-to-br from-gray-100 to-gray-50">
+              {/* IMAGE (clean – no cart icon) */}
+              <div className="relative h-[200px] md:h-[230px] lg:h-[260px] overflow-hidden bg-gray-100">
                 <ImageWithFallback
                   src={product.image}
                   alt={product.name}
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                 />
-                
-                {/* Sponsored Badge */}
-                <div className="absolute top-3 left-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-xs px-3 py-1 rounded-full font-semibold flex items-center gap-1 shadow-lg">
+
+                {/* Sponsored */}
+                <div className="absolute top-3 left-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-xs px-3 py-1 rounded-full flex items-center gap-1">
                   <TrendingUp className="h-3 w-3" />
                   Sponsored
                 </div>
 
-                {/* Badge */}
-                <Badge className="absolute top-3 right-3 bg-blue-900 shadow-lg animate-pulse">
-                  {product.badge}
-                </Badge>
+                <Badge
+  className="
+    absolute top-3 right-3
+    bg-black text-white
+    dark:bg-white dark:text-blue-950
+  "
+>
+  {product.badge}
+</Badge>
+
 
                 {/* Discount */}
-                <div className="absolute top-14 right-3 bg-red-600 text-white text-sm px-3 py-1 rounded-full font-bold shadow-lg">
+                <div className="absolute top-12 right-3 bg-red-600 text-white text-xs px-3 py-1 rounded-full font-bold">
                   {discount(product.originalPrice, product.price)}% OFF
-                </div>
-
-                {/* Overlay on Hover */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-
-                {/* Quick Actions */}
-                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-y-4 group-hover:translate-y-0 flex gap-3">
-                  <Button 
-                    size="icon" 
-                    className="rounded-full shadow-2xl bg-white text-gray-800 hover:bg-red-50 hover:text-red-600 transition-all duration-300 hover:scale-110"
-                  >
-                    <Heart className="h-5 w-5" />
-                  </Button>
-                  <Button 
-                    size="icon" 
-                    className="rounded-full shadow-2xl bg-gradient-to-r from-blue-900 to-blue-800 hover:from-blue-950 hover:to-blue-900 transition-all duration-300 hover:scale-110"
-                  >
-                    <ShoppingCart className="h-5 w-5" />
-                  </Button>
                 </div>
               </div>
 
-              <div className="p-5 space-y-3">
-                {/* Product Name */}
-                <h3 className="text-base line-clamp-2 min-h-[48px] dark:text-gray-100 group-hover:text-blue-900 dark:group-hover:text-blue-400 transition-colors duration-300">
+              {/* INFO */}
+              <div className="p-4 space-y-2">
+                {/* NAME */}
+                <h3 className="text-sm font-medium line-clamp-2 dark:text-gray-100">
                   {product.name}
                 </h3>
-                
-                {/* Artisan */}
-                <div className="flex items-center gap-2">
-                  <div className="h-6 w-6 rounded-full bg-gradient-to-r from-blue-400 to-blue-300" />
-                  <p className="text-sm text-gray-600 dark:text-gray-400">by {product.artisan}</p>
-                </div>
 
-                {/* Rating & Reviews */}
-                <div className="flex items-center gap-2">
-                  <div className="flex items-center gap-1 bg-green-600 text-white px-2 py-1 rounded text-sm font-semibold">
+                {/* ARTISAN */}
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  by {product.artisan}
+                </p>
+
+                {/* RATING ONLY */}
+                <div className="flex items-center">
+                  <div className="flex items-center gap-1 bg-green-600 text-white px-2 py-[2px] rounded text-xs font-semibold">
                     <Star className="h-3 w-3 fill-white" />
                     {product.rating}
                   </div>
-                  <span className="text-sm text-gray-600 dark:text-gray-400">({product.reviews.toLocaleString()} reviews)</span>
                 </div>
 
-                {/* Sold Count */}
-                <div className="text-sm text-green-700 dark:text-green-400 font-semibold">
-                  {product.soldCount}
+                {/* PRICE */}
+                <div className="flex items-center gap-2 pt-1">
+                  <span className="text-lg font-bold text-blue-900 dark:text-blue-400">
+                    ₹{product.price.toLocaleString()}
+                  </span>
+                  <span className="text-sm text-gray-400 line-through">
+                    ₹{product.originalPrice.toLocaleString()}
+                  </span>
                 </div>
 
-                {/* Price */}
-                <div className="flex items-center gap-3 pt-2">
-                  <span className="text-2xl text-blue-900 dark:text-blue-400">₹{product.price.toLocaleString()}</span>
-                  <span className="text-base text-gray-500 dark:text-gray-500 line-through">₹{product.originalPrice.toLocaleString()}</span>
-                </div>
+                {/* ACTION BUTTONS */}
+                <div className="flex gap-2 pt-2">
+                  {/* ADD TO CART */}
+                  <Button
+                    size="sm"
+                    className="flex-1 bg-blue-900 hover:bg-blue-950 text-sm"
+                    disabled={loading.id === product.id}
+                    onClick={() => {
+                      setLoading({ id: product.id, type: "cart" });
+                      setTimeout(
+                        () => setLoading({ id: null, type: null }),
+                        1200
+                      );
+                    }}
+                  >
+                    {loading.id === product.id &&
+                    loading.type === "cart" ? (
+                      <span className="flex items-center gap-2">
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        Adding
+                      </span>
+                    ) : (
+                      "Add to Cart"
+                    )}
+                  </Button>
 
-                {/* Add to Cart Button */}
-                <Button className="w-full bg-gradient-to-r from-blue-900 to-blue-800 hover:from-blue-950 hover:to-blue-900 transition-all duration-300 hover:shadow-lg hover:scale-105">
-                  Add to Cart
-                </Button>
+                  {/* BUY NOW */}
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="flex-1 text-sm border-blue-900 text-blue-900 hover:bg-blue-50 dark:border-blue-400 dark:text-blue-400"
+                    disabled={loading.id === product.id}
+                    onClick={() => {
+                      setLoading({ id: product.id, type: "buy" });
+                      setTimeout(
+                        () => setLoading({ id: null, type: null }),
+                        1200
+                      );
+                    }}
+                  >
+                    {loading.id === product.id &&
+                    loading.type === "buy" ? (
+                      <span className="flex items-center gap-2">
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        Processing
+                      </span>
+                    ) : (
+                      "Buy Now"
+                    )}
+                  </Button>
+                </div>
               </div>
             </Card>
           ))}

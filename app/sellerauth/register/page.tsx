@@ -6,17 +6,16 @@ import { Eye, EyeOff } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export default function SellerRegisterPage() {
-  const [showStepperIntro, setShowStepperIntro] = useState(false);
-
   const [showPass, setShowPass] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
-  
+  const [loading, setLoading] = useState(false);
+
   const router = useRouter();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const form = e.target as HTMLFormElement;
+    const form = e.currentTarget;
     const data = new FormData(form);
 
     const firstName = data.get("firstName");
@@ -26,54 +25,36 @@ export default function SellerRegisterPage() {
     const password = data.get("password");
     const confirm = data.get("confirm");
 
-    // 🔐 Basic guard (form filled + password match)
-    if (
-      !firstName ||
-      !lastName ||
-      !email ||
-      !store ||
-      !password ||
-      password !== confirm
-    ) {
-      return;
-    }
+    // basic validation
+    
 
-   
-setShowStepperIntro(true);
+    setLoading(true);
 
-setTimeout(() => {
-  router.push("/sellerauth/onboarding");
-}, 4500);
-
+    // fake API delay
+    setTimeout(() => {
+      setLoading(false);
+      router.push("/sellerauth/onboarding");
+    }, 2000);
   };
 
   return (
-    <main className="relative min-h-screen overflow-hidden">
-      {/* 🌈 FULL SCREEN BACKGROUND */}
+<main className="relative min-h-screen overflow-hidden bg-[#F5F7FF]">
+      {/* BACKGROUND */}
       <div className="absolute inset-0 bg-gradient-to-br from-[#B7D6CF] to-[#DCEDEA]" />
 
-      {/* 🌟 CONTENT WRAPPER */}
       <div className="relative z-10 min-h-screen flex">
-        {/* 🔹 LEFT – REGISTRATION CARD */}
+        {/* LEFT – FORM */}
         <div className="w-full lg:w-[45%] flex items-center justify-center px-6">
-          <div className="w-full max-w-lg rounded-2xl bg-white/40 backdrop-blur-5xl border border-white/40 p-10 shadow-[0_30px_80px_rgba(0,0,0,0.18)]">
-            {/* HEADER */}
-            <div className="flex items-center justify-between mb-8">
-              <div className="flex items-center gap-2">
-                <div className="h-9 w-9 rounded-full bg-blue-600 text-white flex items-center justify-center font-semibold">
-                  N
-                </div>
-                <span className="text-sm font-semibold text-gray-800">
-                  Nirmatri Seller
-                </span>
-              </div>
+          <div className="w-full max-w-lg rounded-2xl bg-white/40 backdrop-blur-xl border border-white/40 p-10 shadow-[0_30px_80px_rgba(0,0,0,0.18)]">
 
-              <Link
-                href="/sellerauth/login"
-                className="text-sm font-medium text-blue-600 hover:underline"
-              >
-                Login
-              </Link>
+            {/* BRAND */}
+            <div className="flex items-center gap-2 mb-8">
+              <div className="h-9 w-9 rounded-full bg-blue-600 text-white flex items-center justify-center font-semibold">
+                N
+              </div>
+              <span className="text-sm font-semibold text-gray-800">
+                Nirmatri Seller
+              </span>
             </div>
 
             {/* TITLE */}
@@ -89,19 +70,15 @@ setTimeout(() => {
               {/* NAME */}
               <div className="grid grid-cols-2 gap-4">
                 <input
-  name="firstName"
-  placeholder="First name"
-  className="w-full rounded-lg border px-4 py-3 text-sm
-             text-gray-900 placeholder:text-gray-500
-             outline-none focus:ring-2 focus:ring-blue-500"
-/>
-
+                  name="firstName"
+                  placeholder="First name"
+                  className="w-full rounded-lg border px-4 py-3 text-sm text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-blue-500 outline-none"
+                />
                 <input
                   name="lastName"
                   placeholder="Last name"
-  className="w-full rounded-lg border px-4 py-3 text-sm
-             text-gray-900 placeholder:text-gray-500
-             outline-none focus:ring-2 focus:ring-blue-500"                />
+                  className="w-full rounded-lg border px-4 py-3 text-sm text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-blue-500 outline-none"
+                />
               </div>
 
               {/* EMAIL */}
@@ -109,17 +86,15 @@ setTimeout(() => {
                 type="email"
                 name="email"
                 placeholder="Email address"
-  className="w-full rounded-lg border px-4 py-3 text-sm
-             text-gray-900 placeholder:text-gray-500
-             outline-none focus:ring-2 focus:ring-blue-500"              />
+                className="w-full rounded-lg border px-4 py-3 text-sm text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-blue-500 outline-none"
+              />
 
               {/* STORE */}
               <input
                 name="store"
                 placeholder="Store / Brand name"
-  className="w-full rounded-lg border px-4 py-3 text-sm
-             text-gray-900 placeholder:text-gray-500
-             outline-none focus:ring-2 focus:ring-blue-500"              />
+                className="w-full rounded-lg border px-4 py-3 text-sm text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-blue-500 outline-none"
+              />
 
               {/* PASSWORD */}
               <div className="relative">
@@ -127,9 +102,8 @@ setTimeout(() => {
                   type={showPass ? "text" : "password"}
                   name="password"
                   placeholder="Create password"
-  className="w-full rounded-lg border px-4 py-3 text-sm
-             text-gray-900 placeholder:text-gray-500
-             outline-none focus:ring-2 focus:ring-blue-500"                />
+                  className="w-full rounded-lg border px-4 py-3 pr-11 text-sm text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-blue-500 outline-none"
+                />
                 <button
                   type="button"
                   onClick={() => setShowPass(!showPass)}
@@ -145,9 +119,8 @@ setTimeout(() => {
                   type={showConfirm ? "text" : "password"}
                   name="confirm"
                   placeholder="Confirm password"
-  className="w-full rounded-lg border px-4 py-3 text-sm
-             text-gray-900 placeholder:text-gray-500
-             outline-none focus:ring-2 focus:ring-blue-500"                />
+                  className="w-full rounded-lg border px-4 py-3 pr-11 text-sm text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-blue-500 outline-none"
+                />
                 <button
                   type="button"
                   onClick={() => setShowConfirm(!showConfirm)}
@@ -157,28 +130,54 @@ setTimeout(() => {
                 </button>
               </div>
 
-              {/* SUBMIT */}
+              {/* SUBMIT BUTTON WITH SPINNER */}
               <button
                 type="submit"
-                className="w-full rounded-lg bg-blue-600 py-3 text-white font-medium hover:bg-blue-700 transition"
+                disabled={loading}
+                className={`
+                  w-full rounded-lg py-3 text-white font-medium
+                  flex items-center justify-center gap-2
+                  transition-all duration-300
+                  ${loading
+                    ? "bg-blue-400 cursor-not-allowed"
+                    : "bg-blue-600 hover:bg-blue-700 hover:shadow-lg"}
+                `}
               >
-                Create Seller Account
+                {loading ? (
+                  <>
+                    <span className="h-5 w-5 rounded-full border-2 border-white/30 border-t-white animate-spin" />
+                    Creating account...
+                  </>
+                ) : (
+                  "Create Seller Account"
+                )}
               </button>
             </form>
 
+            {/* LOGIN LINK BELOW BUTTON */}
+            <p className="mt-6 text-sm text-gray-600 text-center">
+              Already have an account?{" "}
+              <Link
+                href="/sellerauth/login"
+                className="text-blue-600 font-medium hover:underline"
+              >
+                Login
+              </Link>
+            </p>
+
             {/* FOOTER */}
-            <p className="mt-6 text-xs text-gray-500 text-center">
+            <p className="mt-4 text-xs text-gray-500 text-center">
               By continuing, you agree to Nirmatri’s Seller Terms & Policies
             </p>
           </div>
         </div>
 
-        {/* 🔹 RIGHT – SELLER EXPERIENCE */}
-        <div className="hidden lg:flex w-[55%] relative overflow-hidden">
+        {/* RIGHT – INFO */}
+        <div className="hidden lg:flex w-[55%] relative overflow-hidden ">
           <div className="absolute -top-40 -right-40 h-[600px] w-[600px] rounded-full bg-blue-500/10" />
           <div className="absolute bottom-[-160px] left-[-160px] h-[520px] w-[520px] rounded-full bg-indigo-400/10" />
 
-          <div className="relative z-10 flex flex-col justify-center px-20 w-full">
+          <div className="relative z-10 flex flex-col justify-center px-20 w-full mt-8">
             <h2 className="text-3xl font-semibold text-gray-900 mb-4">
               Start Your Seller Journey
             </h2>
@@ -217,7 +216,6 @@ setTimeout(() => {
           </div>
         </div>
       </div>
-      
     </main>
   );
 }

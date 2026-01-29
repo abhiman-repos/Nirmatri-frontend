@@ -35,7 +35,7 @@ const features = [
 
 export function WhyShopWithUs() {
   return (
-    <section className="py-12 px-4 sm:px-6 lg:px-8 bg-white dark:bg-gray-900 transition-colors duration-300">
+    <section className="py-12 px-4 sm:px-6 lg:px-8 bg-blue dark:bg-gray-900 transition-colors duration-300">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-12">
           <h2 className="text-2xl md:text-3xl mb-2 dark:text-gray-100">Why Shop With Nirmatri</h2>

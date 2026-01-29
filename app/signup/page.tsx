@@ -19,15 +19,9 @@ export default function RegisterPage() {
     const confirm = (document.getElementById("confirm") as HTMLInputElement)?.value;
 
     // ❌ VALIDATION
-    if (!firstName || !lastName || !email || !password || !confirm) {
-      setError("Please fill all the fields");
-      return;
-    }
+    
 
-    if (password !== confirm) {
-      setError("Passwords do not match");
-      return;
-    }
+   
 
     // ✅ ALL GOOD
     setError("");
@@ -53,12 +47,7 @@ export default function RegisterPage() {
             </span>
           </div>
 
-          <Link
-            href="/login"
-            className="rounded-full bg-white px-6 py-2 text-sm font-medium text-gray-700 shadow border hover:bg-gray-50"
-          >
-            LOGIN
-          </Link>
+         
         </div>
 
         {/* TITLE */}

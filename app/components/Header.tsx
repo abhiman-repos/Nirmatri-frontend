@@ -4,7 +4,6 @@ import {
   Search,
   ShoppingCart,
   Heart,
-  Menu,
   LogIn,
 } from "lucide-react";
 import Link from "next/link";
@@ -14,7 +13,6 @@ import { Button } from "@/app/components/ui/button";
 import { Input } from "@/app/components/ui/input";
 import { Badge } from "@/app/components/ui/badge";
 import { ThemeToggle } from "@/app/components/ThemeToggle";
-import { Sidebar } from "@/app/components/Sidebar";
 import { Sheet, SheetContent } from "@/app/components/ui/sheet";
 
 import {
@@ -26,7 +24,6 @@ import {
 
 export function Header() {
   const [cartCount] = useState(3);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [showTopBar, setShowTopBar] = useState(true);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
 
@@ -40,9 +37,6 @@ export function Header() {
 
   return (
     <>
-      {/* Sidebar */}
-      <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
-
       {/* Mobile Search */}
       <Sheet open={isSearchOpen} onOpenChange={setIsSearchOpen}>
         <SheetContent side="top" className="p-4">
@@ -61,7 +55,7 @@ export function Header() {
         </SheetContent>
       </Sheet>
 
-      <header className="sticky top-0 z-50 bg-white dark:bg-gray-800 shadow-md transition-colors">
+<header className="sticky top-0 z-50 bg-white dark:bg-gray-900  border-b border-gray-200 dark:border-gray-700 shadow-sm transition-colors">
         {/* Top Bar */}
         <div
           className={`overflow-hidden transition-all duration-700 ${showTopBar ? "max-h-20 opacity-100" : "max-h-0 opacity-0"
@@ -75,51 +69,45 @@ export function Header() {
         </div>
 
         {/* Main Header */}
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
-          <div className="flex items-center justify-between">
-            {/* LEFT */}
-            <div className="flex items-center gap-3 flex-1">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setIsSidebarOpen(true)}
-                className="hover:scale-110 transition"
-              >
-                <Menu className="h-6 w-6 text-gray-700 dark:text-gray-300" />
-              </Button>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex items-center gap-4">
 
-              {/* Desktop Search */}
-              <form action="/search" className="hidden md:block relative">
+            {/* LEFT → LOGO */}
+            <img
+              src="/bgnirmatri.png"
+              alt="Nirmatri Logo"
+              className="h-21 w-auto object-contain"
+            />
+
+
+            {/* CENTER → SEARCH */}
+            <div className="hidden md:flex flex-1 justify-center">
+              <form action="/search" className="relative w-full max-w-xl">
                 <Input
                   name="q"
                   type="search"
-                  placeholder="Search products..."
-                  className="w-64 pr-10 rounded-full"
+                  placeholder="Search handcrafted products..."
+                  className="
+  w-full h-12 pl-5 pr-12 rounded-full text-base
+  bg-white dark:bg-[#111827]
+  text-gray-900 dark:text-gray-100
+  border border-gray-300 dark:border-gray-600
+  placeholder:text-gray-400 dark:placeholder:text-gray-500
+  focus:ring-2 focus:ring-blue-500/40
+"
                 />
                 <Button
                   size="icon"
                   type="submit"
-                  className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 rounded-full bg-blue-900 hover:bg-blue-950"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-blue-900 hover:bg-blue-950"
                 >
                   <Search className="h-4 w-4 text-white" />
                 </Button>
               </form>
             </div>
 
-            {/* CENTER LOGO */}
-            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-center">
-              <Link href="/">
-                <h1 className="text-4xl md:text-6xl bg-gradient-to-r from-blue-900 to-blue-800 dark:from-blue-400 dark:to-blue-300 bg-clip-text text-transparent">
-                  Nirmatri
-                </h1>
-                <p className="text-xs text-gray-600 dark:text-gray-400">
-                  Handmade with Love
-                </p>
-              </Link>
-            </div>
-
-            {/* RIGHT */}
-            <div className="flex items-center gap-2 md:gap-3 flex-1 justify-end">
+            {/* RIGHT → ACTIONS */}
+            <div className="flex items-center gap-2 md:gap-3 ml-auto">
               {/* Mobile Search */}
               <Button
                 variant="ghost"
@@ -132,50 +120,58 @@ export function Header() {
 
               <ThemeToggle />
 
-              {/* LOGIN DROPDOWN */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="hidden lg:flex items-center gap-2 border-blue-900 dark:border-blue-400 text-blue-900 dark:text-blue-400"
-                  >
-                    <LogIn className="h-4 w-4" />
-                    Login
-                  </Button>
-                </DropdownMenuTrigger>
+              {/* LOGIN */}
+              {/* LOGIN */}
+<DropdownMenu>
+  <DropdownMenuTrigger asChild>
+    <div>
+      {/* DESKTOP LOGIN */}
+      <Button
+        variant="outline"
+        className="
+          hidden lg:flex items-center gap-2
+          border-blue-900 dark:border-blue-400
+          text-blue-900 dark:text-blue-400
+          hover:bg-blue-50 dark:hover:bg-blue-400/10
+        "
+      >
+        <LogIn className="h-4 w-4" />
+        Login
+      </Button>
 
-                <DropdownMenuContent
-                  align="end"
-                  className="w-56 rounded-xl shadow-xl"
-                >
-                  <DropdownMenuItem asChild>
-                    <Link href="/login" className="flex flex-col gap-1 py-2">
-                      <span className="font-medium">Continue as User</span>
-                      <span className="text-xs text-muted-foreground">
-                        Buy handcrafted products
-                      </span>
-                    </Link>
-                  </DropdownMenuItem>
+      {/* MOBILE LOGIN ICON */}
+      <Button
+        variant="ghost"
+        size="icon"
+        className="
+          lg:hidden
+          text-gray-700 dark:text-gray-200
+          hover:bg-gray-100 dark:hover:bg-white/10
+        "
+      >
+        <LogIn className="h-6 w-6" />
+      </Button>
+    </div>
+  </DropdownMenuTrigger>
 
-                  <DropdownMenuItem asChild>
-                    <Link
-                      href="/sellerauth/login"
-                      className="flex flex-col gap-1 py-2"
-                    >
-                      <span className="font-medium">Login as Seller</span>
-                      <span className="text-xs text-muted-foreground">
-                        Manage your store & orders
-                      </span>
-                    </Link>
+  <DropdownMenuContent align="end" className="w-56">
+    <DropdownMenuItem asChild>
+      <Link href="/login">Continue as User</Link>
+    </DropdownMenuItem>
+    <DropdownMenuItem asChild>
+      <Link href="/sellerauth/login">Login as Seller</Link>
+    </DropdownMenuItem>
+  </DropdownMenuContent>
+</DropdownMenu>
 
-
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
 
               {/* Wishlist */}
               <Link href="/wishlist">
-                <Button variant="ghost" size="icon" className="hidden sm:flex">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-white/10"
+                >
                   <Heart className="h-6 w-6" />
                 </Button>
               </Link>
@@ -185,13 +181,15 @@ export function Header() {
                 <Button variant="ghost" size="icon" className="relative">
                   <ShoppingCart className="h-6 w-6" />
                   {cartCount > 0 && (
-                    <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 bg-blue-900">
+                    <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0bg-blue-900 dark:bg-blue-500 text-white
+">
                       {cartCount}
                     </Badge>
                   )}
                 </Button>
               </Link>
             </div>
+
           </div>
         </div>
       </header>

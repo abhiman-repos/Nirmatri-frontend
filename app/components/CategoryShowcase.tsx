@@ -30,7 +30,7 @@ const categories = [
 
 export function CategoryShowcase() {
   return (
-    <section className="py-12 px-4 sm:px-6 lg:px-8 bg-white dark:bg-gray-900 transition-colors duration-300">
+    <section className="py-12 px-4 sm:px-6 lg:px-8 bg-white dark:bg-gray-950 transition-colors duration-300">
       <div className="max-w-7xl mx-auto">
         <div className="flex items-center justify-between mb-8">
           <h2 className="text-2xl md:text-3xl dark:text-gray-100">Shop by Category</h2>

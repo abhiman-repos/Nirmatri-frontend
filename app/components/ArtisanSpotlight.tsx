@@ -38,7 +38,7 @@ const artisans = [
 
 export function ArtisanSpotlight() {
   return (
-    <section className="py-12 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-white to-blue-50 dark:from-gray-900 dark:to-gray-800 transition-colors duration-300">
+    <section className="py-12 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-white to-blue-50 dark:from-gray-950 dark:to-gray-990 transition-colors duration-300">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-12">
           <h2 className="text-2xl md:text-3xl mb-2 dark:text-gray-100">Meet Our Artisans</h2>
@@ -50,14 +50,14 @@ export function ArtisanSpotlight() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           {artisans.map((artisan) => (
             <Card key={artisan.id} className="overflow-hidden hover:shadow-xl transition-shadow duration-300 bg-white dark:bg-gray-800">
-              <div className="relative h-64">
+              <div className="relative h-50">
                 <ImageWithFallback
                   src={artisan.image}
                   alt={artisan.name}
                   className="w-full h-full object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                
+
                 {/* Badge */}
                 <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm rounded-full px-3 py-1 flex items-center gap-1">
                   <Award className="h-4 w-4 text-blue-900" />
@@ -67,7 +67,7 @@ export function ArtisanSpotlight() {
 
               <div className="p-6">
                 <h3 className="text-xl mb-2 dark:text-gray-100">{artisan.name}</h3>
-                
+
                 <div className="flex items-center gap-1 text-gray-600 dark:text-gray-400 mb-2">
                   <MapPin className="h-4 w-4" />
                   <span className="text-sm">{artisan.location}</span>
@@ -95,15 +95,24 @@ export function ArtisanSpotlight() {
         </div>
 
         {/* CTA Banner */}
-        <div className="bg-gradient-to-r from-blue-900 to-blue-800 rounded-2xl p-8 md:p-12 text-white text-center">
-          <Heart className="h-12 w-12 mx-auto mb-4 fill-white" />
+        <div className="bg-gradient-to-r from-blue-920 to-blue-810 rounded-2xl p-8 md:p-12 text-black text-center">
+<Heart className="h-12 w-12 mx-auto mb-4 fill-red-400 text-orange-500" />
           <h3 className="text-2xl md:text-3xl mb-4">Your Purchase Makes a Difference</h3>
           <p className="text-lg mb-6 opacity-90 max-w-2xl mx-auto">
             Every item you buy directly supports local women artisans and helps preserve traditional crafts for future generations.
           </p>
-          <Button size="lg" variant="secondary" className="bg-white text-blue-900 hover:bg-gray-100">
-            Learn About Our Impact
+          <Button
+            size="lg"
+            variant="secondary"
+            className="
+              bg-white text-blue-900
+              transition-all duration-300
+               hover:bg-gray-100
+                hover:px-8" 
+          >
+            Learn About Our Impact →
           </Button>
+
         </div>
       </div>
     </section>

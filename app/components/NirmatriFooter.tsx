@@ -20,7 +20,7 @@ export function NirmatriFooter() {
   return (
     <footer className="bg-gray-900 dark:bg-gray-950 text-gray-300 transition-colors duration-300">
       {/* Newsletter */}
-      <div className="bg-gradient-to-r from-blue-900 to-blue-800 py-8 px-4 sm:px-6 lg:px-8">
+      <div className="bg-gradient-to-r from-blue-900 to-blue-800   py-8 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="text-center md:text-left">
@@ -33,9 +33,21 @@ export function NirmatriFooter() {
                 placeholder="Enter your email"
                 className="bg-white/90 border-none"
               />
-              <Button className="bg-gray-900 hover:bg-gray-800 text-white px-6">
-                Subscribe
-              </Button>
+              <Button
+  className="
+    bg-gray-900 text-white px-6
+    transition-all duration-300 ease-out
+    hover:bg-gray-800
+    hover:-translate-y-1
+    hover:scale-[1.03]
+    hover:shadow-2xl hover:shadow-black/30
+    active:translate-y-0
+    active:scale-100
+  "
+>
+  Subscribe
+</Button>
+
             </div>
           </div>
         </div>
