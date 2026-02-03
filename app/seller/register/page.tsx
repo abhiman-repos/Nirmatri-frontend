@@ -9,28 +9,49 @@ export default function SellerRegisterPage() {
   const [showPass, setShowPass] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const router = useRouter();
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setError("");
 
     const form = e.currentTarget;
     const data = new FormData(form);
 
-    const firstName = data.get("firstName");
-    const lastName = data.get("lastName");
-    const email = data.get("email");
-    const store = data.get("store");
-    const password = data.get("password");
-    const confirm = data.get("confirm");
+    const firstName = data.get("firstName")?.toString().trim();
+    const lastName = data.get("lastName")?.toString().trim();
+    const email = data.get("email")?.toString().trim();
+    const store = data.get("store")?.toString().trim();
+    const password = data.get("password")?.toString();
+    const confirm = data.get("confirm")?.toString();
 
-    // basic validation
-    
+    // ================= VALIDATION =================
 
+    if (!firstName || !lastName || !email || !store || !password || !confirm) {
+      setError("Please fill all fields");
+      return;
+    }
+
+    if (!email.includes("@")) {
+      setError("Please enter a valid email address");
+      return;
+    }
+
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters");
+      return;
+    }
+
+    if (password !== confirm) {
+      setError("Passwords do not match");
+      return;
+    }
+
+    // ================= FAKE REGISTER =================
     setLoading(true);
 
-    // fake API delay
     setTimeout(() => {
       setLoading(false);
       router.push("/seller/onboarding");
@@ -38,12 +59,12 @@ export default function SellerRegisterPage() {
   };
 
   return (
-<main className="relative min-h-screen overflow-hidden bg-[#F5F7FF]">
-      {/* BACKGROUND */}
+    <main className="relative min-h-screen overflow-hidden bg-[#F5F7FF]">
+      {/* ================= BACKGROUND ================= */}
       <div className="absolute inset-0 bg-gradient-to-br from-[#B7D6CF] to-[#DCEDEA]" />
 
       <div className="relative z-10 min-h-screen flex">
-        {/* LEFT – FORM */}
+        {/* ================= LEFT – FORM ================= */}
         <div className="w-full lg:w-[45%] flex items-center justify-center px-6">
           <div className="w-full max-w-lg rounded-2xl bg-white/40 backdrop-blur-xl border border-white/40 p-10 shadow-[0_30px_80px_rgba(0,0,0,0.18)]">
 
@@ -65,19 +86,23 @@ export default function SellerRegisterPage() {
               Start selling handcrafted products on Nirmatri
             </p>
 
-            {/* FORM */}
+            {/* ================= FORM ================= */}
             <form className="space-y-5" onSubmit={handleSubmit}>
               {/* NAME */}
               <div className="grid grid-cols-2 gap-4">
                 <input
                   name="firstName"
                   placeholder="First name"
-                  className="w-full rounded-lg border px-4 py-3 text-sm text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-blue-500 outline-none"
+                  className="w-full rounded-lg border px-4 py-3 text-sm
+                  text-gray-900 placeholder:text-gray-500
+                  focus:ring-2 focus:ring-blue-500 outline-none"
                 />
                 <input
                   name="lastName"
                   placeholder="Last name"
-                  className="w-full rounded-lg border px-4 py-3 text-sm text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-blue-500 outline-none"
+                  className="w-full rounded-lg border px-4 py-3 text-sm
+                  text-gray-900 placeholder:text-gray-500
+                  focus:ring-2 focus:ring-blue-500 outline-none"
                 />
               </div>
 
@@ -86,14 +111,18 @@ export default function SellerRegisterPage() {
                 type="email"
                 name="email"
                 placeholder="Email address"
-                className="w-full rounded-lg border px-4 py-3 text-sm text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-blue-500 outline-none"
+                className="w-full rounded-lg border px-4 py-3 text-sm
+                text-gray-900 placeholder:text-gray-500
+                focus:ring-2 focus:ring-blue-500 outline-none"
               />
 
               {/* STORE */}
               <input
                 name="store"
                 placeholder="Store / Brand name"
-                className="w-full rounded-lg border px-4 py-3 text-sm text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-blue-500 outline-none"
+                className="w-full rounded-lg border px-4 py-3 text-sm
+                text-gray-900 placeholder:text-gray-500
+                focus:ring-2 focus:ring-blue-500 outline-none"
               />
 
               {/* PASSWORD */}
@@ -102,7 +131,9 @@ export default function SellerRegisterPage() {
                   type={showPass ? "text" : "password"}
                   name="password"
                   placeholder="Create password"
-                  className="w-full rounded-lg border px-4 py-3 pr-11 text-sm text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-blue-500 outline-none"
+                  className="w-full rounded-lg border px-4 py-3 pr-11 text-sm
+                  text-gray-900 placeholder:text-gray-500
+                  focus:ring-2 focus:ring-blue-500 outline-none"
                 />
                 <button
                   type="button"
@@ -119,7 +150,9 @@ export default function SellerRegisterPage() {
                   type={showConfirm ? "text" : "password"}
                   name="confirm"
                   placeholder="Confirm password"
-                  className="w-full rounded-lg border px-4 py-3 pr-11 text-sm text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-blue-500 outline-none"
+                  className="w-full rounded-lg border px-4 py-3 pr-11 text-sm
+                  text-gray-900 placeholder:text-gray-500
+                  focus:ring-2 focus:ring-blue-500 outline-none"
                 />
                 <button
                   type="button"
@@ -130,18 +163,23 @@ export default function SellerRegisterPage() {
                 </button>
               </div>
 
-              {/* SUBMIT BUTTON WITH SPINNER */}
+              {/* ERROR */}
+              {error && (
+                <p className="text-sm text-red-500">{error}</p>
+              )}
+
+              {/* SUBMIT */}
               <button
                 type="submit"
                 disabled={loading}
-                className={`
-                  w-full rounded-lg py-3 text-white font-medium
-                  flex items-center justify-center gap-2
-                  transition-all duration-300
-                  ${loading
+                className={`w-full rounded-lg py-3 text-white font-medium
+                flex items-center justify-center gap-2
+                transition-all duration-300
+                ${
+                  loading
                     ? "bg-blue-400 cursor-not-allowed"
-                    : "bg-blue-600 hover:bg-blue-700 hover:shadow-lg"}
-                `}
+                    : "bg-blue-600 hover:bg-blue-700 hover:shadow-lg"
+                }`}
               >
                 {loading ? (
                   <>
@@ -154,7 +192,7 @@ export default function SellerRegisterPage() {
               </button>
             </form>
 
-            {/* LOGIN LINK BELOW BUTTON */}
+            {/* LOGIN */}
             <p className="mt-6 text-sm text-gray-600 text-center">
               Already have an account?{" "}
               <Link
@@ -172,8 +210,8 @@ export default function SellerRegisterPage() {
           </div>
         </div>
 
-        {/* RIGHT – INFO */}
-        <div className="hidden lg:flex w-[55%] relative overflow-hidden ">
+        {/* ================= RIGHT – INFO ================= */}
+        <div className="hidden lg:flex w-[55%] relative overflow-hidden">
           <div className="absolute -top-40 -right-40 h-[600px] w-[600px] rounded-full bg-blue-500/10" />
           <div className="absolute bottom-[-160px] left-[-160px] h-[520px] w-[520px] rounded-full bg-indigo-400/10" />
 

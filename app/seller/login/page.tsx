@@ -1,25 +1,54 @@
 "use client";
-import { useRouter } from "next/navigation";
 
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 
-
-
 export default function SellerLoginPage() {
-    const router = useRouter();
+  const router = useRouter();
 
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleLogin = () => {
+    setError("");
+
+    // ❌ EMPTY CHECK
+    if (!email || !password) {
+      setError("Please fill all fields");
+      return;
+    }
+
+    // ❌ EMAIL CHECK
+    if (!email.includes("@")) {
+      setError("Enter a valid email address");
+      return;
+    }
+
+    // ❌ PASSWORD CHECK
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters");
+      return;
+    }
+
+    // ✅ SUCCESS
+    setLoading(true);
+
+    setTimeout(() => {
+      setLoading(false);
+      router.push("/seller/dashboard");
+    }, 1500);
+  };
 
   return (
     <main className="min-h-screen flex bg-[#F5F7FF] overflow-hidden">
-
-      {/* LEFT – LOGIN FORM */}
+      {/* ================= LEFT – LOGIN FORM ================= */}
       <div className="w-full lg:w-[45%] flex items-center justify-center px-8">
         <div className="w-full max-w-md">
-
           {/* TITLE */}
           <h1 className="text-3xl font-semibold text-gray-900 mb-2">
             Welcome to Seller Panel
@@ -33,37 +62,32 @@ const [loading, setLoading] = useState(false);
             <input
               type="email"
               placeholder="Email"
-              className="
-                w-full rounded-lg border border-gray-300
-                px-4 py-3 text-sm
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm
                 text-black placeholder:text-gray-400
-                focus:outline-none focus:ring-2 focus:ring-blue-500
-              "
+                focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
-          {/* PASSWORD WITH EYE TOGGLE */}
+          {/* PASSWORD */}
           <div className="mb-2 relative">
             <input
               type={showPassword ? "text" : "password"}
               placeholder="Password"
-              className="
-                w-full rounded-lg border border-gray-300
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full rounded-lg border border-gray-300
                 px-4 py-3 pr-11 text-sm
                 text-black placeholder:text-gray-400
-                focus:outline-none focus:ring-2 focus:ring-blue-500
-              "
+                focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
 
-            {/* 👁 Eye Icon */}
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="
-                absolute right-3 top-1/2 -translate-y-1/2
-                text-gray-500 hover:text-gray-800
-                transition-colors
-              "
+              className="absolute right-3 top-1/2 -translate-y-1/2
+                text-gray-500 hover:text-gray-800 transition"
             >
               {showPassword ? (
                 <EyeOff className="h-5 w-5" />
@@ -73,8 +97,13 @@ const [loading, setLoading] = useState(false);
             </button>
           </div>
 
+          {/* ERROR MESSAGE */}
+          {error && (
+            <p className="text-sm text-red-500 mt-2">{error}</p>
+          )}
+
           {/* FORGOT */}
-          <div className="text-right mb-6">
+          <div className="text-right mb-6 mt-2">
             <Link
               href="/forgot-password"
               className="text-sm text-blue-600 hover:underline"
@@ -85,38 +114,28 @@ const [loading, setLoading] = useState(false);
 
           {/* SIGN IN */}
           <button
-  type="button"
-  disabled={loading}
-  onClick={() => {
-    setLoading(true);
-
-    setTimeout(() => {
-      setLoading(false);
-
-      // ✅ LOGIN SUCCESS → DASHBOARD
-      router.push("/sellerdashboard");
-    }, 1500);
-  }}
-  className={`
-    w-full rounded-lg py-3
-    font-medium text-white
-    flex items-center justify-center gap-2
-    transition-all duration-300
-    ${loading
-      ? "bg-blue-400 cursor-not-allowed"
-      : "bg-blue-600 hover:bg-blue-700 hover:shadow-lg"}
-  `}
->
-  {loading ? (
-    <>
-      <span className="h-5 w-5 rounded-full border-2 border-white/30 border-t-white animate-spin" />
-      Signing In...
-    </>
-  ) : (
-    "Sign In"
-  )}
-</button>
-
+            type="button"
+            disabled={loading}
+            onClick={handleLogin}
+            className={`w-full rounded-lg py-3
+              font-medium text-white
+              flex items-center justify-center gap-2
+              transition-all duration-300
+              ${
+                loading
+                  ? "bg-blue-400 cursor-not-allowed"
+                  : "bg-blue-600 hover:bg-blue-700 hover:shadow-lg"
+              }`}
+          >
+            {loading ? (
+              <>
+                <span className="h-5 w-5 rounded-full border-2 border-white/30 border-t-white animate-spin" />
+                Signing In...
+              </>
+            ) : (
+              "Sign In"
+            )}
+          </button>
 
           {/* SOCIAL LOGIN */}
           <div className="flex items-center gap-4 mt-6">
@@ -125,8 +144,6 @@ const [loading, setLoading] = useState(false);
             <button className="h-10 w-10 rounded-full border bg-white flex items-center justify-center hover:shadow">
               <img src="/google.jpg" className="h-5 w-5" alt="Google" />
             </button>
-
-            
           </div>
 
           {/* REGISTER */}
@@ -142,20 +159,17 @@ const [loading, setLoading] = useState(false);
         </div>
       </div>
 
-      {/* RIGHT – CURVED BACKGROUND + INFO */}
+      {/* ================= RIGHT – INFO SECTION ================= */}
       <div className="hidden lg:flex w-[55%] relative overflow-hidden">
-
-        {/* CURVED BLUE PANEL */}
+        {/* CURVED BACKGROUND */}
         <div className="absolute inset-0 bg-gradient-to-br from-blue-500 via-indigo-500 to-blue-600 rounded-l-[140px]" />
 
-        {/* SOFT GLOW */}
+        {/* GLOW */}
         <div className="absolute top-24 right-24 h-72 w-72 rounded-full bg-white/20 blur-3xl" />
         <div className="absolute bottom-24 left-24 h-64 w-64 rounded-full bg-indigo-300/30 blur-3xl" />
 
         {/* CONTENT */}
         <div className="relative z-10 w-full flex items-center justify-between px-16">
-
-          {/* LEFT INFO */}
           <div className="max-w-sm text-white">
             <h2 className="text-3xl font-semibold mb-4">
               Grow your business with Nirmatri
@@ -186,7 +200,6 @@ const [loading, setLoading] = useState(false);
             </ul>
           </div>
 
-          {/* RIGHT IMAGE */}
           <img
             src="/user.png"
             alt="Seller Login Illustration"

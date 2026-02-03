@@ -10,54 +10,72 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-
   const [showPassword, setShowPassword] = useState(false);
+
   const router = useRouter();
 
   const handleLogin = () => {
-    // ❌ validation
-    
+    // ================= VALIDATION =================
+    if (!email || !password) {
+      setError("Please enter email and password");
+      return;
+    }
 
-    // ✅ clear error & continue
+    if (!email.includes("@")) {
+      setError("Please enter a valid email address");
+      return;
+    }
+
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters");
+      return;
+    }
+
+    // ================= SUCCESS =================
     setError("");
     setLoading(true);
 
- 
+    // 🔁 Fake API (backend later)
     setTimeout(() => {
+      setLoading(false);
       router.push("/home");
     }, 2000);
   };
 
   return (
-    <main className="min-h-screen bg-[#F4F7FD] backdrop-blur-sm
-                     flex items-center justify-center px-4 text-gray-900">
-
-      <div className="w-full max-w-xl bg-white/40 backdrop-blur-xl
-                      rounded-2xl border border-white/50
-                      shadow-lg p-12">
-
-        {/* HEADER */}
+    <main
+      className="min-h-screen bg-[#F4F7FD] backdrop-blur-sm
+                 flex items-center justify-center px-4 text-gray-900"
+    >
+      <div
+        className="w-full max-w-xl bg-white/40 backdrop-blur-xl
+                   rounded-2xl border border-white/50
+                   shadow-lg p-12"
+      >
+        {/* ================= HEADER ================= */}
         <div className="flex items-center justify-between mb-12">
           <div className="flex items-center gap-3">
-            <div className="h-11 w-11 rounded-full bg-blue-600 text-white
-                            flex items-center justify-center font-semibold">
+            <div
+              className="h-11 w-11 rounded-full bg-blue-600 text-white
+                         flex items-center justify-center font-semibold"
+            >
               N
             </div>
             <span className="text-base font-semibold text-gray-800">
               Nirmatri
             </span>
           </div>
-
-          
         </div>
 
         <h1 className="text-3xl font-semibold text-gray-900 mb-10">
           Login
         </h1>
 
-        {/* EMAIL */}
+        {/* ================= EMAIL ================= */}
         <div className="mb-8">
-          <label className="block text-sm text-gray-600 mb-2">Email</label>
+          <label className="block text-sm text-gray-600 mb-2">
+            Email
+          </label>
           <input
             type="email"
             value={email}
@@ -69,10 +87,11 @@ export default function LoginPage() {
           />
         </div>
 
-        {/* PASSWORD */}
-          {/* PASSWORD WITH EYE TOGGLE */}
+        {/* ================= PASSWORD ================= */}
         <div className="mb-4">
-          <label className="block text-sm text-gray-600 mb-2">Password</label>
+          <label className="block text-sm text-gray-600 mb-2">
+            Password
+          </label>
 
           <div className="relative">
             <input
@@ -101,22 +120,24 @@ export default function LoginPage() {
           </div>
         </div>
 
-        {/* ERROR MESSAGE */}
+        {/* ================= ERROR ================= */}
         {error && (
           <p className="text-sm text-red-600 mb-6">
             {error}
           </p>
         )}
 
-        {/* FORGOT */}
+        {/* ================= FORGOT ================= */}
         <div className="text-right mb-10">
-          <Link href="/forgot-password"
-                className="text-sm text-blue-600 hover:underline">
+          <Link
+            href="/forgot-password"
+            className="text-sm text-blue-600 hover:underline"
+          >
             Forgot password?
           </Link>
         </div>
 
-        {/* LOGIN BUTTON */}
+        {/* ================= LOGIN BUTTON ================= */}
         <button
           onClick={handleLogin}
           disabled={loading}
@@ -124,24 +145,30 @@ export default function LoginPage() {
                      text-white text-sm font-medium
                      hover:bg-blue-700 transition
                      flex items-center justify-center gap-2
-                     disabled:opacity-70">
+                     disabled:opacity-70"
+        >
           {loading && <Loader2 className="h-4 w-4 animate-spin" />}
           {loading ? "Logging in..." : "Login"}
         </button>
 
-        {/* GOOGLE */}
+        {/* ================= GOOGLE ================= */}
         <button
           className="mt-6 w-full flex items-center justify-center gap-3
                      rounded-xl border border-gray-300/60
                      bg-white/70 py-4 text-sm font-medium
-                     text-gray-700 hover:bg-white transition">
+                     text-gray-700 hover:bg-white transition"
+        >
           <img src="/google.jpg" className="h-5 w-5" alt="Google" />
           Continue with Google
         </button>
 
+        {/* ================= REGISTER ================= */}
         <p className="mt-10 text-sm text-gray-700 text-center">
           Don’t have an account?{" "}
-          <Link href="/userauth/signup" className="text-blue-600 hover:underline">
+          <Link
+            href="/userauth/signup"
+            className="text-blue-600 hover:underline"
+          >
             Register
           </Link>
         </p>

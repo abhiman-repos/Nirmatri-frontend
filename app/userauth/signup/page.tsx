@@ -12,23 +12,55 @@ export default function RegisterPage() {
   const router = useRouter();
 
   const handleRegister = () => {
-    const firstName = (document.getElementById("firstName") as HTMLInputElement)?.value;
-    const lastName = (document.getElementById("lastName") as HTMLInputElement)?.value;
-    const email = (document.getElementById("email") as HTMLInputElement)?.value;
-    const password = (document.getElementById("password") as HTMLInputElement)?.value;
-    const confirm = (document.getElementById("confirm") as HTMLInputElement)?.value;
+    const firstName = (
+      document.getElementById("firstName") as HTMLInputElement
+    )?.value.trim();
 
-    // ❌ VALIDATION
-    
+    const lastName = (
+      document.getElementById("lastName") as HTMLInputElement
+    )?.value.trim();
 
-   
+    const email = (
+      document.getElementById("email") as HTMLInputElement
+    )?.value.trim();
 
-    // ✅ ALL GOOD
+    const password = (
+      document.getElementById("password") as HTMLInputElement
+    )?.value;
+
+    const confirm = (
+      document.getElementById("confirm") as HTMLInputElement
+    )?.value;
+
+    // ================= VALIDATION =================
+
+    if (!firstName || !lastName || !email || !password || !confirm) {
+      setError("Please fill all fields");
+      return;
+    }
+
+    if (!email.includes("@")) {
+      setError("Please enter a valid email address");
+      return;
+    }
+
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters");
+      return;
+    }
+
+    if (password !== confirm) {
+      setError("Passwords do not match");
+      return;
+    }
+
+    // ================= SUCCESS =================
     setError("");
     setLoading(true);
 
-    // ⏳ fake API delay
+    // 🔁 Fake API call (backend baad me)
     setTimeout(() => {
+      setLoading(false);
       router.push("/home");
     }, 2000);
   };
@@ -36,7 +68,7 @@ export default function RegisterPage() {
   return (
     <main className="min-h-screen bg-[#F4F7FD] flex justify-center">
       <div className="w-full max-w-4xl px-7 py-12">
-        {/* TOP BAR */}
+        {/* ================= TOP BAR ================= */}
         <div className="flex items-center justify-between mb-10">
           <div className="flex items-center gap-2">
             <div className="h-8 w-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-semibold">
@@ -46,16 +78,14 @@ export default function RegisterPage() {
               Nirmatri
             </span>
           </div>
-
-         
         </div>
 
-        {/* TITLE */}
+        {/* ================= TITLE ================= */}
         <h1 className="text-3xl font-semibold text-gray-900 mb-8">
           Register
         </h1>
 
-        {/* FORM CARD */}
+        {/* ================= FORM CARD ================= */}
         <div className="bg-white rounded-3xl border shadow-sm p-14">
           {/* NAME */}
           <div className="grid grid-cols-2 gap-6 mb-6">
@@ -127,14 +157,14 @@ export default function RegisterPage() {
             </div>
           </div>
 
-          {/* ERROR */}
+          {/* ================= ERROR ================= */}
           {error && (
             <p className="text-sm text-red-600 mb-4">
               {error}
             </p>
           )}
 
-          {/* SUBMIT */}
+          {/* ================= SUBMIT ================= */}
           <button
             onClick={handleRegister}
             disabled={loading}
@@ -146,7 +176,7 @@ export default function RegisterPage() {
             {loading ? "Creating your account..." : "Create your account"}
           </button>
 
-          {/* FOOTER */}
+          {/* ================= FOOTER ================= */}
           <p className="mt-6 text-sm text-gray-600 text-center">
             Already have an account?{" "}
             <Link href="/login" className="text-blue-600 hover:underline">
