@@ -27,7 +27,6 @@ export default function LoginPage() {
     setError("");
     setLoading(true);
 
- 
     setTimeout(() => {
       router.push("/shop");
     }, 2000);
@@ -127,10 +126,15 @@ export default function LoginPage() {
         <GoogleLogin
           onSuccess={async (res) => {
             await axios.post(
-              "http://127.0.0.1:8000/auth/google-login/",
+              "http://127.0.0.1:8000/google-login/",
               { token: res.credential },
-              { withCredentials: true }, // 🔑 SESSION COOKIE
+              {
+                headers: {
+                  "Content-Type": "application/json",
+                },
+              },
             );
+
             router.push("/shop");
           }}
           onError={() => console.log("Login failed")}
