@@ -5,14 +5,14 @@ import { useRouter } from "next/navigation";
 import {
   User,
   ShoppingBag,
-  MapPin,
+
   Heart,
   ShoppingCart,
   CreditCard,
   RefreshCcw,
   LogOut,
   ChevronRight,
-  X,
+
 } from "lucide-react";
 
 /* ===================== TYPES ===================== */
@@ -83,15 +83,17 @@ export default function AccountSidebar({
           </h2>
 
           <button
-            onClick={onClose}
-            className="
-              rounded-full p-2
-              hover:bg-gray-100 dark:hover:bg-gray-800
-              transition
-            "
-          >
-            <X className="h-5 w-5" />
-          </button>
+  onClick={onClose}
+  aria-label="Close modal"
+  className="
+    rounded-full p-2
+    hover:bg-gray-100 dark:hover:bg-gray-800
+    transition
+  "
+>
+  ✕
+</button>
+
         </div>
 
         {/* ================= CONTENT ================= */}
@@ -133,6 +135,8 @@ export default function AccountSidebar({
             <MenuItem icon={<User />} label="My Profile" onClick={() => onSelect?.("profile")} />
             <MenuItem icon={<ShoppingBag />} label="My Orders" onClick={() => onSelect?.("orders")} />
             
+=======
+
             <MenuItem icon={<Heart />} label="Wishlist" onClick={() => onSelect?.("wishlist")} />
             <MenuItem icon={<ShoppingCart />} label="Cart" onClick={() => onSelect?.("cart")} />
             <MenuItem icon={<CreditCard />} label="Payments" onClick={() => onSelect?.("payments")} />

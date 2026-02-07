@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { ChevronLeft, ChevronRight, Play, Heart, Sprout } from "lucide-react";
+
+import { ChevronLeft, ChevronRight, Heart } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
 import { ImageWithFallback } from "@/app/components/figma/ImageWithFallback";
 
@@ -126,19 +127,25 @@ export function VideoLikeCarousel() {
 
       {/* Navigation Arrows (Artisanal Style) */}
       <div className="absolute bottom-12 right-12 flex gap-4 z-20">
-        <button
+
+    
+        <Button
           onClick={prevSlide}
           className="bg-white/10 backdrop-blur-md hover:bg-amber-600 text-white p-4 rounded-full border border-white/20 transition-all duration-300"
         >
           <ChevronLeft className="h-5 w-5" />
-        </button>
 
-        <button
+      
+
+        
+        </Button>
+
+        <Button
           onClick={nextSlide}
           className="bg-white/10 backdrop-blur-md hover:bg-amber-600 text-white p-4 rounded-full border border-white/20 transition-all duration-300"
         >
           <ChevronRight className="h-5 w-5" />
-        </button>
+        </Button>
       </div>
 
 
@@ -163,6 +170,8 @@ export function VideoLikeCarousel() {
          </div>
          <span className="text-white font-serif text-xl opacity-30">0{slides.length}</span>
       </div> */}
+
+
 
 
       {/* Progress Line */}
