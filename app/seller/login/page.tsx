@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
+import Image from "next/image";
 
 
 
@@ -123,7 +124,7 @@ const [loading, setLoading] = useState(false);
             <span className="text-sm text-gray-500">Login with</span>
 
             <button className="h-10 w-10 rounded-full border bg-white flex items-center justify-center hover:shadow">
-              <img src="/google.jpg" className="h-5 w-5" alt="Google" />
+              <Image src="/google.jpg" className="h-5 w-5" alt="Google" />
             </button>
 
             
@@ -187,7 +188,7 @@ const [loading, setLoading] = useState(false);
           </div>
 
           {/* RIGHT IMAGE */}
-          <img
+          <Image
             src="/user.png"
             alt="Seller Login Illustration"
             className="max-w-[480px] w-full h-auto drop-shadow-2xl translate-y-4"
