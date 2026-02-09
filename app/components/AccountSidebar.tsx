@@ -12,6 +12,7 @@ import {
   RefreshCcw,
   LogOut,
   ChevronRight,
+  Settings,
 
 } from "lucide-react";
 
@@ -79,7 +80,7 @@ export default function AccountSidebar({
           "
         >
           <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-            Account
+            My Account
           </h2>
 
           <button
@@ -138,6 +139,7 @@ export default function AccountSidebar({
             <MenuItem icon={<ShoppingCart />} label="Cart" onClick={() => onSelect?.("cart")} />
             <MenuItem icon={<CreditCard />} label="Payments" onClick={() => onSelect?.("payments")} />
             <MenuItem icon={<RefreshCcw />} label="Returns & Refunds" onClick={() => onSelect?.("returns")} />
+            <MenuItem icon={<Settings/>} label="Settings" onClick={() => onSelect?.("settingsSection")} />
           </div>
 
           {/* ================= LOGOUT ================= */}
@@ -197,5 +199,8 @@ function MenuItem({
 
       <ChevronRight className="h-4 w-4 opacity-40 group-hover:opacity-100" />
     </div>
+    
   );
 }
+
+

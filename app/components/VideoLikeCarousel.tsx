@@ -51,7 +51,7 @@ export function VideoLikeCarousel() {
   const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
 
   return (
-    <section className="relative h-[300px] md:h-[390px] overflow-hidden bg-[#FAF9F6]">
+    <section className="relative h-[300px] md:h-[280px] overflow-hidden bg-[#FAF9F6]">
       {/* Slides */}
       {slides.map((slide, index) => (
         <div

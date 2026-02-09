@@ -83,11 +83,11 @@ export function Navbar({ onUserClick }: Props) {
         <div className="max-w-7xl mx-auto h-full px-4 flex items-center gap-3">
           {/* LOGO */}
           <Link href="/" className="flex-shrink-0">
-            <Image
+            {/* <Image
               src="/bgnirmatri.png"
               alt="Nirmatri Logo"
               className="h-10 w-auto object-contain"
-            />
+            /> */}
           </Link>
 
           {/* SEARCH */}
@@ -135,8 +135,6 @@ export function Navbar({ onUserClick }: Props) {
             >
               <Search className="h-6 w-6" />
             </Button>
-
-            <ThemeToggle />
 
             <Button
               variant="ghost"
