@@ -156,10 +156,10 @@ export function Header() {
 
   <DropdownMenuContent align="end" className="w-56">
     <DropdownMenuItem asChild>
-      <Link href="/login">Continue as User</Link>
+      <Link href="/userauth/login">Continue as User</Link>
     </DropdownMenuItem>
     <DropdownMenuItem asChild>
-      <Link href="/sellerauth/login">Login as Seller</Link>
+      <Link href="/seller/login">Login as Seller</Link>
     </DropdownMenuItem>
   </DropdownMenuContent>
 </DropdownMenu>

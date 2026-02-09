@@ -37,7 +37,7 @@ const orders = [
     status: "processing",
     total: 4999,
     items: [
-      { name: "Running Shoes - Nike Air", qty: 1, price: 4999, image: "👟" },
+      { name: "Running Shoes – Nike Air", qty: 1, price: 4999, image: "👟" },
     ],
   },
 ];
@@ -55,19 +55,19 @@ export function OrdersSection() {
   const fakeApi = () => new Promise((r) => setTimeout(r, 1200));
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* ================= HEADER ================= */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-[#e5e7eb]">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
           My Orders
         </h1>
-        <p className="text-gray-600 dark:text-[#9ca3af]">
-          Track and manage your orders
+        <p className="text-gray-600 dark:text-gray-400">
+          Every order tells a story of craftsmanship
         </p>
       </div>
 
       {/* ================= STATS ================= */}
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {[
           { label: "Total Orders", value: 12 },
           { label: "In Progress", value: 2 },
@@ -76,15 +76,16 @@ export function OrdersSection() {
           <Card
             key={i}
             className="
-              bg-orange-50 border-orange-200
-              dark:bg-[#16181c] dark:border-white/10
+              bg-gradient-to-br from-orange-50 to-orange-100/40
+              dark:from-[#16181c] dark:to-[#0f0f10]
+              border-orange-200/60 dark:border-white/10
             "
           >
-            <CardContent className="pt-4 text-center">
+            <CardContent className="py-6 text-center">
               <div className="text-3xl font-bold text-orange-600 dark:text-blue-400">
                 {stat.value}
               </div>
-              <div className="text-sm text-gray-600 dark:text-[#9ca3af]">
+              <div className="mt-1 text-sm text-gray-600 dark:text-gray-400">
                 {stat.label}
               </div>
             </CardContent>
@@ -93,7 +94,7 @@ export function OrdersSection() {
       </div>
 
       {/* ================= ORDERS ================= */}
-      <div className="space-y-4">
+      <div className="space-y-6">
         {orders.map((order) => {
           const StatusIcon =
             statusConfig[order.status as keyof typeof statusConfig].icon;
@@ -102,83 +103,88 @@ export function OrdersSection() {
             <Card
               key={order.id}
               className="
-                bg-white border-orange-200
-                dark:bg-[#0f0f10] dark:border-white/10
-                overflow-hidden
+                bg-white dark:bg-[#0f0f10]
+                border-orange-200/60 dark:border-white/10
+                shadow-sm hover:shadow-md transition
+                rounded-2xl overflow-hidden
               "
             >
               <CardContent className="p-0">
-                {/* -------- Header -------- */}
+                {/* -------- HEADER -------- */}
                 <div
                   className="
-                    flex items-center justify-between p-4
-                    bg-orange-50 border-b border-orange-200
-                    dark:bg-[#16181c] dark:border-white/10
+                    flex flex-wrap gap-2 items-center justify-between
+                    px-5 py-4
+                    bg-orange-50/70 dark:bg-[#16181c]
+                    border-b border-orange-200/60 dark:border-white/10
                   "
                 >
-                  <div className="flex items-center gap-4">
-                    <span className="font-mono text-sm text-gray-600 dark:text-[#9ca3af]">
+                  <div className="flex items-center gap-3">
+                    <span className="font-mono text-sm text-gray-500">
                       {order.id}
                     </span>
                     <Badge
-                      variant="outline"
                       className="
-                        bg-orange-100 text-orange-600 border-orange-200
-                        dark:bg-blue-500/20 dark:text-blue-300 dark:border-blue-500/40
+                        gap-1 rounded-full
+                        bg-orange-100 text-orange-600
+                        dark:bg-blue-500/20 dark:text-blue-300
                       "
                     >
-                      <StatusIcon className="w-3 h-3 mr-1" />
+                      <StatusIcon className="w-3.5 h-3.5" />
                       {statusConfig[order.status as keyof typeof statusConfig].label}
                     </Badge>
                   </div>
-                  <span className="text-sm text-gray-600 dark:text-[#9ca3af]">
+                  <span className="text-sm text-gray-500">
                     {order.date}
                   </span>
                 </div>
 
-                {/* -------- Items -------- */}
-                <div className="p-4 space-y-3">
+                {/* -------- ITEMS -------- */}
+                <div className="px-5 py-5 space-y-4">
                   {order.items.map((item, idx) => (
                     <div key={idx} className="flex items-center gap-4">
                       <div
                         className="
-                          w-16 h-16 rounded-lg
-                          bg-orange-100
-                          dark:bg-[#1f232a]
+                          w-16 h-16 rounded-xl
+                          bg-orange-100 dark:bg-[#1f232a]
                           flex items-center justify-center text-3xl
                         "
                       >
                         {item.image}
                       </div>
                       <div className="flex-1">
-                        <h3 className="font-medium text-gray-900 dark:text-[#e5e7eb]">
+                        <h3 className="font-medium text-gray-900 dark:text-gray-100">
                           {item.name}
                         </h3>
-                        <p className="text-sm text-gray-600 dark:text-[#9ca3af]">
+                        <p className="text-sm text-gray-500">
                           Qty: {item.qty}
                         </p>
                       </div>
-                      <div className="font-semibold text-gray-900 dark:text-[#e5e7eb]">
+                      <div className="font-semibold text-gray-900 dark:text-gray-100">
                         ₹{item.price.toLocaleString()}
                       </div>
                     </div>
                   ))}
                 </div>
 
-                {/* -------- Footer -------- */}
+                {/* -------- FOOTER -------- */}
                 <div
                   className="
-                    flex items-center justify-between p-4
-                    border-t border-orange-200
-                    dark:border-white/10
+                    flex flex-col sm:flex-row gap-3
+                    items-start sm:items-center justify-between
+                    px-5 py-4
+                    border-t border-orange-200/60 dark:border-white/10
+                    bg-orange-50/30 dark:bg-[#16181c]/40
                   "
                 >
-                  <div className="font-semibold text-gray-900 dark:text-[#e5e7eb]">
-                    Total: ₹{order.total.toLocaleString()}
+                  <div className="font-semibold text-gray-900 dark:text-gray-100">
+                    Total&nbsp;
+                    <span className="text-orange-600 dark:text-blue-400">
+                      ₹{order.total.toLocaleString()}
+                    </span>
                   </div>
 
-                  <div className="flex gap-2">
-                    {/* Invoice */}
+                  <div className="flex gap-2 w-full sm:w-auto">
                     <Button
                       variant="outline"
                       size="sm"
@@ -188,11 +194,7 @@ export function OrdersSection() {
                         await fakeApi();
                         setInvoiceLoading(null);
                       }}
-                      className="
-                        gap-1 border-orange-300 text-gray-800
-                        dark:border-white/20 dark:text-[#e5e7eb]
-                        hover:bg-orange-50 dark:hover:bg-[#1f232a]
-                      "
+                      className="flex-1 sm:flex-none"
                     >
                       {invoiceLoading === order.id ? (
                         <Loader2 className="w-4 h-4 animate-spin" />
@@ -202,7 +204,6 @@ export function OrdersSection() {
                       Invoice
                     </Button>
 
-                    {/* Re-order */}
                     <Button
                       size="sm"
                       disabled={reorderLoading === order.id}
@@ -212,7 +213,8 @@ export function OrdersSection() {
                         setReorderLoading(null);
                       }}
                       className="
-                        gap-1 bg-orange-500 hover:bg-orange-600 text-white
+                        flex-1 sm:flex-none
+                        bg-orange-500 hover:bg-orange-600 text-white
                         dark:bg-blue-400 dark:hover:bg-blue-300 dark:text-black
                       "
                     >

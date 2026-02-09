@@ -133,7 +133,7 @@ const [loading, setLoading] = useState(false);
           <p className="mt-8 text-sm text-gray-600">
             Don&apos;t have an Account?{" "}
             <Link
-              href="/sellerauth/register"
+              href="/seller/register"
               className="text-blue-600 font-medium hover:underline"
             >
               Register Now

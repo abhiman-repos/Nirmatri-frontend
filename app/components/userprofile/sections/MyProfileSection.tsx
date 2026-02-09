@@ -55,7 +55,7 @@ export function MyProfileSection() {
   return (
     <div className="space-y-6">
       {/* ================= HEADER ================= */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
             My Profile
@@ -68,7 +68,7 @@ export function MyProfileSection() {
         <Button
           onClick={handleEditSave}
           disabled={saving}
-          className={`gap-2 ${
+          className={`gap-2 self-start sm:self-auto ${
             isEditing
               ? "bg-orange-500 hover:bg-orange-600 text-white dark:bg-blue-500 dark:hover:bg-blue-400 dark:text-black"
               : "border border-orange-500 text-orange-600 hover:bg-orange-50 dark:border-blue-400 dark:text-blue-400 dark:hover:bg-blue-400/10"
@@ -90,7 +90,7 @@ export function MyProfileSection() {
 
       {/* ================= AVATAR ================= */}
       <Card className="bg-white dark:bg-[#0f0f10] border border-orange-200 dark:border-white/10">
-        <CardContent className="pt-6 flex items-center gap-6">
+        <CardContent className="pt-6 flex flex-col sm:flex-row items-center gap-6">
           <div className="relative">
             <div className="w-24 h-24 rounded-full overflow-hidden bg-orange-500 text-white dark:bg-blue-500 dark:text-black flex items-center justify-center text-3xl font-bold">
               {profile.avatar ? (
@@ -125,13 +125,18 @@ export function MyProfileSection() {
             )}
           </div>
 
-          <div>
+          <div className="text-center sm:text-left">
             <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
               {profile.name}
             </h2>
             <p className="text-gray-600 dark:text-gray-400">
               Member since January 2024
             </p>
+            {isEditing && (
+              <p className="text-xs mt-1 text-gray-500">
+                Click camera icon to change photo
+              </p>
+            )}
           </div>
         </CardContent>
       </Card>
@@ -148,7 +153,11 @@ export function MyProfileSection() {
         <CardContent className="grid gap-4 md:grid-cols-2">
           <div>
             <Label>Full Name</Label>
-            <Input disabled={!isEditing} value={profile.name} />
+            <Input
+              disabled={!isEditing}
+              value={profile.name}
+              className={!isEditing ? "bg-gray-50 dark:bg-gray-800 cursor-not-allowed" : ""}
+            />
           </div>
 
           <div>
@@ -156,7 +165,11 @@ export function MyProfileSection() {
               <Phone className="w-4 h-4 text-orange-500 dark:text-blue-400" />
               Phone
             </Label>
-            <Input disabled={!isEditing} value={profile.phone} />
+            <Input
+              disabled={!isEditing}
+              value={profile.phone}
+              className={!isEditing ? "bg-gray-50 dark:bg-gray-800 cursor-not-allowed" : ""}
+            />
           </div>
 
           <div className="md:col-span-2">
@@ -164,7 +177,11 @@ export function MyProfileSection() {
               <Mail className="w-4 h-4 text-orange-500 dark:text-blue-400" />
               Email
             </Label>
-            <Input disabled={!isEditing} value={profile.email} />
+            <Input
+              disabled
+              value={profile.email}
+              className="bg-gray-50 dark:bg-gray-800 cursor-not-allowed"
+            />
           </div>
         </CardContent>
       </Card>
@@ -183,9 +200,13 @@ export function MyProfileSection() {
           <Input type="password" placeholder="New Password" />
           <Input type="password" placeholder="Confirm New Password" />
 
+          <p className="text-xs text-gray-500">
+            Password must be at least 8 characters long
+          </p>
+
           <Button
             disabled={updatingPassword}
-            className="gap-2 bg-orange-500 hover:bg-orange-600 text-white dark:bg-blue-500 dark:hover:bg-blue-400 dark:text-black"
+            className="w-full sm:w-auto gap-2 bg-orange-500 hover:bg-orange-600 text-white dark:bg-blue-500 dark:hover:bg-blue-400 dark:text-black"
           >
             {updatingPassword ? (
               <>

@@ -4,7 +4,6 @@ import { useState } from "react";
 import Link from "next/link";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 import { GoogleLogin } from "@react-oauth/google";
 import axios from "axios";
 
@@ -28,7 +27,7 @@ export default function LoginPage() {
     setLoading(true);
 
     setTimeout(() => {
-      router.push("/shop");
+      router.push("/home");
     }, 2000);
   };
 
@@ -126,23 +125,25 @@ export default function LoginPage() {
         <GoogleLogin
           onSuccess={async (res) => {
             await axios.post(
-              "http://127.0.0.1:8000/google-login/",
+              "http://localhost:8000/api/auth/google-login/",
               { token: res.credential },
               {
-                headers: {
-                  "Content-Type": "application/json",
-                },
+                headers: { "Content-Type": "application/json" },
+                withCredentials: false,
               },
             );
 
-            router.push("/shop");
+            router.push("/home");
           }}
           onError={() => console.log("Login failed")}
         />
 
         <p className="mt-10 text-sm text-gray-700 text-center">
           Don’t have an account?{" "}
-          <Link href="/signup" className="text-blue-600 hover:underline">
+          <Link
+            href="/userauth/signup"
+            className="text-blue-600 hover:underline"
+          >
             Register
           </Link>
         </p>

@@ -29,7 +29,7 @@ export default function RegisterPage() {
 
     // ⏳ fake API delay
     setTimeout(() => {
-      router.push("/shop");
+      router.push("/home");
     }, 2000);
   };
 

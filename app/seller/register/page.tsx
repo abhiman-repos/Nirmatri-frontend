@@ -33,7 +33,7 @@ export default function SellerRegisterPage() {
     // fake API delay
     setTimeout(() => {
       setLoading(false);
-      router.push("/sellerauth/onboarding");
+      router.push("/seller/onboarding");
     }, 2000);
   };
 
