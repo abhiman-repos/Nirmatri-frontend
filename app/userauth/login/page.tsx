@@ -35,11 +35,10 @@ export default function LoginPage() {
     setError("");
     setLoading(true);
 
-  
-    setTimeout(() => {
-      setLoading(false);
-      router.push("/home");
-    }, 2000);
+    localStorage.setItem("loggedIn", "true");
+    router.replace("/home");
+
+
   };
 
   return (

@@ -1,6 +1,8 @@
 "use client";
 
 import clsx from "clsx";
+import type { Section } from "@/app/components/HeaderWrapper";
+
 import { useRouter } from "next/navigation";
 import {
   User,
@@ -23,8 +25,10 @@ import {
 type AccountSidebarProps = {
   open: boolean;
   onClose: () => void;
-  onSelect?: (section: string) => void;
+  onSelect?: (section: Section) => void;
 };
+
+
 
 /* ===================== COMPONENT ===================== */
 
@@ -134,26 +138,34 @@ export default function AccountSidebar({
 
           </div>
 
-          {/* ================= LOGOUT ================= */}
           <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-800">
-            <button
-              onClick={() => {
-                onClose();
-                router.push("/");
-              }}
-              className="
-                w-full flex items-center gap-3
-                px-4 py-3 rounded-xl
-                text-red-500
-                hover:bg-red-50
-                dark:hover:bg-red-900/20
-                font-medium transition
-              "
-            >
-              <LogOut className="h-4 w-4" />
-              Logout
-            </button>
-          </div>
+  <button
+    type="button" // ⭐ MOST IMPORTANT
+    onClick={(e) => {
+      e.preventDefault(); // ⭐ safety
+
+      // 🔐 AUTH CLEAR
+      document.cookie = "loggedIn=; path=/; max-age=0";
+      localStorage.removeItem("loggedIn"); // optional
+
+      onClose();
+
+      // 🔁 LANDING PAGE
+      router.replace("/");
+    }}
+    className="
+      w-full flex items-center gap-3
+      px-4 py-3 rounded-xl
+      hover:bg-red-50
+      dark:hover:bg-red-900/20
+      font-medium transition
+    "
+  >
+    <LogOut className="h-4 w-4" />
+    Logout
+  </button>
+</div>
+
         </div>
       </aside>
     </>
@@ -195,4 +207,4 @@ function MenuItem({
   );
 }
 
-
+  
