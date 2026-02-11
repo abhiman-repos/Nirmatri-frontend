@@ -14,33 +14,55 @@ export default function LoginPage() {
 
   const router = useRouter();
 
-  const handleLogin = () => {
-    // ================= VALIDATION =================
-    if (!email || !password) {
-      setError("Please enter email and password");
+ const handleLogin = async () => {
+  // ================= VALIDATION =================
+  if (!email || !password) {
+    setError("Please enter email and password");
+    return;
+  }
+
+  if (!email.includes("@")) {
+    setError("Please enter a valid email address");
+    return;
+  }
+
+  if (password.length < 6) {
+    setError("Password must be at least 6 characters");
+    return;
+  }
+
+  setError("");
+  setLoading(true);
+
+  try {
+    const res = await fetch("http://127.0.0.1:8000/api/auth/login/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email,
+        password,
+      }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      setError(data.error || "Login failed");
       return;
     }
 
-    if (!email.includes("@")) {
-      setError("Please enter a valid email address");
-      return;
-    }
+    // ✅ LOGIN SUCCESS
+    alert("Login successful 🎉");
+    router.push("/home");
 
-    if (password.length < 6) {
-      setError("Password must be at least 6 characters");
-      return;
-    }
-
-    // ================= SUCCESS =================
-    setError("");
-    setLoading(true);
-
-    // 🔁 Fake API (backend later)
-    setTimeout(() => {
-      setLoading(false);
-      router.push("/home");
-    }, 2000);
-  };
+  } catch (err) {
+    setError("Backend not reachable");
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <main
