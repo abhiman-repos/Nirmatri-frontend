@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Loader2, Eye, EyeOff } from "lucide-react";
 
-export default function LoginPage() {
+export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -35,11 +35,10 @@ export default function LoginPage() {
     setError("");
     setLoading(true);
 
-    // 🔁 Fake API (backend later)
-    setTimeout(() => {
-      setLoading(false);
-      router.push("/home");
-    }, 2000);
+    localStorage.setItem("loggedIn", "true");
+    router.push("/");
+
+
   };
 
   return (
@@ -130,7 +129,7 @@ export default function LoginPage() {
         {/* ================= FORGOT ================= */}
         <div className="text-right mb-10">
           <Link
-            href="/forgot-password"
+            href="/userauth/forgotpassword"
             className="text-sm text-blue-600 hover:underline"
           >
             Forgot password?
@@ -158,13 +157,16 @@ export default function LoginPage() {
                      bg-white/70 py-4 text-sm font-medium
                      text-gray-700 hover:bg-white transition"
         >
-          <img src="/google.jpg" className="h-5 w-5" alt="Google" />
+          <img src="/google.jpg" 
+          className="h-5 w-5" 
+          alt="Google"
+          />
           Continue with Google
         </button>
 
         {/* ================= REGISTER ================= */}
         <p className="mt-10 text-sm text-gray-700 text-center">
-          Don’t have an account?{" "}
+          Do not have an account?{" "}
           <Link
             href="/userauth/signup"
             className="text-blue-600 hover:underline"

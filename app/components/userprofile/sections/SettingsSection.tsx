@@ -1,307 +1,264 @@
-"use client";
-import { useState } from 'react';
-import { FiUser, FiMail, FiPhone, FiLock, FiBell, FiMoon, FiGlobe, FiCreditCard } from 'react-icons/fi';
+" use client";
 
-export default function SimpleSettingsPage() {
-  // All settings in one state
-  const [settings, setSettings] = useState(() => {
-    const saved = localStorage.getItem('simpleSettings');
-    return saved ? JSON.parse(saved) : {
-      name: "John Doe",
-      email: "john@example.com",
-      phone: "+91 9876543210",
-      notifications: true,
-      darkMode: false,
-      language: "English",
-      currency: "INR",
-      autoSave: true
-    };
+import { useState, useId } from "react";
+import { useTheme } from "@/app/contexts/ThemeContext";
+import {
+  User,
+  Lock,
+  Bell,
+  Shield,
+  Moon,
+  Sun,
+  Laptop,
+  Trash2,
+  Eye,
+  EyeOff,
+} from "lucide-react";
+
+export function SettingsSection() {
+  const { theme, setTheme } = useTheme();
+  const [showPassword, setShowPassword] = useState(false);
+  const [notifications, setNotifications] = useState({
+    email: true,
+    sms: false,
+    push: true,
   });
 
-  // Track which field is being edited
-  const [editingField, setEditingField] = useState(null);
-  const [tempValue, setTempValue] = useState("");
+  return (
+    <div className="p-6 space-y-10 text-gray-900 dark:text-gray-100">
+      {/* ================= HEADER ================= */}
+      <header>
+        <h1 className="text-2xl font-semibold">Account Settings</h1>
+        <p className="text-sm text-gray-500 dark:text-gray-400">
+          Manage your account, privacy & preferences
+        </p>
+      </header>
 
-  // Save settings
-  const saveSettings = () => {
-    localStorage.setItem('simpleSettings', JSON.stringify(settings));
-  };
+      {/* ================= PROFILE ================= */}
+      <Section title="Profile" icon={<User />}>
+        <Input label="Full Name" defaultValue="Rahul Kumar" />
+        <Input label="Email Address" defaultValue="rahul@gmail.com" />
+        <Input label="Mobile Number" defaultValue="+91 9876543210" />
+        <Button text="Save Changes" />
+      </Section>
 
-  // Start editing a field
-  const startEdit = (field: string, value: string) => {
-    setEditingField(null);
-    setTempValue(value);
-  };
+      {/* ================= SECURITY ================= */}
+      <Section title="Security" icon={<Lock />}>
+        <Input
+          label="Current Password"
+          type={showPassword ? "text" : "password"}
+          rightIcon={
+            showPassword ? (
+              <EyeOff onClick={() => setShowPassword(false)} />
+            ) : (
+              <Eye onClick={() => setShowPassword(true)} />
+            )
+          }
+        />
+        <Input label="New Password" type="password" />
+        <Input label="Confirm Password" type="password" />
+        <Button text="Update Password" />
+      </Section>
 
-  // Save the edited field
-  const saveEdit = () => {
-    if (editingField) {
-      setSettings({
-        ...settings,
-        [editingField]: tempValue
-      });
-      saveSettings();
-    }
-    setEditingField(null);
-  };
+      {/* ================= APPEARANCE ================= */}
+      <Section title="Appearance" icon={<Moon />}>
+        <div className="grid grid-cols-3 gap-3">
+          <ThemeCard
+            label="Light"
+            active={theme === "light"}
+            icon={<Sun />}
+            onClick={() => setTheme("light")}
+          />
+          <ThemeCard
+            label="Dark"
+            active={theme === "dark"}
+            icon={<Moon />}
+            onClick={() => setTheme("dark")}
+          />
+          <ThemeCard
+            label="System"
+            active={theme === "system"}
+            icon={<Laptop />}
+            onClick={() => setTheme("system")}
+          />
+        </div>
+      </Section>
 
-  // Cancel editing
-  const cancelEdit = () => {
-    setEditingField(null);
-  };
+      {/* ================= NOTIFICATIONS ================= */}
+      <Section title="Notifications" icon={<Bell />}>
+        <Toggle
+          label="Email Notifications"
+          value={notifications.email}
+          onChange={() =>
+            setNotifications((p) => ({ ...p, email: !p.email }))
+          }
+        />
+        <Toggle
+          label="SMS Alerts"
+          value={notifications.sms}
+          onChange={() =>
+            setNotifications((p) => ({ ...p, sms: !p.sms }))
+          }
+        />
+        <Toggle
+          label="Push Notifications"
+          value={notifications.push}
+          onChange={() =>
+            setNotifications((p) => ({ ...p, push: !p.push }))
+          }
+        />
+      </Section>
 
-  // Toggle boolean settings
-  const toggleSetting = (field: string) => {
-    const updated = {
-      ...settings,
-      [field]: !settings[field]
-    };
-    setSettings(updated);
-    saveSettings();
-  };
+      {/* ================= PRIVACY ================= */}
+      <Section title="Privacy" icon={<Shield />}>
+        <Toggle label="Make profile private" value={true} />
+        <Toggle label="Search engine visibility" value={false} />
+      </Section>
 
-  // Handle key press (Enter to save)
-  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      saveEdit();
-    } else if (e.key === 'Escape') {
-      cancelEdit();
-    }
-  };
+      {/* ================= DANGER ZONE ================= */}
+      <Section title="Danger Zone" icon={<Trash2 />} danger>
+        <button
+          className="danger-btn"
+          aria-label="Delete account permanently"
+        >
+          <Trash2 size={16} />
+          Delete Account
+        </button>
+      </Section>
+    </div>
+  );
+}
 
-  // Simple styles
-  const styles = {
-    page: {
-      padding: '20px',
-      maxWidth: '500px',
-      margin: '0 auto',
-      fontFamily: 'Arial, sans-serif'
-    },
-    settingItem: {
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      padding: '15px 0',
-      borderBottom: '1px solid #eee',
-      cursor: 'pointer'
-    },
-    settingInfo: {
-      display: 'flex',
-      alignItems: 'center',
-      gap: '12px'
-    },
-    icon: {
-      fontSize: '18px',
-      color: '#666'
-    },
-    label: {
-      fontSize: '16px',
-      color: '#333'
-    },
-    value: {
-      fontSize: '14px',
-      color: '#666'
-    },
-    editInput: {
-      padding: '5px 10px',
-      border: '1px solid #0070f3',
-      borderRadius: '4px',
-      fontSize: '14px',
-      width: '200px'
-    },
-    toggle: {
-      width: '40px',
-      height: '20px',
-      backgroundColor: settings.darkMode ? '#0070f3' : '#ccc',
-      borderRadius: '10px',
-      position: 'relative' as const,
-      cursor: 'pointer'
-    },
-    toggleCircle: {
-      width: '16px',
-      height: '16px',
-      backgroundColor: 'white',
-      borderRadius: '50%',
-      position: 'absolute' as const,
-      top: '2px',
-      left: settings.darkMode ? '22px' : '2px',
-      transition: '0.3s'
-    },
-    select: {
-      padding: '5px 10px',
-      border: '1px solid #ddd',
-      borderRadius: '4px',
-      fontSize: '14px',
-      backgroundColor: 'white'
-    }
-  };
+/* ================= SUB COMPONENTS ================= */
 
-  // Settings options array
-  const settingOptions = [
-    {
-      id: 'name',
-      label: 'Your Name',
-      icon: <FiUser style={styles.icon} />,
-      type: 'text',
-      value: settings.name
-    },
-    {
-      id: 'email',
-      label: 'Email Address',
-      icon: <FiMail style={styles.icon} />,
-      type: 'email',
-      value: settings.email
-    },
-    {
-      id: 'phone',
-      label: 'Phone Number',
-      icon: <FiPhone style={styles.icon} />,
-      type: 'tel',
-      value: settings.phone
-    },
-    {
-      id: 'language',
-      label: 'Language',
-      icon: <FiGlobe style={styles.icon} />,
-      type: 'select',
-      value: settings.language,
-      options: ['English', 'Hindi', 'Spanish', 'French']
-    },
-    {
-      id: 'currency',
-      label: 'Currency',
-      icon: <FiCreditCard style={styles.icon} />,
-      type: 'select',
-      value: settings.currency,
-      options: ['INR', 'USD', 'EUR', 'GBP']
-    },
-    {
-      id: 'notifications',
-      label: 'Notifications',
-      icon: <FiBell style={styles.icon} />,
-      type: 'toggle',
-      value: settings.notifications
-    },
-    {
-      id: 'darkMode',
-      label: 'Dark Mode',
-      icon: <FiMoon style={styles.icon} />,
-      type: 'toggle',
-      value: settings.darkMode
-    },
-    {
-      id: 'autoSave',
-      label: 'Auto Save',
-      icon: <FiLock style={styles.icon} />,
-      type: 'toggle',
-      value: settings.autoSave
-    }
-  ];
+function Section({
+  title,
+  icon,
+  children,
+  danger,
+}: {
+  title: string;
+  icon: React.ReactNode;
+  children: React.ReactNode;
+  danger?: boolean;
+}) {
+  return (
+    <section
+      className={`rounded-2xl p-5 space-y-4 border ${
+        danger
+          ? "border-red-300 dark:border-red-800"
+          : "border-gray-200 dark:border-gray-800"
+      }`}
+    >
+      <div className="flex items-center gap-2 font-semibold">
+        {icon}
+        {title}
+      </div>
+      {children}
+    </section>
+  );
+}
+
+function Input({
+  label,
+  type = "text",
+  defaultValue,
+  rightIcon,
+}: {
+  label: string;
+  type?: string;
+  defaultValue?: string;
+  rightIcon?: React.ReactNode;
+}) {
+  const id = useId();
 
   return (
-    <div style={styles.page}>
-      {/* Settings List */}
-      {settingOptions.map((option) => (
-        <div 
-          key={option.id} 
-          style={styles.settingItem}
-          onClick={() => option.type !== 'toggle' && startEdit(option.id, option.value)}
-        >
-          <div style={styles.settingInfo}>
-            {option.icon}
-            <div>
-              <div style={styles.label}>{option.label}</div>
-              {option.type !== 'toggle' && editingField !== option.id && (
-                <div style={styles.value}>{option.value}</div>
-              )}
-            </div>
-          </div>
+    <div className="space-y-1">
+      <label htmlFor={id} className="text-sm font-medium">
+        {label}
+      </label>
 
-          {/* Display based on type */}
-          <div>
-            {editingField === option.id ? (
-              <div style={{display: 'flex', gap: '10px', alignItems: 'center'}}>
-                {option.type === 'select' ? (
-                  <select 
-                    value={tempValue}
-                    onChange={(e) => setTempValue(e.target.value)}
-                    style={styles.select}
-                    autoFocus
-                    aria-label={`Select ${option.label}`}
-                  >
-                    {option.options && option.options.map(opt => (
-                      <option key={opt} value={opt}>{opt}</option>
-                    ))}
-                  </select>
-                ) : (
-                  <input
-                    type={option.type}
-                    value={tempValue}
-                    onChange={(e) => setTempValue(e.target.value)}
-                    onKeyDown={handleKeyPress}
-                    style={styles.editInput}
-                    autoFocus
-                  />
-                )}
-                <button 
-                  onClick={saveEdit}
-                  style={{
-                    padding: '5px 10px',
-                    backgroundColor: '#28a745',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '4px',
-                    cursor: 'pointer'
-                  }}
-                >
-                  ✓
-                </button>
-                <button 
-                  onClick={cancelEdit}
-                  style={{
-                    padding: '5px 10px',
-                    backgroundColor: '#dc3545',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '4px',
-                    cursor: 'pointer'
-                  }}
-                >
-                  ✕
-                </button>
-              </div>
-            ) : option.type === 'toggle' ? (
-              <div 
-                style={{
-                  ...styles.toggle,
-                  backgroundColor: option.value ? '#0070f3' : '#ccc'
-                }}
-                onClick={() => toggleSetting(option.id)}
-              >
-                <div style={{
-                  ...styles.toggleCircle,
-                  left: option.value ? '22px' : '2px'
-                }} />
-              </div>
-            ) : (
-              <div style={styles.value}>{option.value}</div>
-            )}
-          </div>
-        </div>
-      ))}
+      <div className="relative">
+        <input
+          id={id}
+          type={type}
+          defaultValue={defaultValue}
+          className="input w-full"
+        />
 
-      {/* Simple Status */}
-      <div style={{
-        marginTop: '30px',
-        padding: '10px',
-        backgroundColor: '#f8f9fa',
-        borderRadius: '4px',
-        fontSize: '12px',
-        color: '#666',
-        textAlign: 'center'
-      }}>
-        Changes are saved automatically
+        {rightIcon && (
+          <span
+            className="absolute right-3 top-3 cursor-pointer"
+            aria-hidden="true"
+          >
+            {rightIcon}
+          </span>
+        )}
       </div>
     </div>
   );
+}
+
+function Toggle({
+  label,
+  value = false,
+  onChange,
+}: {
+  label: string;
+  value?: boolean;
+  onChange?: () => void;
+}) {
+  return (
+    <div className="flex items-center justify-between">
+      <span>{label}</span>
+
+      <button
+        type="button"
+        onClick={onChange}
+        aria-label={label}
+        aria-pressed={value ? "true" : "false"}
+        className={`w-12 h-6 rounded-full transition ${
+          value ? "bg-blue-600" : "bg-gray-300"
+        }`}
+      >
+        <span
+          className={`block h-5 w-5 bg-white rounded-full transition ${
+            value ? "translate-x-6" : "translate-x-1"
+          }`}
+        />
+      </button>
+    </div>
+  );
+}
+
+function ThemeCard({
+  label,
+  icon,
+  active,
+  onClick,
+}: {
+  label: string;
+  icon: React.ReactNode;
+  active: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={`Switch to ${label} theme`}
+      className={`p-4 rounded-xl border flex flex-col items-center gap-2 ${
+        active
+          ? "border-blue-600 bg-blue-50 dark:bg-blue-900/20"
+          : "border-gray-200 dark:border-gray-700"
+      }`}
+    >
+      {icon}
+      <span>{label}</span>
+    </button>
+  );
+}
+
+function Button({ text }: { text: string }) {
+  return <button className="primary-btn">{text}</button>;
 }

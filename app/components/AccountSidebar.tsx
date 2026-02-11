@@ -1,18 +1,22 @@
 "use client";
 
 import clsx from "clsx";
+import type { Section } from "@/app/components/HeaderWrapper";
+
 import { useRouter } from "next/navigation";
 import {
   User,
   ShoppingBag,
-
   Heart,
   ShoppingCart,
   CreditCard,
   RefreshCcw,
   LogOut,
   ChevronRight,
+  MapPin,
+
   Settings,
+
 
 } from "lucide-react";
 
@@ -21,8 +25,10 @@ import {
 type AccountSidebarProps = {
   open: boolean;
   onClose: () => void;
-  onSelect?: (section: string) => void;
+  onSelect?: (section: Section) => void;
 };
+
+
 
 /* ===================== COMPONENT ===================== */
 
@@ -50,24 +56,13 @@ export default function AccountSidebar({
       {/* ================= SIDEBAR ================= */}
       <aside
         className={clsx(
-          /* 📱 Mobile: full screen */
           "fixed inset-0 z-[70]",
-
-          /* 💻 Desktop: navbar ke niche right side */
           "lg:inset-auto lg:right-0 lg:top-14 lg:bottom-0",
-
-          /* Width control */
           "w-full lg:w-[330px]",
-
-          /* Base styles */
           "bg-white dark:bg-gray-900",
           "border-l border-gray-200 dark:border-gray-800",
           "shadow-[0_0_40px_rgba(0,0,0,0.18)]",
-
-          /* Animation */
           "transition-transform duration-300 ease-out",
-
-          /* Open / Close */
           open ? "translate-x-0" : "translate-x-full"
         )}
       >
@@ -84,17 +79,16 @@ export default function AccountSidebar({
           </h2>
 
           <button
-  onClick={onClose}
-  aria-label="Close modal"
-  className="
-    rounded-full p-2
-    hover:bg-gray-100 dark:hover:bg-gray-800
-    transition
-  "
->
-  ✕
-</button>
-
+            onClick={onClose}
+            aria-label="Close sidebar"
+            className="
+              rounded-full p-2
+              hover:bg-gray-100 dark:hover:bg-gray-800
+              transition
+            "
+          >
+            ✕
+          </button>
         </div>
 
         {/* ================= CONTENT ================= */}
@@ -139,29 +133,39 @@ export default function AccountSidebar({
             <MenuItem icon={<ShoppingCart />} label="Cart" onClick={() => onSelect?.("cart")} />
             <MenuItem icon={<CreditCard />} label="Payments" onClick={() => onSelect?.("payments")} />
             <MenuItem icon={<RefreshCcw />} label="Returns & Refunds" onClick={() => onSelect?.("returns")} />
+            <MenuItem icon={<MapPin />} label="Addresses" onClick={() => onSelect?.("addresses")} />
             <MenuItem icon={<Settings/>} label="Settings" onClick={() => onSelect?.("settingsSection")} />
+
           </div>
 
-          {/* ================= LOGOUT ================= */}
           <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-800">
-            <button
-              onClick={() => {
-                onClose();          // Sidebar band
-                router.push("/");  // ✅ localhost:3000
-              }}
-              className="
-                w-full flex items-center gap-3
-                px-4 py-3 rounded-xl
-                text-red-500
-                hover:bg-red-50
-                dark:hover:bg-red-900/20
-                font-medium transition
-              "
-            >
-              <LogOut className="h-4 w-4" />
-              Logout
-            </button>
-          </div>
+  <button
+    type="button" // ⭐ MOST IMPORTANT
+    onClick={(e) => {
+      e.preventDefault(); // ⭐ safety
+
+      // 🔐 AUTH CLEAR
+      document.cookie = "loggedIn=; path=/; max-age=0";
+      localStorage.removeItem("loggedIn"); // optional
+
+      onClose();
+
+      // 🔁 LANDING PAGE
+      router.replace("/");
+    }}
+    className="
+      w-full flex items-center gap-3
+      px-4 py-3 rounded-xl
+      hover:bg-red-50
+      dark:hover:bg-red-900/20
+      font-medium transition
+    "
+  >
+    <LogOut className="h-4 w-4" />
+    Logout
+  </button>
+</div>
+
         </div>
       </aside>
     </>
@@ -203,4 +207,4 @@ function MenuItem({
   );
 }
 
-
+  

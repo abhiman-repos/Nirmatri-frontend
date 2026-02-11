@@ -18,30 +18,51 @@ export function ThemeToggle() {
 
   return (
     <div className="relative">
+      {/* TOGGLE BUTTON */}
       <Button
         variant="ghost"
         size="icon"
         onClick={() => setIsOpen(!isOpen)}
-        className="hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-300 hover:scale-110"
         aria-label="Toggle theme"
+        className="
+          transition-all duration-300 hover:scale-110
+          hover:bg-gradient-to-br hover:from-[#CF9893]/40 hover:to-[#6968A6]/40
+          dark:hover:bg-gray-800
+        "
       >
-        <Icon className="h-5 w-5 text-gray-700 dark:text-gray-300" />
+        <Icon
+          className="
+            h-5 w-5
+            text-[#085078]
+            dark:text-gray-300
+          "
+        />
       </Button>
 
       {isOpen && (
         <>
-          {/* Backdrop */}
+          {/* BACKDROP */}
           <div
             className="fixed inset-0 z-40"
             onClick={() => setIsOpen(false)}
           />
-          
-          {/* Dropdown Menu */}
-          <div className="absolute right-0 mt-2 w-40 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+
+          {/* DROPDOWN */}
+          <div
+            className="
+              absolute right-0 mt-2 w-44 z-50 overflow-hidden
+              rounded-xl border
+              bg-white/80 backdrop-blur-xl
+              border-[#6968A6]/20
+              shadow-[0_20px_50px_-15px_rgba(105,104,166,0.35)]
+              dark:bg-gray-900 dark:border-gray-700
+              animate-in fade-in slide-in-from-top-2 duration-200
+            "
+          >
             {themes.map((themeOption) => {
               const ThemeIcon = themeOption.icon;
               const isSelected = theme === themeOption.value;
-              
+
               return (
                 <button
                   key={themeOption.value}
@@ -49,16 +70,31 @@ export function ThemeToggle() {
                     setTheme(themeOption.value);
                     setIsOpen(false);
                   }}
-                  className={`w-full flex items-center gap-3 px-4 py-3 text-left transition-colors duration-200 ${
-                    isSelected
-                      ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-900 dark:text-blue-300'
-                      : 'hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300'
-                  }`}
+                  className={`
+                    w-full flex items-center gap-3 px-4 py-3 text-left
+                    transition-all duration-200
+                    ${
+                      isSelected
+                        ? `
+                          bg-gradient-to-r from-[#CF9893]/30 to-[#6968A6]/30
+                          text-[#085078]
+                          dark:bg-gray-800 dark:text-gray-200
+                        `
+                        : `
+                          hover:bg-gradient-to-r hover:from-[#CF9893]/20 hover:to-[#6968A6]/20
+                          text-gray-700 dark:text-gray-300
+                        `
+                    }
+                  `}
                 >
                   <ThemeIcon className="h-4 w-4" />
-                  <span className="text-sm font-medium">{themeOption.label}</span>
+                  <span className="text-sm font-medium">
+                    {themeOption.label}
+                  </span>
                   {isSelected && (
-                    <span className="ml-auto text-blue-900 dark:text-blue-300">✓</span>
+                    <span className="ml-auto text-[#6968A6] dark:text-gray-300">
+                      ✓
+                    </span>
                   )}
                 </button>
               );

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { ThemeProvider } from "./contexts/ThemeContext";
-
+import HeaderWrapper from "@/app/components/HeaderWrapper";
+import { ThemeProvider } from "@/app/contexts/ThemeContext";
 
 export const metadata: Metadata = {
   title: "Nirmatri",
@@ -16,8 +16,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="antialiased">
-        {/* ✅ Wrap entire app with ThemeProvider for global theme access */}
+        {/*  THEME PROVIDER (ROOT) */}
         <ThemeProvider>
+          {/*  HEADER + SIDEBAR CONTROLLER */}
+          <HeaderWrapper />
+
+          {/*  PAGE CONTENT */}
           {children}
         </ThemeProvider>
       </body>

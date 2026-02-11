@@ -148,6 +148,32 @@ export function VideoLikeCarousel() {
         </Button>
       </div>
 
+
+      {/*
+            ))}
+         </div>
+         <span className="text-white font-serif text-xl opacity-30">0{slides.length}</span>
+      </div>
+
+      {/* Modern Number Indicators */}
+      {/* <div className="absolute bottom-12 left-12 flex items-center gap-6 z-20">
+         <span className="text-white font-serif text-4xl italic opacity-50">0{currentSlide + 1}</span>
+         <div className="flex gap-2">
+            {slides.map((_, index) => (
+              <div
+                key={index}
+                className={`h-1 transition-all duration-500 rounded-full ${
+                  index === currentSlide ? "bg-amber-500 w-12" : "bg-white/30 w-4"
+                }`}
+              />
+            ))}
+         </div>
+         <span className="text-white font-serif text-xl opacity-30">0{slides.length}</span>
+      </div> */}
+
+
+
+
       {/* Progress Line */}
       <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/10 z-30">
         <div 
