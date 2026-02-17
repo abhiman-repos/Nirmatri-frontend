@@ -1,6 +1,5 @@
 "use client";
 
-import { Header } from "@/app/components/Header";
 import { VideoLikeCarousel } from "@/app/components/VideoLikeCarousel";
 import { CategoryShowcase } from "@/app/components/CategoryShowcase";
 import { SponsoredProducts } from "@/app/components/SponsoredProducts";
@@ -13,7 +12,7 @@ export default function Page() {
   return (
     <ThemeProvider>
       <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-300">
-        <Header />
+        
         <VideoLikeCarousel />
         <CategoryShowcase />
         <SponsoredProducts />

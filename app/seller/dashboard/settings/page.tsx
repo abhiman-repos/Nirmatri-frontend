@@ -1,208 +1,151 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
-export default function SettingsPage() {
-  const [activeTab, setActiveTab] = useState('profile');
-  const [isEditing, setIsEditing] = useState(false);
-  const [showSuccess, setShowSuccess] = useState(false);
-  
-  const [profileData, setProfileData] = useState({
-    name: 'Nirmatri Crafts',
-    email: 'seller@nirmatri.com',
-    phone: '+91 98765 43210',
-    address: 'Shop 12, Artisan Market, New Delhi',
-    gst: 'GST123456789',
-    pan: 'ABCDE1234F',
-  });
-
-  const [shopSettings, setShopSettings] = useState({
-    shopName: 'Nirmatri Crafts',
-    description: 'Authentic handmade crafts and artisan goods',
-    minOrderValue: '500',
-    deliveryTime: '7-10',
-    returnPolicy: '15',
-  });
-
-  const [bankDetails, setBankDetails] = useState({
-    accountName: 'Nirmatri Crafts',
-    accountNumber: '****4892',
-    ifsc: 'HDFC0001234',
-    bankName: 'HDFC Bank',
-    branch: 'Connaught Place, New Delhi',
-  });
-
+export default function SellerSettingsPage() {
+  const [darkMode, setDarkMode] = useState(false);
   const [notifications, setNotifications] = useState({
-    orderUpdates: true,
-    paymentAlerts: true,
-    productReviews: true,
-    promotionalEmails: false,
-    smsNotifications: true,
+    email: true,
+    orders: true,
+    inventory: true,
+  });
+  const [storeStatus, setStoreStatus] = useState({
+    vacationMode: false,
+    autoAccept: true,
   });
 
-  const handleSave = () => {
-    setIsEditing(false);
-    setShowSuccess(true);
-    setTimeout(() => setShowSuccess(false), 3000);
-  };
+  // Sync dark mode from localStorage
+  useEffect(() => {
+    const isDark = localStorage.getItem('darkMode') === 'true';
+    setDarkMode(isDark);
 
-  const tabs = [
-    { id: 'profile', label: 'Profile', icon: '👤' },
-    { id: 'shop', label: 'Shop Settings', icon: '🏪' },
-    { id: 'payment', label: 'Payment & Bank', icon: '💳' },
-    { id: 'notifications', label: 'Notifications', icon: '🔔' },
-    { id: 'security', label: 'Security', icon: '🔒' },
-  ];
+    const handleStorageChange = () => {
+      setDarkMode(localStorage.getItem('darkMode') === 'true');
+    };
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <main className="p-8">
+    <div className={darkMode ? 'dark' : ''}>
+      <main className="min-h-screen bg-gray-50 dark:bg-gray-900 p-8 transition-colors duration-300">
+        <div className="max-w-3xl mx-auto">
+          <header className="mb-8">
+            <h1 className="text-3xl font-semibold text-gray-900 dark:text-white">Store Settings</h1>
+            <p className="text-gray-600 dark:text-gray-400 mt-1">Manage your store preferences and operational status</p>
+          </header>
 
-        {/* Header */}
-        <div className="mb-8 flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-semibold text-gray-900">Settings</h1>
-            <p className="text-gray-600 mt-1">
-              Manage your account and shop preferences
-            </p>
-          </div>
-
-          {activeTab === 'profile' && (
-            <button
-              onClick={() => isEditing ? handleSave() : setIsEditing(true)}
-              className="px-6 py-2.5 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700"
-            >
-              {isEditing ? '💾 Save Changes' : '✏️ Edit Profile'}
-            </button>
-          )}
-        </div>
-
-        {/* Success Message */}
-        {showSuccess && (
-          <div className="mb-6 bg-green-50 border border-green-200 rounded-lg p-4 flex items-center gap-3">
-            <span className="text-green-600 text-xl">✓</span>
-            <span className="text-green-800 font-medium">
-              Settings saved successfully!
-            </span>
-          </div>
-        )}
-
-        {/* Tabs */}
-        <div className="bg-white rounded-lg shadow-sm border mb-6">
-          <div className="flex border-b overflow-x-auto">
-            {tabs.map(tab => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 px-6 py-4 text-sm font-medium ${
-                  activeTab === tab.id
-                    ? 'border-b-2 border-blue-600 text-blue-600'
-                    : 'text-gray-600 hover:text-gray-900'
-                }`}
-              >
-                <span>{tab.icon}</span>
-                {tab.label}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Content */}
-        <div className="bg-white rounded-lg shadow-sm border p-8">
-
-          {activeTab === 'profile' && (
-            <div className="space-y-6">
-              <h2 className="text-xl font-semibold">Profile Information</h2>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {['name','email','phone','gst'].map(field => (
-                  <input
-                    key={field}
-                    value={(profileData as any)[field]}
-                    disabled={!isEditing}
-                    className={`w-full px-4 py-2.5 border rounded-lg ${
-                      !isEditing ? 'bg-gray-50 cursor-not-allowed' : ''
-                    }`}
-                  />
-                ))}
-
-                <textarea
-                  rows={3}
-                  value={profileData.address}
-                  disabled={!isEditing}
-                  className={`md:col-span-2 w-full px-4 py-2.5 border rounded-lg ${
-                    !isEditing ? 'bg-gray-50 cursor-not-allowed' : ''
-                  }`}
+          <div className="space-y-6">
+            {/* Notifications Section */}
+            <section className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+              <div className="p-6 border-b border-gray-100 dark:border-gray-700">
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Notifications</h2>
+                <p className="text-sm text-gray-500 dark:text-gray-400">Control your alerts and communication preferences</p>
+              </div>
+              <div className="p-6 space-y-6">
+                <ToggleRow 
+                  label="New Order Alerts" 
+                  description="Get notified immediately when a customer places an order"
+                  enabled={notifications.orders}
+                  onChange={() => setNotifications({...notifications, orders: !notifications.orders})}
+                />
+                <ToggleRow 
+                  label="Stock Alerts" 
+                  description="Notifications when your products are low or out of stock"
+                  enabled={notifications.inventory}
+                  onChange={() => setNotifications({...notifications, inventory: !notifications.inventory})}
+                />
+                <ToggleRow 
+                  label="Email Digest" 
+                  description="Receive a weekly summary of your sales and earnings"
+                  enabled={notifications.email}
+                  onChange={() => setNotifications({...notifications, email: !notifications.email})}
                 />
               </div>
-            </div>
-          )}
+            </section>
 
-          {activeTab === 'shop' && (
-            <div className="space-y-6">
-              <h2 className="text-xl font-semibold">Shop Settings</h2>
-              <input className="input" value={shopSettings.shopName} />
-              <textarea className="input" rows={4} value={shopSettings.description} />
-            </div>
-          )}
+            {/* Store Operations */}
+            <section className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+              <div className="p-6 border-b border-gray-100 dark:border-gray-700">
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Store Operations</h2>
+                <p className="text-sm text-gray-500 dark:text-gray-400">Manage how your store handles orders</p>
+              </div>
+              <div className="p-6 space-y-6">
+                <ToggleRow 
+                  label="Auto-Accept Orders" 
+                  description="Automatically move new orders to 'Processing' status"
+                  enabled={storeStatus.autoAccept}
+                  onChange={() => setStoreStatus({...storeStatus, autoAccept: !storeStatus.autoAccept})}
+                />
+                
+                <div className="p-4 bg-orange-50 dark:bg-orange-900/10 border border-orange-100 dark:border-orange-900/30 rounded-lg">
+                  <ToggleRow 
+                    label="Vacation Mode" 
+                    description="Temporarily hide products from customers while you are away"
+                    enabled={storeStatus.vacationMode}
+                    onChange={() => setStoreStatus({...storeStatus, vacationMode: !storeStatus.vacationMode})}
+                    variant="orange"
+                  />
+                </div>
+              </div>
+            </section>
 
-          {activeTab === 'payment' && (
-            <div className="space-y-6">
-              <h2 className="text-xl font-semibold">Bank Details</h2>
-              <input className="input" value={bankDetails.bankName} />
-              <input className="input" value={bankDetails.ifsc} />
-            </div>
-          )}
+            {/* Shipping & Tax */}
+            <section className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Regional Preferences</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Currency</label>
+                  <select className="w-full px-4 py-2 border dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 dark:text-white">
+                    <option>INR (₹)</option>
+                    <option>USD ($)</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Timezone</label>
+                  <select className="w-full px-4 py-2 border dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 dark:text-white">
+                    <option>(GMT+05:30) Mumbai, Kolkata</option>
+                  </select>
+                </div>
+              </div>
+            </section>
 
-          {activeTab === 'notifications' && (
-            <div className="space-y-4">
-              {Object.entries(notifications).map(([key, value]: [string, boolean]) => (
-              <NotificationToggle
-                key={key}
-                label={key}
-                description=""
-                checked={value}
-                onChange={(checked: boolean) =>
-                setNotifications({ ...notifications, [key]: checked })
-                }
-              />
-              ))}
-            </div>
-          )}
-
-          {activeTab === 'security' && (
-            <div className="space-y-6">
-              <h2 className="text-xl font-semibold">Security</h2>
-              <button className="px-6 py-2 bg-red-600 text-white rounded-lg">
-                Delete Account
+            <div className="flex justify-end gap-3 mt-8">
+              <button className="px-6 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                Discard Changes
+              </button>
+              <button className="px-6 py-2.5 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 shadow-sm transition-colors">
+                Save Settings
               </button>
             </div>
-          )}
-
+          </div>
         </div>
       </main>
     </div>
   );
 }
 
-function NotificationToggle({
-  label,
-  description,
-  checked,
-  onChange,
-}: any) {
+function ToggleRow({ label, description, enabled, onChange, variant = 'blue' }: any) {
+  const activeColor = variant === 'orange' ? 'bg-orange-500' : 'bg-blue-600';
+  
   return (
-    <div className="flex items-center justify-between py-4 border-b">
-      <div>
-        <p className="font-medium">{label}</p>
-        <p className="text-sm text-gray-500">{description}</p>
+    <div className="flex items-center justify-between">
+      <div className="pr-4">
+        <p className="font-medium text-gray-900 dark:text-white">{label}</p>
+        <p className="text-sm text-gray-500 dark:text-gray-400">{description}</p>
       </div>
       <button
-        onClick={() => onChange(!checked)}
-        className={`h-6 w-11 rounded-full ${
-          checked ? 'bg-blue-600' : 'bg-gray-300'
+        onClick={onChange}
+        className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors focus:outline-none ${
+          enabled ? activeColor : 'bg-gray-200 dark:bg-gray-700'
         }`}
-      />
+      >
+        <span
+          className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+            enabled ? 'translate-x-6' : 'translate-x-1'
+          }`}
+        />
+      </button>
     </div>
   );
 }

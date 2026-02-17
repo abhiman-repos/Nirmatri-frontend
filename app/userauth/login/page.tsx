@@ -48,14 +48,24 @@ export default function LoginPage() {
 
     const data = await res.json();
 
-    if (!res.ok) {
-      setError(data.error || "Login failed");
-      return;
-    }
+    if (res.ok) {
+  localStorage.setItem("token", data.token);
+  localStorage.setItem("user", JSON.stringify(data.user));
+
+  router.push("/home");
+}
+
 
     // ✅ LOGIN SUCCESS
-    alert("Login successful 🎉");
-    router.push("/home");
+    // ✅ SAVE TOKEN & USER
+localStorage.setItem("token", data.token);
+localStorage.setItem("user", JSON.stringify(data.user));
+
+// OPTIONAL: success message
+alert("Login successful 🎉");
+
+// REDIRECT
+router.push("/home");
 
   } catch (err) {
     setError("Backend not reachable");
@@ -152,7 +162,7 @@ export default function LoginPage() {
         {/* ================= FORGOT ================= */}
         <div className="text-right mb-10">
           <Link
-            href="/forgot-password"
+            href="/userauth/forgot-password"
             className="text-sm text-blue-600 hover:underline"
           >
             Forgot password?

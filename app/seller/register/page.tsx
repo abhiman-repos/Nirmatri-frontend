@@ -13,50 +13,75 @@ export default function SellerRegisterPage() {
 
   const router = useRouter();
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setError("");
+const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  e.preventDefault();
+  setError("");
 
-    const form = e.currentTarget;
-    const data = new FormData(form);
+  const form = e.currentTarget;
+  const data = new FormData(form);
 
-    const firstName = data.get("firstName")?.toString().trim();
-    const lastName = data.get("lastName")?.toString().trim();
-    const email = data.get("email")?.toString().trim();
-    const store = data.get("store")?.toString().trim();
-    const password = data.get("password")?.toString();
-    const confirm = data.get("confirm")?.toString();
-
-    // ================= VALIDATION =================
-
-    if (!firstName || !lastName || !email || !store || !password || !confirm) {
-      setError("Please fill all fields");
-      return;
-    }
-
-    if (!email.includes("@")) {
-      setError("Please enter a valid email address");
-      return;
-    }
-
-    if (password.length < 6) {
-      setError("Password must be at least 6 characters");
-      return;
-    }
-
-    if (password !== confirm) {
-      setError("Passwords do not match");
-      return;
-    }
-
-    // ================= FAKE REGISTER =================
-    setLoading(true);
-
-    setTimeout(() => {
-      setLoading(false);
-      router.push("/seller/onboarding");
-    }, 2000);
+  const payload = {
+    first_name: data.get("firstName")?.toString().trim(),
+    last_name: data.get("lastName")?.toString().trim(),
+    email: data.get("email")?.toString().trim(),
+    store_name: data.get("store")?.toString().trim(),
+    password: data.get("password")?.toString(),
+    confirm_password: data.get("confirm")?.toString(),
   };
+
+  // ================= VALIDATION =================
+  if (
+    !payload.first_name ||
+    !payload.last_name ||
+    !payload.email ||
+    !payload.store_name ||
+    !payload.password ||
+    !payload.confirm_password
+  ) {
+    setError("All fields are required");
+    return;
+  }
+
+  if (payload.password.length < 6) {
+    setError("Password must be at least 6 characters");
+    return;
+  }
+
+  if (payload.password !== payload.confirm_password) {
+    setError("Passwords do not match");
+    return;
+  }
+
+  setLoading(true);
+
+  try {
+    const res = await fetch(
+      "http://127.0.0.1:8000/api/auth/sellerRegister/",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      }
+    );
+
+    const result = await res.json();
+
+    if (!res.ok) {
+      throw new Error(result.error || "Registration failed");
+    }
+
+    // ✅ SUCCESS
+    router.push("/seller/onboarding");
+
+  } catch (err: any) {
+    setError(err.message || "Server error");
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   return (
     <main className="relative min-h-screen overflow-hidden bg-[#F5F7FF]">
@@ -196,7 +221,7 @@ export default function SellerRegisterPage() {
             <p className="mt-6 text-sm text-gray-600 text-center">
               Already have an account?{" "}
               <Link
-                href="/sellerauth/login"
+                href="/seller/login"
                 className="text-blue-600 font-medium hover:underline"
               >
                 Login
