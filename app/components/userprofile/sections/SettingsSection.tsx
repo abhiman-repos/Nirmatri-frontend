@@ -34,14 +34,6 @@ export function SettingsSection() {
         </p>
       </header>
 
-      {/* ================= PROFILE ================= */}
-      <Section title="Profile" icon={<User />}>
-        <Input label="Full Name" defaultValue="Rahul Kumar" />
-        <Input label="Email Address" defaultValue="rahul@gmail.com" />
-        <Input label="Mobile Number" defaultValue="+91 9876543210" />
-        <Button text="Save Changes" />
-      </Section>
-
       {/* ================= SECURITY ================= */}
       <Section title="Security" icon={<Lock />}>
         <Input
@@ -260,5 +252,11 @@ function ThemeCard({
 }
 
 function Button({ text }: { text: string }) {
-  return <button className="primary-btn">{text}</button>;
+
+  return (
+    <button className="primary-btn">
+      {text}
+    </button>
+  );
 }
+

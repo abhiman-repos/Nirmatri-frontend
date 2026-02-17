@@ -81,8 +81,8 @@ export default function Login() {
             onChange={(e) => setEmail(e.target.value)}
             placeholder="you@email.com"
             className="w-full rounded-xl border border-gray-300/60
-                       bg-white/60 px-4 py-4 text-sm
-                       focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      bg-white/60 px-4 py-4 text-sm
+                      focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
 
@@ -99,8 +99,8 @@ export default function Login() {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter your password"
               className="w-full rounded-xl border border-gray-300/60
-                         bg-white/60 px-4 py-4 pr-12 text-sm
-                         focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        bg-white/60 px-4 py-4 pr-12 text-sm
+                        focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
 
             {/* 👁 Eye Toggle */}
@@ -108,7 +108,7 @@ export default function Login() {
               type="button"
               onClick={() => setShowPassword(!showPassword)}
               className="absolute right-4 top-1/2 -translate-y-1/2
-                         text-gray-500 hover:text-gray-800 transition"
+                        text-gray-500 hover:text-gray-800 transition"
             >
               {showPassword ? (
                 <EyeOff className="h-5 w-5" />
@@ -129,7 +129,7 @@ export default function Login() {
         {/* ================= FORGOT ================= */}
         <div className="text-right mb-10">
           <Link
-            href="/userauth/forgotpassword"
+            href="/userauth/forgot-password"
             className="text-sm text-blue-600 hover:underline"
           >
             Forgot password?
@@ -157,10 +157,7 @@ export default function Login() {
                      bg-white/70 py-4 text-sm font-medium
                      text-gray-700 hover:bg-white transition"
         >
-          <img src="/google.jpg" 
-          className="h-5 w-5" 
-          alt="Google"
-          />
+          <img src="/google.jpg" className="h-5 w-5" alt="Google"/>
           Continue with Google
         </button>
 

@@ -4,13 +4,16 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTheme } from "@/app/contexts/ThemeContext";
 import Link from "next/link";
+import { Button } from "@/app/components/ui/button";
+import { Select } from "@/app/components/ui/select";
+import { Input } from "@/app/components/ui/input";
 
 export default function ManageProductsPage() {
   // ============================================
   // STATE & HOOKS
   // ============================================
   const router = useRouter();
-  const { effectiveTheme } = useTheme();
+  const { effectiveTheme = "light" } = useTheme();
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
@@ -249,21 +252,21 @@ export default function ManageProductsPage() {
             </div>
 
             {/* Category Filter */}
-            <select
+            <Select
               value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
+              onChange={(e: any) => setSelectedCategory(e.target.value)}
               className="px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white bg-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
             >
               <option value="all">All Categories</option>
               {categories.filter(c => c !== "all").map((cat) => (
                 <option key={cat} value={cat}>{cat}</option>
               ))}
-            </select>
+            </Select>
 
             {/* Status Filter */}
-            <select
+            <Select
               value={selectedStatus}
-              onChange={(e) => setSelectedStatus(e.target.value)}
+              onChange={(e: any) => setSelectedStatus(e.target.value)}
               className="px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white bg-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
             >
               <option value="all">All Status</option>
@@ -271,11 +274,11 @@ export default function ManageProductsPage() {
               <option value="lowstock">Low Stock</option>
               <option value="outofstock">Out of Stock</option>
               <option value="inactive">Inactive</option>
-            </select>
+            </Select>
 
             {/* View Mode Toggle */}
             <div className="flex gap-2">
-              <button
+              <Button
                 onClick={() => setViewMode("grid")}
                 className={`p-2.5 rounded-lg transition-colors ${
                   viewMode === "grid"
@@ -286,8 +289,8 @@ export default function ManageProductsPage() {
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
                 </svg>
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={() => setViewMode("list")}
                 className={`p-2.5 rounded-lg transition-colors ${
                   viewMode === "list"
@@ -298,7 +301,7 @@ export default function ManageProductsPage() {
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
                 </svg>
-              </button>
+              </Button>
             </div>
           </div>
 
@@ -428,7 +431,7 @@ function ProductCard({ product, isSelected, onSelect, onDelete, onDuplicate }: a
       {/* Image & Checkbox */}
       <div className="relative aspect-square bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
         <span className="text-6xl">{product.image}</span>
-        <input
+        <Input
           type="checkbox"
           checked={isSelected}
           onChange={onSelect}
@@ -501,7 +504,7 @@ function ProductTable({ products, selectedProducts, onSelectAll, onSelect, onDel
         <thead className="bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-700">
           <tr>
             <th className="px-4 py-3 text-left">
-              <input
+              <Input
                 type="checkbox"
                 checked={selectedProducts.length === products.length && products.length > 0}
                 onChange={onSelectAll}
@@ -521,7 +524,7 @@ function ProductTable({ products, selectedProducts, onSelectAll, onSelect, onDel
           {products.map((product: any) => (
             <tr key={product.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
               <td className="px-4 py-3">
-                <input
+                <Input
                   type="checkbox"
                   checked={selectedProducts.includes(product.id)}
                   onChange={() => onSelect(product.id)}
