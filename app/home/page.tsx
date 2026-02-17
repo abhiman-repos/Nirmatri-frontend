@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 import { VideoLikeCarousel } from "@/app/components/VideoLikeCarousel";
@@ -13,21 +13,20 @@ import { ThemeProvider } from "@/app/contexts/ThemeContext";
 
 export default function Page() {
   const router = useRouter();
-  const [isAuthorized, setIsAuthorized] = useState(false);
 
-/* 🔒 HOME PAGE GUARD */
-useEffect(() => {
-  const token = localStorage.getItem("token");
+  /* 🔒 HOME PAGE GUARD */
+  useEffect(() => {
+    const isLoggedIn =
+      typeof window !== "undefined" &&
+      localStorage.getItem("loggedIn") === "true";
 
-  if (!token) {
-    router.push("/userauth/login");
-  } else {
-    setIsAuthorized(true);
-  }
-}, [router]);
+    if (!isLoggedIn) {
+      router.replace("/");
+      alert("You must be logged in to access the home page.");
+    }
+  }, [router]);
 
-if (!isAuthorized)
-{
+
   return (
     <ThemeProvider>
       <div className="min-h-screen bg-black transition-colors duration-300">
