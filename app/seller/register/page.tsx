@@ -24,7 +24,6 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     first_name: data.get("firstName")?.toString().trim(),
     last_name: data.get("lastName")?.toString().trim(),
     email: data.get("email")?.toString().trim(),
-    store_name: data.get("store")?.toString().trim(),
     password: data.get("password")?.toString(),
     confirm_password: data.get("confirm")?.toString(),
   };
@@ -34,7 +33,6 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     !payload.first_name ||
     !payload.last_name ||
     !payload.email ||
-    !payload.store_name ||
     !payload.password ||
     !payload.confirm_password
   ) {
@@ -136,15 +134,6 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
                 type="email"
                 name="email"
                 placeholder="Email address"
-                className="w-full rounded-lg border px-4 py-3 text-sm
-                text-gray-900 placeholder:text-gray-500
-                focus:ring-2 focus:ring-blue-500 outline-none"
-              />
-
-              {/* STORE */}
-              <input
-                name="store"
-                placeholder="Store / Brand name"
                 className="w-full rounded-lg border px-4 py-3 text-sm
                 text-gray-900 placeholder:text-gray-500
                 focus:ring-2 focus:ring-blue-500 outline-none"
