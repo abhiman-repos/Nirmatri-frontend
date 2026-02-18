@@ -58,7 +58,7 @@ export default function LoginPage() {
     alert("Login successful 🎉");
 
     // REDIRECT
-    router.push("/home");
+    router.replace("/home");
   } else {
     setError(data.message || "Login failed");
   }
