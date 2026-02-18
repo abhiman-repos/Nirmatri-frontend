@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import axios from "axios";
 
 export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
@@ -11,7 +12,7 @@ export default function RegisterPage() {
 
   const router = useRouter();
 
-  const handleRegister = () => {
+  const handleRegister = async () => {
     const firstName = (
       document.getElementById("firstName") as HTMLInputElement
     )?.value.trim();
@@ -33,7 +34,6 @@ export default function RegisterPage() {
     )?.value;
 
     // ================= VALIDATION =================
-
     if (!firstName || !lastName || !email || !password || !confirm) {
       setError("Please fill all fields");
       return;
@@ -54,16 +54,41 @@ export default function RegisterPage() {
       return;
     }
 
-    // ================= SUCCESS =================
+    // ================= API CALL =================
     setError("");
     setLoading(true);
 
-    // 🔁 Fake API call (backend baad me)
-    setTimeout(() => {
-      setLoading(false);
+    try {
+      const response = await axios.request({
+        method: "post",
+        url: "http://localhost:8000/api/auth/userRegister/",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        data: {
+          first_name: firstName,
+          last_name: lastName,
+          email: email,
+          password: password,
+        },
+      });
+
+      console.log("Register success:", response.data);
+      alert("registration is succesful")
       router.push("/home");
-    }, 2000);
-  };
+    } catch (err: any) {
+      console.error("Register error:", err);
+
+      if (err.response && err.response.data && err.response.data.error) {
+        // 👈 Show backend error (like "Email already registered")
+        setError(err.response.data.error);
+      } else {
+        setError("Registration failed. Please try again.");
+      }
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
     <main className="min-h-screen bg-[#F4F7FD] flex justify-center">
