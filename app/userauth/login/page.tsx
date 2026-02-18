@@ -46,28 +46,24 @@ export default function LoginPage() {
       }),
     });
 
-    const data = await res.json();
+  const data = await res.json();
 
-    if (res.ok) {
-  localStorage.setItem("token", data.token);
-  localStorage.setItem("user", JSON.stringify(data.user));
-
-  router.push("/home");
-}
-
-
+  if (res.ok) {
     // ✅ LOGIN SUCCESS
     // ✅ SAVE TOKEN & USER
-localStorage.setItem("token", data.token);
-localStorage.setItem("user", JSON.stringify(data.user));
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("user", JSON.stringify(data.user));
 
-// OPTIONAL: success message
-alert("Login successful 🎉");
+    // OPTIONAL: success message
+    alert("Login successful 🎉");
 
-// REDIRECT
-router.push("/home");
+    // REDIRECT
+    router.push("/home");
+  } else {
+    setError(data.message || "Login failed");
+  }
 
-  } catch (err) {
+} catch (err) {
     setError("Backend not reachable");
   } finally {
     setLoading(false);
