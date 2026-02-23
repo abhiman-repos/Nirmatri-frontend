@@ -100,7 +100,7 @@ export function OrdersSection() {
                     <Badge
                       className="
                         gap-1 rounded-full
-                        bg-orange-100 text-orange-600
+                        bg-orange-100 text-blue-600
                         dark:bg-blue-500/20 dark:text-blue-300
                       "
                     >
@@ -120,7 +120,7 @@ export function OrdersSection() {
                       <div
                         className="
                           w-16 h-16 rounded-xl
-                          bg-orange-100 dark:bg-[#1f232a]
+                          bg-blue-100 dark:bg-[#1f232a]
                           flex items-center justify-center text-3xl
                         "
                       >
@@ -148,7 +148,7 @@ export function OrdersSection() {
                     items-start sm:items-center justify-between
                     px-5 py-4
                     border-t border-orange-200/60 dark:border-white/10
-                    bg-orange-50/30 dark:bg-[#16181c]/40
+                    bg-blue-50/30 dark:bg-[#16181c]/40
                   "
                 >
                   <div className="font-semibold text-gray-900 dark:text-gray-100">
@@ -188,7 +188,7 @@ export function OrdersSection() {
                       }}
                       className="
                         flex-1 sm:flex-none
-                        bg-orange-500 hover:bg-orange-600 text-white
+                        bg-green-500 hover:bg-green-600 text-white
                         dark:bg-blue-400 dark:hover:bg-blue-300 dark:text-black
                       "
                     >

@@ -1,6 +1,5 @@
 "use client";
 
-import HeaderWrapper from "@/app/components/HeaderWrapper";
 import { VideoLikeCarousel } from "@/app/components/VideoLikeCarousel";
 import { CategoryShowcase } from "@/app/components/CategoryShowcase";
 import { SponsoredProducts } from "@/app/components/SponsoredProducts";
@@ -13,16 +12,11 @@ export default function Page() {
   return (
     <ThemeProvider>
       <div className="min-h-screen bg-black transition-colors duration-300">
-        
-        {/* ✅ Navbar + Account Sidebar */}
-        <HeaderWrapper />
-
         <VideoLikeCarousel />
         <CategoryShowcase />
         <SponsoredProducts />
         <ArtisanSpotlight />
         <WhyShopWithUs />
-
         <NirmatriFooter />
       </div>
     </ThemeProvider>

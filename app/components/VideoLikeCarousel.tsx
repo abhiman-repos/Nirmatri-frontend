@@ -27,7 +27,7 @@ const slides = [
     id: 3,
     image: "/boutique.png", // Crochet/Bouquet focus
     title: "Threads That Empower",
-    subtitle: "Intricate crochet bouquets and handmade clothes that tell a story.",
+    subtitle: "Intricate crochet bouquets and handmade clothes that tells a story.  ",
     // cta: "Shop Apparel",
     tag: "HAND-KNITTED",
     color: "from-rose-900/80"
@@ -51,7 +51,7 @@ export function VideoLikeCarousel() {
   const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
 
   return (
-    <section className="relative h-[300px] md:h-[280px] overflow-hidden bg-[#FAF9F6]">
+    <section className="relative h-[300px] md:h-[300px] overflow-hidden bg-[#FAF9F6]">
       {/* Slides */}
       {slides.map((slide, index) => (
         <div
@@ -89,7 +89,7 @@ export function VideoLikeCarousel() {
                 </h2>
 
                 {/* Subtitle */}
-                <p className="text-lg md:text-xl text-white/80 max-w-lg leading-relaxed font-light">
+                <p className="text-lg md:text-xl text-white/80 max-w-2xl leading-relaxed font-light">
                   {slide.subtitle}
                 </p>
 
@@ -147,6 +147,32 @@ export function VideoLikeCarousel() {
           <ChevronRight className="h-5 w-5" />
         </Button>
       </div>
+
+
+      {/*
+            ))}
+         </div>
+         <span className="text-white font-serif text-xl opacity-30">0{slides.length}</span>
+      </div>
+
+      {/* Modern Number Indicators */}
+      {/* <div className="absolute bottom-12 left-12 flex items-center gap-6 z-20">
+         <span className="text-white font-serif text-4xl italic opacity-50">0{currentSlide + 1}</span>
+         <div className="flex gap-2">
+            {slides.map((_, index) => (
+              <div
+                key={index}
+                className={`h-1 transition-all duration-500 rounded-full ${
+                  index === currentSlide ? "bg-amber-500 w-12" : "bg-white/30 w-4"
+                }`}
+              />
+            ))}
+         </div>
+         <span className="text-white font-serif text-xl opacity-30">0{slides.length}</span>
+      </div> */}
+
+
+
 
       {/* Progress Line */}
       <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/10 z-30">

@@ -1,537 +1,630 @@
 "use client";
 
-import { useState } from "react";
-import {
-  Edit2,
-  Lock,
-  Mail,
-  Phone,
-  User,
-  Loader2,
-  MapPin,
-  Calendar,
-  Briefcase,
-  Globe,
-  Shield,
-  Bell,
-} from "lucide-react";
-import { Button } from "@/app/components/ui/button";
-import { Input } from "@/app/components/ui/input";
-import { Label } from "@/app/components/ui/label";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/app/components/ui/card";
-import { Badge } from "@/app/components/ui/badge";
-import { Switch } from "@/app/components/ui/switch";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/app/components/ui/tabs";
-import { Separator } from "@/app/components/ui/separator";
+import { useState, useEffect } from 'react';
+import { FiEdit, FiCheck, FiX, FiSave, FiUser, FiMail, FiPhone } from 'react-icons/fi';
 
-export function MyProfileSection() {
-  const [isEditing, setIsEditing] = useState(false);
-  const [saving, setSaving] = useState(false);
-  const [updatingPassword, setUpdatingPassword] = useState(false);
-  const [activeTab, setActiveTab] = useState("personal");
-
-  const [profile, setProfile] = useState({
-    name: "Rahul Kumar",
-    email: "rahul.kumar@gmail.com",
-    phone: "+91 98765 43210",
-    location: "Mumbai, India",
-    dob: "15 March 1990",
-    occupation: "Senior Software Engineer",
-    company: "TechCorp Solutions",
-    website: "www.rahulkumar.dev",
-    bio: "Passionate software developer with 8+ years of experience in web technologies. Love building scalable applications and mentoring junior developers.",
-    joinedDate: "January 2020",
-    status: "Active",
-  });
-
-  const [securitySettings, setSecuritySettings] = useState({
-    twoFactorAuth: true,
-    emailNotifications: true,
-    smsNotifications: false,
-    loginAlerts: true,
-    privacyMode: false,
-  });
-
-  const handleEditSave = async () => {
-    if (!isEditing) {
-      setIsEditing(true);
-      return;
+export default function PersonalInformationPage() {
+  // Initialize state from localStorage
+  const initializeUserData = () => {
+    const savedData = localStorage.getItem('personalInfo');
+    if (savedData) {
+      return JSON.parse(savedData);
     }
-    setSaving(true);
-    await new Promise((r) => setTimeout(r, 1000));
-    setSaving(false);
-    setIsEditing(false);
+    return {
+      firstName: '',
+      lastName: '',
+      gender: '',
+      email: 'nirmatri@gmail.com',
+      mobile: '+91xxxxxxxxx'
+    };
   };
 
-  const toggleSecuritySetting = (key: keyof typeof securitySettings) => {
-    setSecuritySettings(prev => ({
-      ...prev,
-      [key]: !prev[key]
-    }));
+  // State for personal information
+  const [userData, setUserData] = useState(initializeUserData);
+
+  // State for editing mode
+  const [editing, setEditing] = useState({
+    personalInfo: false,
+    email: false,
+    mobile: false
+  });
+
+  // State for form data
+  const [formData, setFormData] = useState(userData);
+
+  // Handle editing state
+  const startEditing = (section: string) => {
+    setFormData({ ...userData });
+    setEditing({ ...editing, [section]: true });
+  };
+
+  const cancelEditing = (section: string) => {
+    setEditing({ ...editing, [section]: false });
+    setFormData({ ...userData });
+  };
+
+  // Handle form input changes
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value
+    });
+  };
+
+  // Save data for a specific section
+  const saveData = (section: string) => {
+    // Validation for email
+    if (section === 'email' && formData.email && !/\S+@\S+\.\S+/.test(formData.email)) {
+      alert('Please enter a valid email address');
+      return;
+    }
+
+    // Validation for mobile number
+    if (section === 'mobile' && formData.mobile && !/^\+?[0-9\s\-\(\)]{10,}$/.test(formData.mobile)) {
+      alert('Please enter a valid mobile number');
+      return;
+    }
+
+    const updatedData = { ...userData, ...formData };
+    setUserData(updatedData);
+    setEditing({ ...editing, [section]: false });
+    
+    // Save to localStorage
+    localStorage.setItem('personalInfo', JSON.stringify(updatedData));
+  };
+
+  // Save all data at once
+  const saveAllData = () => {
+    const updatedData = { ...userData, ...formData };
+    setUserData(updatedData);
+    setEditing({ personalInfo: false, email: false, mobile: false });
+    
+    // Save to localStorage
+    localStorage.setItem('personalInfo', JSON.stringify(updatedData));
+  };
+
+  // CSS Styles as JavaScript objects
+  const styles: { [key: string]: React.CSSProperties } = {
+    container: {
+      maxWidth: '800px',
+      margin: '0 auto',
+      padding: '2rem',
+      fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif",
+      backgroundColor: '#120e31',
+      minHeight: '100vh'
+    },
+    header: {
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginBottom: '2rem',
+      paddingBottom: '1rem',
+      borderBottom: '1px solid #e5e7eb'
+    },
+    title: {
+      fontSize: '1.875rem',
+      fontWeight: '700',
+      color: '#f5f5f5',
+      margin: '0'
+    },
+    saveAllButton: {
+      display: 'flex',
+      alignItems: 'center',
+      gap: '0.5rem',
+      backgroundColor: '#10b981',
+      color: 'white',
+      border: 'none',
+      padding: '0.75rem 1.5rem',
+      borderRadius: '0.5rem',
+      fontWeight: '600',
+      cursor: 'pointer',
+      transition: 'background-color 0.2s'
+    },
+    sectionsContainer: {
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '1.5rem'
+    },
+    sectionCard: {
+      backgroundColor: 'white',
+      borderRadius: '0.75rem',
+      boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)',
+      overflow: 'hidden',
+      transition: 'box-shadow 0.3s'
+    },
+    sectionHeader: {
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      padding: '1.5rem 1.5rem 0'
+    },
+    sectionTitle: {
+      display: 'flex',
+      alignItems: 'center',
+      gap: '0.75rem'
+    },
+    sectionIcon: {
+      fontSize: '1.25rem',
+      color: '#6b7280'
+    },
+    sectionTitleH2: {
+      fontSize: '1.25rem',
+      fontWeight: '600',
+      color: '#111827',
+      margin: '0'
+    },
+    editButton: {
+      display: 'flex',
+      alignItems: 'center',
+      gap: '0.5rem',
+      padding: '0.5rem 1rem',
+      borderRadius: '0.375rem',
+      fontWeight: '500',
+      cursor: 'pointer',
+      border: 'none',
+      backgroundColor: '#f3f4f6',
+      color: '#374151',
+      transition: 'all 0.2s'
+    },
+    cancelButton: {
+      display: 'flex',
+      alignItems: 'center',
+      gap: '0.5rem',
+      padding: '0.5rem 1rem',
+      borderRadius: '0.375rem',
+      fontWeight: '500',
+      cursor: 'pointer',
+      border: 'none',
+      backgroundColor: '#fef2f2',
+      color: '#dc2626',
+      transition: 'all 0.2s'
+    },
+    saveButton: {
+      display: 'flex',
+      alignItems: 'center',
+      gap: '0.5rem',
+      padding: '0.5rem 1rem',
+      borderRadius: '0.375rem',
+      fontWeight: '500',
+      cursor: 'pointer',
+      border: 'none',
+      backgroundColor: '#dbeafe',
+      color: '#1d4ed8',
+      marginTop: '1rem',
+      transition: 'all 0.2s'
+    },
+    editControls: {
+      display: 'flex',
+      gap: '0.5rem'
+    },
+    displayContent: {
+      padding: '1.5rem'
+    },
+    infoRow: {
+      display: 'flex',
+      marginBottom: '1rem',
+      paddingBottom: '0.75rem',
+      borderBottom: '1px solid #070707'
+    },
+    infoLabel: {
+      fontWeight: '500',
+      color: '#4b5563',
+      minWidth: '140px'
+    },
+    infoValue: {
+      color: '#111827',
+      fontWeight: '400'
+    },
+    emailValue: {
+      color: '#2563eb'
+    },
+    editForm: {
+      padding: '1.5rem',
+      borderTop: '1px solid #f3f4f6'
+    },
+    formGroup: {
+      marginBottom: '1.5rem'
+    },
+    formLabel: {
+      display: 'block',
+      fontWeight: '500',
+      color: '#374151',
+      marginBottom: '0.5rem'
+    },
+    formInput: {
+      width: '100%',
+      padding: '0.75rem',
+      border: '1px solid #d1d5db',
+      borderRadius: '0.375rem',
+      fontSize: '1rem',
+      transition: 'border-color 0.2s'
+    },
+    genderOptions: {
+      display: 'flex',
+      gap: '1.5rem',
+      marginTop: '0.5rem'
+    },
+    radioLabel: {
+      display: 'flex',
+      alignItems: 'center',
+      gap: '0.5rem',
+      cursor: 'pointer',
+      fontWeight: '400',
+      color: '#4b5563'
+    },
+    radioCustom: {
+      display: 'inline-block',
+      width: '1.25rem',
+      height: '1.25rem',
+      border: '2px solid #d1d5db',
+      borderRadius: '50%',
+      position: 'relative',
+      transition: 'all 0.2s'
+    },
+    footerNote: {
+      marginTop: '2rem',
+      padding: '1rem',
+      backgroundColor: '#f0f9ff',
+      borderRadius: '0.5rem',
+      color: '#0369a1',
+      fontSize: '0.875rem',
+      textAlign: 'center',
+      border: '1px solid #bae6fd'
+    }
+  };
+
+  // Mouse hover effects ko handle karne ke liye inline styles
+  const buttonHover = (e: React.MouseEvent<HTMLButtonElement>, type: string) => {
+    if (type === 'edit') {
+      e.currentTarget.style.backgroundColor = '#e5e7eb';
+    } else if (type === 'cancel') {
+      e.currentTarget.style.backgroundColor = '#fee2e2';
+    } else if (type === 'save') {
+      e.currentTarget.style.backgroundColor = '#bfdbfe';
+    } else if (type === 'saveAll') {
+      e.currentTarget.style.backgroundColor = '#059669';
+    }
+  };
+
+  const buttonLeave = (e: React.MouseEvent<HTMLButtonElement>, type: string) => {
+    if (type === 'edit') {
+      e.currentTarget.style.backgroundColor = '#f3f4f6';
+    } else if (type === 'cancel') {
+      e.currentTarget.style.backgroundColor = '#fef2f2';
+    } else if (type === 'save') {
+      e.currentTarget.style.backgroundColor = '#dbeafe';
+    } else if (type === 'saveAll') {
+      e.currentTarget.style.backgroundColor = '#10b981';
+    }
+  };
+
+  // Input focus effect
+  const inputFocus = (e: React.FocusEvent<HTMLInputElement>) => {
+    e.target.style.outline = 'none';
+    e.target.style.borderColor = '#3b82f6';
+    e.target.style.boxShadow = '0 0 0 3px rgba(59, 130, 246, 0.1)';
+  };
+
+  const inputBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    e.target.style.borderColor = '#d1d5db';
+    e.target.style.boxShadow = 'none';
+  };
+
+  // Card hover effect
+  const cardHover = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.currentTarget.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)';
+  };
+
+  const cardLeave = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.currentTarget.style.boxShadow = '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)';
   };
 
   return (
-    <div className="space-y-6">
-      {/* ================= HEADER ================= */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-            My Profile
-          </h1>
-          <p className="text-gray-600 dark:text-gray-400">
-            Manage your personal information and account settings
-          </p>
-        </div>
-
-        <Button
-          onClick={handleEditSave}
-          disabled={saving}
-          className={`gap-2 self-start sm:self-auto ${
-            isEditing
-              ? "bg-orange-500 hover:bg-orange-600 text-white dark:bg-blue-500 dark:hover:bg-blue-400 dark:text-black"
-              : "border border-orange-500 text-orange-600 hover:bg-orange-50 dark:border-blue-400 dark:text-blue-400 dark:hover:bg-blue-400/10"
-          }`}
+    <div style={styles.container}>
+      <header style={styles.header}>
+        <h1 style={styles.title}>Personal Information</h1>
+        <button 
+          style={styles.saveAllButton}
+          onClick={saveAllData}
+          onMouseEnter={(e) => buttonHover(e, 'saveAll')}
+          onMouseLeave={(e) => buttonLeave(e, 'saveAll')}
         >
-          {saving ? (
-            <>
-              <Loader2 className="w-4 h-4 animate-spin" />
-              Saving…
-            </>
+          <FiSave /> Save All
+        </button>
+      </header>
+
+      <div style={styles.sectionsContainer}>
+        {/* Personal Information Section */}
+        <div 
+          style={styles.sectionCard}
+          onMouseEnter={cardHover}
+          onMouseLeave={cardLeave}
+        >
+          <div style={styles.sectionHeader}>
+            <div style={styles.sectionTitle}>
+              <FiUser style={styles.sectionIcon} />
+              <h2 style={styles.sectionTitleH2}>Personal Information</h2>
+            </div>
+            {!editing.personalInfo ? (
+              <button 
+                style={styles.editButton}
+                onClick={() => startEditing('personalInfo')}
+                onMouseEnter={(e) => buttonHover(e, 'edit')}
+                onMouseLeave={(e) => buttonLeave(e, 'edit')}
+              >
+                <FiEdit /> Edit
+              </button>
+            ) : (
+              <div style={styles.editControls}>
+                <button 
+                  style={styles.cancelButton}
+                  onClick={() => cancelEditing('personalInfo')}
+                  onMouseEnter={(e) => buttonHover(e, 'cancel')}
+                  onMouseLeave={(e) => buttonLeave(e, 'cancel')}
+                >
+                  <FiX /> Cancel
+                </button>
+              </div>
+            )}
+          </div>
+
+          {!editing.personalInfo ? (
+            <div style={styles.displayContent}>
+              <div style={styles.infoRow}>
+                <span style={styles.infoLabel}>First Name:</span>
+                <span style={styles.infoValue}>{userData.firstName || 'Not set'}</span>
+              </div>
+              <div style={styles.infoRow}>
+                <span style={styles.infoLabel}>Last Name:</span>
+                <span style={styles.infoValue}>{userData.lastName || 'Not set'}</span>
+              </div>
+              <div style={styles.infoRow}>
+                <span style={styles.infoLabel}>Your Gender:</span>
+                <span style={styles.infoValue}>{userData.gender || 'Not set'}</span>
+              </div>
+            </div>
           ) : (
-            <>
-              <Edit2 className="w-4 h-4" />
-              {isEditing ? "Save Changes" : "Edit Profile"}
-            </>
+            <div style={styles.editForm}>
+              <div style={styles.formGroup}>
+                <label htmlFor="firstName" style={styles.formLabel}>First Name</label>
+                <input
+                  type="text"
+                  id="firstName"
+                  name="firstName"
+                  value={formData.firstName}
+                  onChange={handleInputChange}
+                  placeholder="Enter first name"
+                  style={styles.formInput}
+                  onFocus={inputFocus}
+                  onBlur={inputBlur}
+                />
+              </div>
+              <div style={styles.formGroup}>
+                <label htmlFor="lastName" style={styles.formLabel}>Last Name</label>
+                <input
+                  type="text"
+                  id="lastName"
+                  name="lastName"
+                  value={formData.lastName}
+                  onChange={handleInputChange}
+                  placeholder="Enter last name"
+                  style={styles.formInput}
+                  onFocus={inputFocus}
+                  onBlur={inputBlur}
+                />
+              </div>
+              <div style={styles.formGroup}>
+                <label style={styles.formLabel}>Your Gender</label>
+                <div style={styles.genderOptions}>
+                  <label style={styles.radioLabel}>
+                    <input
+                      type="radio"
+                      name="gender"
+                      value="Male"
+                      checked={formData.gender === 'Male'}
+                      onChange={handleInputChange}
+                      style={{ display: 'none' }}
+                    />
+                    <span style={{
+                      ...styles.radioCustom,
+                      borderColor: formData.gender === 'Male' ? '#3b82f6' : '#d1d5db'
+                    } as React.CSSProperties}>
+                      {formData.gender === 'Male' && (
+                        <span style={{
+                          content: '""',
+                          position: 'absolute',
+                          top: '50%',
+                          left: '50%',
+                          transform: 'translate(-50%, -50%)',
+                          width: '0.75rem',
+                          height: '0.75rem',
+                          backgroundColor: '#3b82f6',
+                          borderRadius: '50%'
+                        }} />
+                      )}
+                    </span>
+                    Male
+                  </label>
+                  <label style={styles.radioLabel}>
+                    <input
+                      type="radio"
+                      name="gender"
+                      value="Female"
+                      checked={formData.gender === 'Female'}
+                      onChange={handleInputChange}
+                      style={{ display: 'none' }}
+                    />
+                    <span style={{
+                      ...styles.radioCustom,
+                      borderColor: formData.gender === 'Female' ? '#3b82f6' : '#d1d5db'
+                    } as React.CSSProperties}>
+                      {formData.gender === 'Female' && (
+                        <span style={{
+                          content: '""',
+                          position: 'absolute',
+                          top: '50%',
+                          left: '50%',
+                          transform: 'translate(-50%, -50%)',
+                          width: '0.75rem',
+                          height: '0.75rem',
+                          backgroundColor: '#3b82f6',
+                          borderRadius: '50%'
+                        }} />
+                      )}
+                    </span>
+                    Female
+                  </label>
+                </div>
+              </div>
+              <button 
+                style={styles.saveButton}
+                onClick={() => saveData('personalInfo')}
+                onMouseEnter={(e) => buttonHover(e, 'save')}
+                onMouseLeave={(e) => buttonLeave(e, 'save')}
+              >
+                <FiCheck /> Save
+              </button>
+            </div>
           )}
-        </Button>
-      </div>
-
-      {/* ================= MAIN PROFILE LAYOUT ================= */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* LEFT COLUMN - ACCOUNT INFO */}
-        <div className="lg:col-span-1 space-y-6">
-          {/* ACCOUNT STATUS CARD */}
-          <Card className="bg-white dark:bg-[#0f0f10] border border-gray-200 dark:border-white/10">
-            <CardHeader className="pb-3">
-              <CardTitle className="flex items-center gap-2">
-                <Shield className="w-5 h-5 text-orange-500 dark:text-blue-400" />
-                Account Overview
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600 dark:text-gray-400">Account Status</span>
-                <Badge className="bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
-                  {profile.status}
-                </Badge>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600 dark:text-gray-400">Member Since</span>
-                <span className="font-medium">{profile.joinedDate}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600 dark:text-gray-400">Last Login</span>
-                <span className="font-medium">2 hours ago</span>
-              </div>
-              <Separator />
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Bell className="w-4 h-4 text-gray-500" />
-                    <span className="text-sm">Email Notifications</span>
-                  </div>
-                  <Switch 
-                    checked={securitySettings.emailNotifications}
-                    onCheckedChange={() => toggleSecuritySetting('emailNotifications')}
-                  />
-                </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Bell className="w-4 h-4 text-gray-500" />
-                    <span className="text-sm">SMS Notifications</span>
-                  </div>
-                  <Switch 
-                    checked={securitySettings.smsNotifications}
-                    onCheckedChange={() => toggleSecuritySetting('smsNotifications')}
-                  />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* QUICK ACTIONS CARD */}
-          <Card className="bg-white dark:bg-[#0f0f10] border border-gray-200 dark:border-white/10">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-lg">Quick Actions</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <Button 
-                variant="outline" 
-                className="w-full justify-start gap-2"
-                onClick={() => setActiveTab("security")}
-              >
-                <Lock className="w-4 h-4" />
-                Change Password
-              </Button>
-              <Button 
-                variant="outline" 
-                className="w-full justify-start gap-2"
-                onClick={() => setActiveTab("personal")}
-              >
-                <User className="w-4 h-4" />
-                Edit Profile
-              </Button>
-              <Button 
-                variant="outline" 
-                className="w-full justify-start gap-2"
-              >
-                <Shield className="w-4 h-4" />
-                Privacy Settings
-              </Button>
-            </CardContent>
-          </Card>
         </div>
 
-        {/* RIGHT COLUMN - PROFILE INFORMATION */}
-        <div className="lg:col-span-2 space-y-6">
-          {/* TABS FOR DIFFERENT SECTIONS */}
-          <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid grid-cols-3 mb-6">
-              <TabsTrigger value="personal">
-                <User className="w-4 h-4 mr-2" />
-                Personal
-              </TabsTrigger>
-              <TabsTrigger value="professional">
-                <Briefcase className="w-4 h-4 mr-2" />
-                Professional
-              </TabsTrigger>
-              <TabsTrigger value="security">
-                <Lock className="w-4 h-4 mr-2" />
-                Security
-              </TabsTrigger>
-            </TabsList>
+        {/* Email Address Section */}
+        <div 
+          style={styles.sectionCard}
+          onMouseEnter={cardHover}
+          onMouseLeave={cardLeave}
+        >
+          <div style={styles.sectionHeader}>
+            <div style={styles.sectionTitle}>
+              <FiMail style={styles.sectionIcon} />
+              <h2 style={styles.sectionTitleH2}>Email Address</h2>
+            </div>
+            {!editing.email ? (
+              <button 
+                style={styles.editButton}
+                onClick={() => startEditing('email')}
+                onMouseEnter={(e) => buttonHover(e, 'edit')}
+                onMouseLeave={(e) => buttonLeave(e, 'edit')}
+              >
+                <FiEdit /> Edit
+              </button>
+            ) : (
+              <div style={styles.editControls}>
+                <button 
+                  style={styles.cancelButton}
+                  onClick={() => cancelEditing('email')}
+                  onMouseEnter={(e) => buttonHover(e, 'cancel')}
+                  onMouseLeave={(e) => buttonLeave(e, 'cancel')}
+                >
+                  <FiX /> Cancel
+                </button>
+              </div>
+            )}
+          </div>
 
-            {/* PERSONAL INFO TAB */}
-            <TabsContent value="personal" className="space-y-6">
-              <Card className="bg-white dark:bg-[#0f0f10] border border-gray-200 dark:border-white/10">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <User className="w-5 h-5 text-orange-500 dark:text-blue-400" />
-                    Personal Information
-                  </CardTitle>
-                  <CardDescription>
-                    Update your personal details and contact information
-                  </CardDescription>
-                </CardHeader>
+          {!editing.email ? (
+            <div style={styles.displayContent}>
+              <div style={styles.infoRow}>
+                <span style={styles.infoLabel}>Email Address:</span>
+                <span style={{...styles.infoValue, ...styles.emailValue}}>{userData.email}</span>
+              </div>
+            </div>
+          ) : (
+            <div style={styles.editForm}>
+              <div style={styles.formGroup}>
+                <label htmlFor="email" style={styles.formLabel}>Email Address</label>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  placeholder="Enter email address"
+                  style={styles.formInput}
+                  onFocus={inputFocus}
+                  onBlur={inputBlur}
+                />
+              </div>
+              <button 
+                style={styles.saveButton}
+                onClick={() => saveData('email')}
+                onMouseEnter={(e) => buttonHover(e, 'save')}
+                onMouseLeave={(e) => buttonLeave(e, 'save')}
+              >
+                <FiCheck /> Save
+              </button>
+            </div>
+          )}
+        </div>
 
-                <CardContent className="space-y-6">
-                  {/* HORIZONTAL INFO BOXES */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {/* Name Box */}
-                    <div className="bg-gray-50 dark:bg-gray-900/50 p-4 rounded-lg border border-gray-200 dark:border-gray-800">
-                      <div className="flex items-center gap-2 mb-2">
-                        <User className="w-4 h-4 text-orange-500 dark:text-blue-400" />
-                        <Label className="text-sm font-medium">Full Name</Label>
-                      </div>
-                      {isEditing ? (
-                        <Input
-                          value={profile.name}
-                          onChange={(e) => setProfile({...profile, name: e.target.value})}
-                          className="border-orange-200 dark:border-blue-800"
-                        />
-                      ) : (
-                        <p className="text-lg font-semibold">{profile.name}</p>
-                      )}
-                    </div>
+        {/* Mobile Number Section */}
+        <div 
+          style={styles.sectionCard}
+          onMouseEnter={cardHover}
+          onMouseLeave={cardLeave}
+        >
+          <div style={styles.sectionHeader}>
+            <div style={styles.sectionTitle}>
+              <FiPhone style={styles.sectionIcon} />
+              <h2 style={styles.sectionTitleH2}>Mobile Number</h2>
+            </div>
+            {!editing.mobile ? (
+              <button 
+                style={styles.editButton}
+                onClick={() => startEditing('mobile')}
+                onMouseEnter={(e) => buttonHover(e, 'edit')}
+                onMouseLeave={(e) => buttonLeave(e, 'edit')}
+              >
+                <FiEdit /> Edit
+              </button>
+            ) : (
+              <div style={styles.editControls}>
+                <button 
+                  style={styles.cancelButton}
+                  onClick={() => cancelEditing('mobile')}
+                  onMouseEnter={(e) => buttonHover(e, 'cancel')}
+                  onMouseLeave={(e) => buttonLeave(e, 'cancel')}
+                >
+                  <FiX /> Cancel
+                </button>
+              </div>
+            )}
+          </div>
 
-                    {/* Email Box */}
-                    <div className="bg-gray-50 dark:bg-gray-900/50 p-4 rounded-lg border border-gray-200 dark:border-gray-800">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Mail className="w-4 h-4 text-orange-500 dark:text-blue-400" />
-                        <Label className="text-sm font-medium">Email Address</Label>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <p className="text-lg font-semibold">{profile.email}</p>
-                        <Badge variant="outline" className="text-xs">
-                          Verified
-                        </Badge>
-                      </div>
-                    </div>
-
-                    {/* Phone Box */}
-                    <div className="bg-gray-50 dark:bg-gray-900/50 p-4 rounded-lg border border-gray-200 dark:border-gray-800">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Phone className="w-4 h-4 text-orange-500 dark:text-blue-400" />
-                        <Label className="text-sm font-medium">Phone Number</Label>
-                      </div>
-                      {isEditing ? (
-                        <Input
-                          value={profile.phone}
-                          onChange={(e) => setProfile({...profile, phone: e.target.value})}
-                          className="border-orange-200 dark:border-blue-800"
-                        />
-                      ) : (
-                        <p className="text-lg font-semibold">{profile.phone}</p>
-                      )}
-                    </div>
-
-                    {/* Location Box */}
-                    <div className="bg-gray-50 dark:bg-gray-900/50 p-4 rounded-lg border border-gray-200 dark:border-gray-800">
-                      <div className="flex items-center gap-2 mb-2">
-                        <MapPin className="w-4 h-4 text-orange-500 dark:text-blue-400" />
-                        <Label className="text-sm font-medium">Location</Label>
-                      </div>
-                      {isEditing ? (
-                        <Input
-                          value={profile.location}
-                          onChange={(e) => setProfile({...profile, location: e.target.value})}
-                          className="border-orange-200 dark:border-blue-800"
-                        />
-                      ) : (
-                        <p className="text-lg font-semibold">{profile.location}</p>
-                      )}
-                    </div>
-
-                    {/* Date of Birth Box */}
-                    <div className="bg-gray-50 dark:bg-gray-900/50 p-4 rounded-lg border border-gray-200 dark:border-gray-800">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Calendar className="w-4 h-4 text-orange-500 dark:text-blue-400" />
-                        <Label className="text-sm font-medium">Date of Birth</Label>
-                      </div>
-                      {isEditing ? (
-                        <Input
-                          value={profile.dob}
-                          onChange={(e) => setProfile({...profile, dob: e.target.value})}
-                          className="border-orange-200 dark:border-blue-800"
-                        />
-                      ) : (
-                        <p className="text-lg font-semibold">{profile.dob}</p>
-                      )}
-                    </div>
-
-                    {/* Website Box */}
-                    <div className="bg-gray-50 dark:bg-gray-900/50 p-4 rounded-lg border border-gray-200 dark:border-gray-800">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Globe className="w-4 h-4 text-orange-500 dark:text-blue-400" />
-                        <Label className="text-sm font-medium">Website</Label>
-                      </div>
-                      {isEditing ? (
-                        <Input
-                          value={profile.website}
-                          onChange={(e) => setProfile({...profile, website: e.target.value})}
-                          className="border-orange-200 dark:border-blue-800"
-                        />
-                      ) : (
-                        <p className="text-lg font-semibold text-blue-600 dark:text-blue-400">
-                          {profile.website}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Bio Section */}
-                  <div className="space-y-2">
-                    <Label className="flex items-center gap-2">
-                      <User className="w-4 h-4" />
-                      Bio
-                    </Label>
-                    {isEditing ? (
-                      <textarea
-                        value={profile.bio}
-                        onChange={(e) => setProfile({...profile, bio: e.target.value})}
-                        className="w-full min-h-[120px] p-3 border border-orange-200 dark:border-blue-800 rounded-lg bg-transparent focus:outline-none focus:ring-2 focus:ring-orange-500 dark:focus:ring-blue-500"
-                        placeholder="Tell us about yourself..."
-                      />
-                    ) : (
-                      <div className="bg-gray-50 dark:bg-gray-900/50 p-4 rounded-lg border border-gray-200 dark:border-gray-800">
-                        <p className="text-gray-700 dark:text-gray-300">{profile.bio}</p>
-                      </div>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            {/* PROFESSIONAL INFO TAB */}
-            <TabsContent value="professional" className="space-y-6">
-              <Card className="bg-white dark:bg-[#0f0f10] border border-gray-200 dark:border-white/10">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Briefcase className="w-5 h-5 text-orange-500 dark:text-blue-400" />
-                    Professional Information
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="bg-gray-50 dark:bg-gray-900/50 p-4 rounded-lg border border-gray-200 dark:border-gray-800">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Briefcase className="w-4 h-4 text-orange-500 dark:text-blue-400" />
-                        <Label className="text-sm font-medium">Occupation</Label>
-                      </div>
-                      {isEditing ? (
-                        <Input
-                          value={profile.occupation}
-                          onChange={(e) => setProfile({...profile, occupation: e.target.value})}
-                          className="border-orange-200 dark:border-blue-800"
-                        />
-                      ) : (
-                        <p className="text-lg font-semibold">{profile.occupation}</p>
-                      )}
-                    </div>
-
-                    <div className="bg-gray-50 dark:bg-gray-900/50 p-4 rounded-lg border border-gray-200 dark:border-gray-800">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Briefcase className="w-4 h-4 text-orange-500 dark:text-blue-400" />
-                        <Label className="text-sm font-medium">Company</Label>
-                      </div>
-                      {isEditing ? (
-                        <Input
-                          value={profile.company}
-                          onChange={(e) => setProfile({...profile, company: e.target.value})}
-                          className="border-orange-200 dark:border-blue-800"
-                        />
-                      ) : (
-                        <p className="text-lg font-semibold">{profile.company}</p>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="space-y-4">
-                    <h3 className="font-medium flex items-center gap-2">
-                      <Calendar className="w-4 h-4" />
-                      Work Experience
-                    </h3>
-                    <div className="bg-gray-50 dark:bg-gray-900/50 p-4 rounded-lg border border-gray-200 dark:border-gray-800">
-                      <p className="text-gray-600 dark:text-gray-400">
-                        {profile.occupation} at {profile.company} since {profile.joinedDate}
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            {/* SECURITY TAB */}
-            <TabsContent value="security" className="space-y-6">
-              <Card className="bg-white dark:bg-[#0f0f10] border border-gray-200 dark:border-white/10">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Lock className="w-5 h-5 text-orange-500 dark:text-blue-400" />
-                    Password & Security
-                  </CardTitle>
-                </CardHeader>
-                
-                <CardContent className="space-y-6">
-                  {/* Security Settings */}
-                  <div className="space-y-4">
-                    <h3 className="font-medium">Security Settings</h3>
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-900/50 rounded-lg">
-                        <div className="flex items-center gap-3">
-                          <Shield className="w-5 h-5 text-green-500" />
-                          <div>
-                            <p className="font-medium">Two-Factor Authentication</p>
-                            <p className="text-sm text-gray-500">Add an extra layer of security</p>
-                          </div>
-                        </div>
-                        <Switch 
-                          checked={securitySettings.twoFactorAuth}
-                          onCheckedChange={() => toggleSecuritySetting('twoFactorAuth')}
-                        />
-                      </div>
-
-                      <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-900/50 rounded-lg">
-                        <div className="flex items-center gap-3">
-                          <Bell className="w-5 h-5 text-blue-500" />
-                          <div>
-                            <p className="font-medium">Login Alerts</p>
-                            <p className="text-sm text-gray-500">Get notified for new logins</p>
-                          </div>
-                        </div>
-                        <Switch 
-                          checked={securitySettings.loginAlerts}
-                          onCheckedChange={() => toggleSecuritySetting('loginAlerts')}
-                        />
-                      </div>
-
-                      <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-900/50 rounded-lg">
-                        <div className="flex items-center gap-3">
-                          <Lock className="w-5 h-5 text-purple-500" />
-                          <div>
-                            <p className="font-medium">Privacy Mode</p>
-                            <p className="text-sm text-gray-500">Hide your online status</p>
-                          </div>
-                        </div>
-                        <Switch 
-                          checked={securitySettings.privacyMode}
-                          onCheckedChange={() => toggleSecuritySetting('privacyMode')}
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Change Password */}
-                  <div className="space-y-4">
-                    <h3 className="font-medium">Change Password</h3>
-                    <div className="grid gap-4 md:grid-cols-2">
-                      <div className="space-y-2">
-                        <Label htmlFor="currentPassword">Current Password</Label>
-                        <Input
-                          id="currentPassword"
-                          type="password"
-                          placeholder="Enter current password"
-                          className="border-orange-200 dark:border-blue-800"
-                        />
-                      </div>
-                      
-                      <div className="space-y-2">
-                        <Label htmlFor="newPassword">New Password</Label>
-                        <Input
-                          id="newPassword"
-                          type="password"
-                          placeholder="Enter new password"
-                          className="border-orange-200 dark:border-blue-800"
-                        />
-                      </div>
-                      
-                      <div className="space-y-2 md:col-span-2">
-                        <Label htmlFor="confirmPassword">Confirm Password</Label>
-                        <Input
-                          id="confirmPassword"
-                          type="password"
-                          placeholder="Confirm new password"
-                          className="border-orange-200 dark:border-blue-800"
-                        />
-                      </div>
-                    </div>
-                    
-                    <div className="flex justify-end">
-                      <Button
-                        onClick={() => setUpdatingPassword(true)}
-                        disabled={updatingPassword}
-                        className="gap-2 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white dark:from-blue-500 dark:to-blue-600 dark:hover:from-blue-600 dark:hover:to-blue-700"
-                      >
-                        {updatingPassword ? (
-                          <>
-                            <Loader2 className="w-4 h-4 animate-spin" />
-                            Updating...
-                          </>
-                        ) : (
-                          "Update Password"
-                        )}
-                      </Button>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-          </Tabs>
+          {!editing.mobile ? (
+            <div style={styles.displayContent}>
+              <div style={styles.infoRow}>
+                <span style={styles.infoLabel}>Mobile Number:</span>
+                <span style={styles.infoValue}>{userData.mobile}</span>
+              </div>
+            </div>
+          ) : (
+            <div style={styles.editForm}>
+              <div style={styles.formGroup}>
+                <label htmlFor="mobile" style={styles.formLabel}>Mobile Number</label>
+                <input
+                  type="tel"
+                  id="mobile"
+                  name="mobile"
+                  value={formData.mobile}
+                  onChange={handleInputChange}
+                  placeholder="Enter mobile number with country code"
+                  style={styles.formInput}
+                  onFocus={inputFocus}
+                  onBlur={inputBlur}
+                />
+              </div>
+              <button 
+                style={styles.saveButton}
+                onClick={() => saveData('mobile')}
+                onMouseEnter={(e) => buttonHover(e, 'save')}
+                onMouseLeave={(e) => buttonLeave(e, 'save')}
+              >
+                <FiCheck /> Save
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>

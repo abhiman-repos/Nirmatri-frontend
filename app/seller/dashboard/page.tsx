@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 
+
 export default function SellerDashboardPage() {
   // ============================================
   // THEME HOOK
@@ -100,8 +101,8 @@ export default function SellerDashboardPage() {
 
       {/* ================= QUICK ACTIONS ================= */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8 md:mb-12">
-        <ActionButton title="Add New Product" icon="➕" href="/seller/dashboard/products/addnewproduct"/>
-        <ActionButton title="Manage Products" icon="📦" href="/seller/dashboard/products/manageproducts" />
+        <ActionButton title="Add New Product" icon="➕" href="/seller/dashboard/addnewproduct"/>
+        <ActionButton title="Manage Products" icon="📦" href="/seller/dashboard/manageproducts" />
         <ActionButton title="Bank Details" icon="🏦" href="/seller/dashboard/bank-details"/>
         <ActionButton title="KYC Status" icon="🧑‍⚖️" href="/seller/dashboard/kyc-status" />
       </div>

@@ -9,32 +9,15 @@ import axios from "axios";
 export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirm, setConfirm] = useState("");
 
   const router = useRouter();
 
   const handleRegister = async () => {
-    const firstName = (
-      document.getElementById("firstName") as HTMLInputElement
-    )?.value.trim();
-
-    const lastName = (
-      document.getElementById("lastName") as HTMLInputElement
-    )?.value.trim();
-
-    const email = (
-      document.getElementById("email") as HTMLInputElement
-    )?.value.trim();
-
-    const password = (
-      document.getElementById("password") as HTMLInputElement
-    )?.value;
-
-    const confirm = (
-      document.getElementById("confirm") as HTMLInputElement
-    )?.value;
-
-    // ================= VALIDATION =================
-    if (!firstName || !lastName || !email || !password || !confirm) {
+    if (!fullName || !email || !password || !confirm) {
       setError("Please fill all fields");
       return;
     }
@@ -54,33 +37,26 @@ export default function RegisterPage() {
       return;
     }
 
-    // ================= API CALL =================
-    setError("");
-    setLoading(true);
-
     try {
-      const response = await axios.request({
-        method: "post",
-        url: "http://localhost:8000/api/auth/userRegister/",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        data: {
-          first_name: firstName,
-          last_name: lastName,
-          email: email,
-          password: password,
-        },
-      });
+      setLoading(true);
+      setError("");
 
-      console.log("Register success:", response.data);
-      alert("registration is succesful")
+      const response = await axios.post(
+        "http://localhost:8000/api/auth/userRegister/",
+        {
+          full_name: fullName,
+          email,
+          password,
+        },
+      );
+
+      alert("Registration successful");
       router.push("/home");
-    } catch (err: any) {
-      console.error("Register error:", err);
+      localStorage.setItem("loggedIn", "true");
+      router.push("/home");
 
-      if (err.response && err.response.data && err.response.data.error) {
-        // 👈 Show backend error (like "Email already registered")
+    } catch (err: any) {
+      if (err.response?.data?.error) {
         setError(err.response.data.error);
       } else {
         setError("Registration failed. Please try again.");
@@ -88,7 +64,7 @@ export default function RegisterPage() {
     } finally {
       setLoading(false);
     }
-  }
+  };
 
   return (
     <main className="min-h-screen bg-[#F4F7FD] flex justify-center">
@@ -106,50 +82,36 @@ export default function RegisterPage() {
         </div>
 
         {/* ================= TITLE ================= */}
-        <h1 className="text-3xl font-semibold text-gray-900 mb-8">
-          Register
-        </h1>
+        <h1 className="text-3xl font-semibold text-gray-900 mb-8">Register</h1>
 
         {/* ================= FORM CARD ================= */}
         <div className="bg-white rounded-3xl border shadow-sm p-14">
           {/* NAME */}
-          <div className="grid grid-cols-2 gap-6 mb-6">
+          <div className="grid gap-6 mb-6">
             <div>
               <label className="block text-sm text-gray-600 mb-2">
-                First Name
+                Full Name
               </label>
               <input
-                id="firstName"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
                 className="w-full rounded-xl border px-4 py-3 text-sm text-gray-900
                            focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="First name"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm text-gray-600 mb-2">
-                Last Name
-              </label>
-              <input
-                id="lastName"
-                className="w-full rounded-xl border px-4 py-3 text-sm text-gray-900
-                           focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Last name"
+                placeholder="Full name"
               />
             </div>
           </div>
 
           {/* EMAIL */}
           <div className="mb-6">
-            <label className="block text-sm text-gray-600 mb-2">
-              Email
-            </label>
+            <label className="block text-sm text-gray-600 mb-2">Email</label>
             <input
-              id="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               type="email"
               className="w-full rounded-xl border px-4 py-3 text-sm text-gray-900
-                         focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="you@email.com"
+              focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="example@email.com"
             />
           </div>
 
@@ -160,10 +122,11 @@ export default function RegisterPage() {
                 Password
               </label>
               <input
-                id="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 type="password"
                 className="w-full rounded-xl border px-4 py-3 text-sm text-gray-900
-                           focus:outline-none focus:ring-2 focus:ring-blue-500"
+                focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Create password"
               />
             </div>
@@ -173,7 +136,8 @@ export default function RegisterPage() {
                 Confirm Password
               </label>
               <input
-                id="confirm"
+                value={confirm}
+                onChange={(e) => setConfirm(e.target.value)}
                 type="password"
                 className="w-full rounded-xl border px-4 py-3 text-sm text-gray-900
                            focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -183,11 +147,7 @@ export default function RegisterPage() {
           </div>
 
           {/* ================= ERROR ================= */}
-          {error && (
-            <p className="text-sm text-red-600 mb-4">
-              {error}
-            </p>
-          )}
+          {error && <p className="text-sm text-red-600 mb-4">{error}</p>}
 
           {/* ================= SUBMIT ================= */}
           <button

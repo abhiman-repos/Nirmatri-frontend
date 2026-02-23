@@ -42,9 +42,13 @@ export function ProfileSidebar({
   const router = useRouter();
 
   const handleLogout = () => {
-    // 🔴 future me yahan auth clear kar sakte ho
-    // localStorage.removeItem("token");
-    // cookies delete
+    // ✅ remove login flag
+    localStorage.removeItem("loggedIn");
+
+    // ✅ if you store token
+    localStorage.removeItem("token");  // add it for logout 
+
+    // ✅ redirect to login page
     router.push("/");
   };
 
@@ -107,7 +111,7 @@ export function ProfileSidebar({
                   : `
                       text-gray-700 dark:text-gray-300
                       hover:bg-orange-50 dark:hover:bg-blue-500/10
-                    `
+                    `,
               )}
             >
               <Icon className="w-5 h-5" />
@@ -116,7 +120,7 @@ export function ProfileSidebar({
               <ChevronRight
                 className={cn(
                   "w-4 h-4 transition-transform",
-                  isActive && "translate-x-1"
+                  isActive && "translate-x-1",
                 )}
               />
             </button>

@@ -2,18 +2,38 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Loader2 } from "lucide-react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { GoogleLogin } from "@react-oauth/google";
+import { useGoogleLogin  } from "@react-oauth/google";
 import axios from "axios";
 
-export default function LoginPage() {
+export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   const router = useRouter();
+
+  const login = useGoogleLogin({
+  onSuccess: async (tokenResponse) => {
+    try {
+      await axios.post(
+        "http://localhost:8000/api/auth/google-login/",
+        { token: tokenResponse.access_token },
+        {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: false,
+        }
+      );
+
+      router.push("/home");
+    } catch (error) {
+      console.error("Backend login failed:", error);
+    }
+  },
+  onError: () => console.log("Login failed"),
+});
 
   const handleLogin = () => {
     // ❌ validation
@@ -29,6 +49,9 @@ export default function LoginPage() {
     setTimeout(() => {
       router.push("/home");
     }, 2000);
+
+    localStorage.setItem("loggedIn", "true");
+    router.push("/");
   };
 
   return (
@@ -75,23 +98,40 @@ export default function LoginPage() {
             onChange={(e) => setEmail(e.target.value)}
             placeholder="you@email.com"
             className="w-full rounded-xl border border-gray-300/60
-                       bg-white/60 px-4 py-4 text-sm
-                       focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      bg-white/60 px-4 py-4 text-sm
+                      focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
 
         {/* PASSWORD */}
         <div className="mb-4">
           <label className="block text-sm text-gray-600 mb-2">Password</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Enter your password"
-            className="w-full rounded-xl border border-gray-300/60
-                       bg-white/60 px-4 py-4 text-sm
-                       focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
+
+          <div className="relative">
+            <input
+              type={password ? "text" : "password"}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Enter your password"
+              className="w-full rounded-xl border border-gray-300/60
+                        bg-white/60 px-4 py-4 pr-12 text-sm
+                        focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+
+            {/* 👁 Eye Toggle */}
+            <button
+              type="button"
+              onClick={() => setPassword(password)}
+              className="absolute right-4 top-1/2 -translate-y-1/2
+                        text-gray-500 hover:text-gray-800 transition"
+            >
+              {password ? (
+                <EyeOff className="h-5 w-5" />
+              ) : (
+                <Eye className="h-5 w-5" />
+              )}
+            </button>
+          </div>
         </div>
 
         {/* ERROR MESSAGE */}
@@ -100,7 +140,7 @@ export default function LoginPage() {
         {/* FORGOT */}
         <div className="text-right mb-10">
           <Link
-            href="/forgot-password"
+            href="/userauth/forgot-password"
             className="text-sm text-blue-600 hover:underline"
           >
             Forgot password?
@@ -121,25 +161,21 @@ export default function LoginPage() {
           {loading ? "Logging in..." : "Login"}
         </button>
 
-        {/* GOOGLE */}
-        <GoogleLogin
-          onSuccess={async (res) => {
-            await axios.post(
-              "http://localhost:8000/api/auth/google-login/",
-              { token: res.credential },
-              {
-                headers: { "Content-Type": "application/json" },
-                withCredentials: false,
-              },
-            );
 
-            router.push("/home");
-          }}
-          onError={() => console.log("Login failed")}
-        />
+        {/* ================= GOOGLE LOGIN AUTHENTICATION ================= */}
+        <button
+          onClick={() => login()}
+          className="mt-6 w-full flex items-center justify-center gap-3
+          rounded-xl border border-gray-300/60
+          bg-white/70 py-4 text-sm font-medium
+          text-gray-700 hover:bg-white transition"
+        >
+          <img src="/google.jpg" className="h-5 w-5" alt="Google" />
+          Continue with Google
+        </button>
 
         <p className="mt-10 text-sm text-gray-700 text-center">
-          Don’t have an account?{" "}
+          Do not have an account?{" "}
           <Link
             href="/userauth/signup"
             className="text-blue-600 hover:underline"
@@ -150,4 +186,4 @@ export default function LoginPage() {
       </div>
     </main>
   );
-}
+} // code updated
