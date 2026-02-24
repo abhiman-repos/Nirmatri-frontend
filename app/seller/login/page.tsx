@@ -119,17 +119,6 @@ const [loading, setLoading] = useState(false);
 </button>
 
 
-          {/* SOCIAL LOGIN */}
-          <div className="flex items-center gap-4 mt-6">
-            <span className="text-sm text-gray-500">Login with</span>
-
-            <button className="h-10 w-10 rounded-full border bg-white flex items-center justify-center hover:shadow">
-              <Image src="/google.jpg" className="h-5 w-5" alt="Google" />
-            </button>
-
-            
-          </div>
-
           {/* REGISTER */}
           <p className="mt-8 text-sm text-gray-600">
             Don&apos;t have an Account?{" "}
@@ -190,6 +179,8 @@ const [loading, setLoading] = useState(false);
           {/* RIGHT IMAGE */}
           <Image
             src="/user.png"
+            width={10} 
+            height={10}
             alt="Seller Login Illustration"
             className="max-w-[480px] w-full h-auto drop-shadow-2xl translate-y-4"
           />

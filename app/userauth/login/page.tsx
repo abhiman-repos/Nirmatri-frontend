@@ -4,8 +4,9 @@ import { useState } from "react";
 import Link from "next/link";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useGoogleLogin  } from "@react-oauth/google";
+import { useGoogleLogin } from "@react-oauth/google";
 import axios from "axios";
+import GoogleAuthButton from "@/lib/google-auth";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -14,44 +15,42 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
 
   const router = useRouter();
-
-  const login = useGoogleLogin({
-  onSuccess: async (tokenResponse) => {
-    try {
-      await axios.post(
-        "http://localhost:8000/api/auth/google-login/",
-        { token: tokenResponse.access_token },
-        {
-          headers: { "Content-Type": "application/json" },
-          withCredentials: false,
-        }
-      );
-
-      router.push("/home");
-    } catch (error) {
-      console.error("Backend login failed:", error);
-    }
-  },
-  onError: () => console.log("Login failed"),
-});
-
-  const handleLogin = () => {
-    // ❌ validation
-    if (!email || !password) {
-      setError("Please enter email and password");
-      return;
-    }
-
-    // ✅ clear error & continue
+  const handleLogin = async () => {
     setError("");
     setLoading(true);
 
-    setTimeout(() => {
-      router.push("/home");
-    }, 2000);
+    try {
+      const response = await axios.post(
+        "http://localhost:8000/api/auth/login/",
+        {
+          email,
+          password,
+        },
+        {
+          headers: { "Content-Type": "application/json" },
+        },
+      );
 
-    localStorage.setItem("loggedIn", "true");
-    router.push("/");
+      console.log("Login Success:", response.data);
+
+      // ✅ Save token in localStorage
+      localStorage.setItem("auth_token", response.data.token);
+
+      // ✅ Redirect to home
+      router.push("/home");
+      localStorage.setItem("loggedIn", "true");
+
+    } catch (err: any) {
+      console.error("Login error:", err);
+
+      if (err.response?.data?.error) {
+        setError(err.response.data.error);
+      } else {
+        setError("Something went wrong");
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -161,10 +160,9 @@ export default function Login() {
           {loading ? "Logging in..." : "Login"}
         </button>
 
-
         {/* ================= GOOGLE LOGIN AUTHENTICATION ================= */}
-        <button
-          onClick={() => login()}
+        {/* {<button
+          
           className="mt-6 w-full flex items-center justify-center gap-3
           rounded-xl border border-gray-300/60
           bg-white/70 py-4 text-sm font-medium
@@ -172,7 +170,8 @@ export default function Login() {
         >
           <img src="/google.jpg" className="h-5 w-5" alt="Google" />
           Continue with Google
-        </button>
+        </button>} */}
+        <GoogleAuthButton />
 
         <p className="mt-10 text-sm text-gray-700 text-center">
           Do not have an account?{" "}

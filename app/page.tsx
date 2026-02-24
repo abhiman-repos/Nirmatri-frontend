@@ -8,15 +8,16 @@ import { WhyShopWithUs } from "@/app/components/WhyShopWithUs";
 import { NirmatriFooter } from "@/app/components/NirmatriFooter";
 import { ThemeProvider } from "@/app/contexts/ThemeContext";
 
+
 export default function Page() {
   return (
     <ThemeProvider>
+
       <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-300">
-        
         <VideoLikeCarousel />
         <CategoryShowcase />
         <SponsoredProducts />
- 
+
         <ArtisanSpotlight />
         <WhyShopWithUs />
         <NirmatriFooter />
@@ -24,4 +25,3 @@ export default function Page() {
     </ThemeProvider>
   );
 }
-

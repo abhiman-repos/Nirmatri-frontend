@@ -16,6 +16,8 @@ import {
 } from "lucide-react";
 import { cn } from "@/app/components/ui/utils";
 import { useRouter } from "next/navigation";
+import axios from "axios";
+import { googleLogout } from "@react-oauth/google";
 
 interface ProfileSidebarProps {
   activeSection: string;
@@ -41,15 +43,28 @@ export function ProfileSidebar({
 }: ProfileSidebarProps) {
   const router = useRouter();
 
-  const handleLogout = () => {
-    // ✅ remove login flag
+  const handleLogout = async () => {
+    const token = localStorage.getItem("auth_token");
+
+    try {
+      if (token) {
+        await axios.post("http://localhost:8000/api/auth/logout/", {
+          token,
+        });
+      }
+    } catch (err) {
+      console.error("Logout failed:", err);
+    }
+
+    // Logout from Google (if used)
+    googleLogout();
+
+    // Clear local storage
     localStorage.removeItem("loggedIn");
 
-    // ✅ if you store token
-    localStorage.removeItem("token");  // add it for logout 
+    alert("Your account has been logged out ✅");
 
-    // ✅ redirect to login page
-    router.push("/");
+    router.push("/login");
   };
 
   return (
