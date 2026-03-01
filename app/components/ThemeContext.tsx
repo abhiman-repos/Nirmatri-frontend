@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useState } from "react";
 
-type Theme = "light" | "dark" | "system";
+type Theme = "lightGreen" | "dark" | "system";
 
 type ThemeContextType = {
   theme: Theme;
@@ -12,19 +12,17 @@ type ThemeContextType = {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<Theme>("light");
+  const [theme, setTheme] = useState<Theme>("lightGreen");
 
-  useEffect(() => {
-    const root = document.documentElement;
+ useEffect(() => {
+  const root = document.documentElement;
 
-    if (theme === "light") {
-      root.setAttribute("data-theme", "lavender");
-    } else if (theme === "dark") {
-      root.setAttribute("data-theme", "bluedark");
-    } else {
-      root.removeAttribute("data-theme");
-    }
-  }, [theme]);
+  if (theme === "lightGreen") {
+    root.setAttribute("data-theme", "lightgreen");
+  } else if (theme === "dark") {
+    root.setAttribute("data-theme", "dark");
+  }
+}, [theme]);
 
   return (
     <ThemeContext.Provider value={{ theme, setTheme }}>

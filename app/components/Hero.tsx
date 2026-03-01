@@ -1,6 +1,6 @@
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
-import { ImageWithFallback } from "@/app/components/figma/ImageWithFallback";
+import { ImageWithFallback } from "@/app/components/context/AuthContext.tsx/ImageWithFallback";
 
 export function Hero() {
   return (

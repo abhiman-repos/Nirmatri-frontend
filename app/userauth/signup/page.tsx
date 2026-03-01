@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
+import { useAuth } from "@/app/components/context/AuthContext";
 
 export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
@@ -15,6 +16,7 @@ export default function RegisterPage() {
   const [confirm, setConfirm] = useState("");
 
   const router = useRouter();
+  const { login } = useAuth();
 
   const handleRegister = async () => {
     if (!fullName || !email || !password || !confirm) {
@@ -41,26 +43,26 @@ export default function RegisterPage() {
       setLoading(true);
       setError("");
 
-      const response = await axios.post(
+      const res = await axios.post(
         "http://localhost:8000/api/auth/userRegister/",
         {
-          full_name: fullName,
+          name: fullName,
           email,
           password,
-        },
+        }
       );
 
-      alert("Registration successful");
-      router.push("/home");
-      localStorage.setItem("loggedIn", "true");
-      router.push("/home");
+      // Backend must return token
+      const data = res.data;
 
-    } catch (err: any) {
-      if (err.response?.data?.error) {
-        setError(err.response.data.error);
+      if (data.token) {
+        login(data.token);      // 🔥 THIS IS IMPORTANT
+        router.replace("/home");
       } else {
-        setError("Registration failed. Please try again.");
+        console.error("No token returned from backend");
       }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Registration failed");
     } finally {
       setLoading(false);
     }

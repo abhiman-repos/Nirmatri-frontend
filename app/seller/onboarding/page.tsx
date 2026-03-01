@@ -3,13 +3,20 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
-import  TermsModal  from "@/app/components/TermsModal";
 import { Input } from "@/app/components/ui/input";
+import {
+  Clipboard,
+  Check,
+  Smartphone,
+  AlertTriangle,
+  NotebookText,
+  FileUp,
+} from "lucide-react";
 
 // ============================================
 // CONFIGURATION
 // ============================================
-const steps = ["Store Info", "KYC", "Bank","Phone Verification","Review"];
+const steps = ["Store Info", "KYC", "Bank", "Phone Verification", "Review"];
 
 export default function SellerOnboardingPage() {
   // ============================================
@@ -21,8 +28,7 @@ export default function SellerOnboardingPage() {
 
   // Form data state for all steps
   const [formData, setFormData] = useState({
-
-    // Store Info 
+    // Store Info
     ownerName: "",
     storeName: "",
     storeCategory: [] as string[],
@@ -51,24 +57,43 @@ export default function SellerOnboardingPage() {
   // ============================================
   // FORM UPDATE HANDLER
   // ============================================
-  const updateFormData = (field: string, value: string | string[] | File | null | boolean) => {
+  const updateFormData = (
+    field: string,
+    value: string | string[] | File | null | boolean,
+  ) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
   // ============================================
   // NAVIGATION HANDLERS
   // ============================================
-  const nextStep = () => {
+  const nextStep = async () => {
     if (currentStep < steps.length - 1) {
       setCurrentStep((prev) => prev + 1);
     } else {
-      // ✅ Stepper complete
+      // ✅ FINAL STEP: SUBMIT FOR APPROVAL
       setShowSuccess(true);
 
-      // ⏳ success message ke baad dashboard
-      setTimeout(() => {
-        router.push("/seller/dashboard");
-      }, 2000);
+      try {
+        // 🔐 Call backend to mark onboarding complete
+        await fetch("/api/seller/onboarding/submit", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            onboardingCompleted: true,
+            status: "PENDING_APPROVAL",
+          }),
+        });
+
+        // ⏳ show success screen briefly
+        setTimeout(() => {
+          router.push("/seller/pending-approval");
+        }, 2000);
+      } catch (error) {
+        console.error("Submission failed", error);
+      }
     }
   };
 
@@ -98,8 +123,8 @@ export default function SellerOnboardingPage() {
                     index < currentStep
                       ? "bg-green-600 text-white" // Completed
                       : index === currentStep
-                      ? "bg-blue-600 text-white shadow-lg scale-110" // Current
-                      : "bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400" // Upcoming
+                        ? "bg-blue-600 text-white shadow-lg scale-110" // Current
+                        : "bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400" // Upcoming
                   }`}
                 >
                   {index < currentStep ? "✓" : index + 1}
@@ -135,7 +160,8 @@ export default function SellerOnboardingPage() {
           {/* Progress Indicator */}
           <div className="text-center">
             <p className="text-sm text-gray-600 dark:text-gray-400">
-              Step {currentStep + 1} of {steps.length} • {Math.round(((currentStep + 1) / steps.length) * 100)}% Complete
+              Step {currentStep + 1} of {steps.length} •{" "}
+              {Math.round(((currentStep + 1) / steps.length) * 100)}% Complete
             </p>
           </div>
         </div>
@@ -153,10 +179,24 @@ export default function SellerOnboardingPage() {
               transition={{ duration: 0.35, ease: "easeOut" }}
               className="min-h-[400px]"
             >
-              {currentStep === 0 && <StoreInfo formData={formData} updateFormData={updateFormData} />}
-              {currentStep === 1 && <KYC formData={formData} updateFormData={updateFormData} />}
-              {currentStep === 2 && <Bank formData={formData} updateFormData={updateFormData} />}
-              {currentStep === 3 && <PhoneVerification formData={formData} updateFormData={updateFormData} />}
+              {currentStep === 0 && (
+                <StoreInfo
+                  formData={formData}
+                  updateFormData={updateFormData}
+                />
+              )}
+              {currentStep === 1 && (
+                <KYC formData={formData} updateFormData={updateFormData} />
+              )}
+              {currentStep === 2 && (
+                <Bank formData={formData} updateFormData={updateFormData} />
+              )}
+              {currentStep === 3 && (
+                <PhoneVerification
+                  formData={formData}
+                  updateFormData={updateFormData}
+                />
+              )}
               {currentStep === 4 && <Review formData={formData} />}
             </motion.div>
           </AnimatePresence>
@@ -172,7 +212,7 @@ export default function SellerOnboardingPage() {
             className="py-12 text-center"
           >
             <div className="w-20 h-20 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center mx-auto mb-4">
-              <span className="text-4xl">✅</span>
+              <Check className="w-10 h-10 text-green-600" />
             </div>
             <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
               Welcome to Nirmatri!
@@ -181,7 +221,11 @@ export default function SellerOnboardingPage() {
               Successfully created your seller account
             </p>
             <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
-              Redirecting you to your dashboard…
+              Your details have been submitted for approval.
+            </p>
+
+            <p className="text-sm text-gray-500 dark:text-gray-500 mt-1">
+              Redirecting you to approval status…
             </p>
             <div className="mt-4">
               <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
@@ -206,7 +250,9 @@ export default function SellerOnboardingPage() {
               onClick={nextStep}
               className="px-8 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium transition-all duration-200 shadow-md hover:shadow-lg"
             >
-              {currentStep === steps.length - 1 ? "Submit & Finish" : "Continue →"}
+              {currentStep === steps.length - 1
+                ? "Submit & Finish"
+                : "Continue →"}
             </button>
           </div>
         )}
@@ -224,9 +270,8 @@ export default function SellerOnboardingPage() {
 // ============================================
 interface FormDataProps {
   formData: {
-    ownername?: string;
     ownerName?: string;
-    storeName: string;
+    storeName?: string;
     storeCategory: string[];
     panNumber: string;
     aadhaarNumber: string;
@@ -241,7 +286,10 @@ interface FormDataProps {
     isOtpSent: boolean;
     isOtpVerified: boolean;
   };
-  updateFormData: (field: string, value: string | string[] | File | null | boolean) => void;
+  updateFormData: (
+    field: string,
+    value: string | string[] | File | null | boolean,
+  ) => void;
 }
 
 function StoreInfo({ formData, updateFormData }: FormDataProps) {
@@ -260,12 +308,12 @@ function StoreInfo({ formData, updateFormData }: FormDataProps) {
   // Handle category selection/deselection
   const handleCategoryToggle = (category: string) => {
     const currentCategories = formData.storeCategory || [];
-    
+
     if (currentCategories.includes(category)) {
       // Remove category if already selected
       updateFormData(
         "storeCategory",
-        currentCategories.filter((c: string) => c !== category)
+        currentCategories.filter((c: string) => c !== category),
       );
     } else {
       // Add category if not selected
@@ -289,6 +337,18 @@ function StoreInfo({ formData, updateFormData }: FormDataProps) {
           Tell us about your handmade goods store
         </p>
       </div>
+      {/* Store Name */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          Store Name
+        </label>
+        <input
+          value={formData.storeName}
+          onChange={(e) => updateFormData("storeName", e.target.value)}
+          placeholder="e.g. Nirmatri Crafts"
+          className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-3 text-gray-900 dark:text-white bg-white dark:bg-gray-700 placeholder:text-xs text-gray-500 dark:placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors uppercase"
+        />
+      </div>
 
       {/* Owner Name */}
       <div>
@@ -298,27 +358,10 @@ function StoreInfo({ formData, updateFormData }: FormDataProps) {
         <Input
           value={formData.ownerName}
           onChange={(e) => updateFormData("ownerName", e.target.value)}
-          placeholder="Type your full name"
-          className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-3 text-gray-900 dark:text-white bg-white dark:bg-gray-700 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+          placeholder="Enter your full name as per your ID"
+          className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-3 text-gray-900 dark:text-white bg-white dark:bg-gray-700 placeholder:text-xs text-gray-500 dark:placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors uppercase"
         />
-        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-          Enter your full name as it appears on your ID
-        </p>
-      </div>
-      {/* Store Name */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-          Store Name
-        </label>
-        <input
-          value={formData.storeName}
-          onChange={(e) => updateFormData("storeName", e.target.value)}
-          placeholder="e.g., Nirmatri Crafts"
-          className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-3 text-gray-900 dark:text-white bg-white dark:bg-gray-700 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-        />
-        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-          Choose a unique name for your store
-        </p>
+
       </div>
 
       {/* Store Categories - Multi-select */}
@@ -329,7 +372,7 @@ function StoreInfo({ formData, updateFormData }: FormDataProps) {
         <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">
           Select all categories that apply to your products
         </p>
-        
+
         {/* Category Pills */}
         <div className="flex flex-wrap gap-2">
           {categories.map((cat) => (
@@ -353,49 +396,16 @@ function StoreInfo({ formData, updateFormData }: FormDataProps) {
         {formData.storeCategory && formData.storeCategory.length > 0 && (
           <div className="mt-3 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
             <p className="text-sm text-blue-900 dark:text-blue-400">
-              <strong>{formData.storeCategory.length}</strong> {formData.storeCategory.length === 1 ? 'category' : 'categories'} selected: {formData.storeCategory.join(", ")}
+              <strong>{formData.storeCategory.length}</strong>{" "}
+              {formData.storeCategory.length === 1 ? "category" : "categories"}{" "}
+              selected: {formData.storeCategory.join(", ")}
             </p>
           </div>
         )}
       </div>
-
-      {/* Store Description
-      <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-          Store Description
-        </label>
-        <textarea
-          value={formData.storeDescription}
-          onChange={(e) => updateFormData("storeDescription", e.target.value)}
-          placeholder="Describe your products and what makes them special..."
-          rows={4}
-          className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-3 text-gray-900 dark:text-white bg-white dark:bg-gray-700 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors resize-none"
-        />
-        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-          Write a brief description about your store and products
-        </p>
-      </div>
-
-      Store Address
-      <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-          Store Address
-        </label>
-        <textarea
-          value={formData.storeAddress}
-          onChange={(e) => updateFormData("storeAddress", e.target.value)}
-          placeholder="Full business address with city, state, and pincode"
-          rows={3}
-          className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-3 text-gray-900 dark:text-white bg-white dark:bg-gray-700 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors resize-none"
-        />
-        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-          Enter your complete business address
-        </p>
-      </div> */}
     </div>
   );
 }
-
 
 // ============================================
 // STEP 2: KYC DETAILS
@@ -424,14 +434,13 @@ function KYC({ formData, updateFormData }: FormDataProps) {
         </label>
         <input
           value={formData.panNumber}
-          onChange={(e) => updateFormData("panNumber", e.target.value.toUpperCase())}
-          placeholder="ABCDE1234F"
+          onChange={(e) =>
+            updateFormData("panNumber", e.target.value.toUpperCase())
+          }
+          placeholder="your 10-character PAN number (e.g., ABCDE1234F)"
           maxLength={10}
-          className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-3 text-gray-900 dark:text-white bg-white dark:bg-gray-700 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors uppercase"
+          className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-3 text-gray-900 dark:text-white bg-white dark:bg-gray-700 placeholder:text-xs text-gray-500 dark:placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors uppercase"
         />
-        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-          Enter your 10-character PAN number (e.g., ABCDE1234F)
-        </p>
       </div>
 
       {/* Aadhaar Number */}
@@ -446,13 +455,10 @@ function KYC({ formData, updateFormData }: FormDataProps) {
             const value = e.target.value.replace(/\D/g, "").slice(0, 12);
             updateFormData("aadhaarNumber", value);
           }}
-          placeholder="123456789012"
+          placeholder="Enter your 12-digit Aadhaar number"
           maxLength={12}
-          className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-3 text-gray-900 dark:text-white bg-white dark:bg-gray-700 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+          className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-3 text-gray-900 dark:text-white bg-white dark:bg-gray-700 placeholder:text-xs text-gray-500 dark:placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors uppercase"
         />
-        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-          Enter your 12-digit Aadhaar number
-        </p>
       </div>
 
       {/* File Uploads */}
@@ -460,14 +466,18 @@ function KYC({ formData, updateFormData }: FormDataProps) {
         <FileUpload
           label="PAN Card Document"
           file={formData.panDocument}
-          onChange={(file: File | null) => handleFileUpload("panDocument", file)}
+          onChange={(file: File | null) =>
+            handleFileUpload("panDocument", file)
+          }
           description="Upload clear photo or PDF of your PAN card (Max 5MB)"
         />
 
         <FileUpload
           label="Aadhaar Card Document"
           file={formData.aadhaarDocument}
-          onChange={(file: File | null) => handleFileUpload("aadhaarDocument", file)}
+          onChange={(file: File | null) =>
+            handleFileUpload("aadhaarDocument", file)
+          }
           description="Upload clear photo or PDF of your Aadhaar card (Max 5MB)"
         />
       </div>
@@ -475,7 +485,10 @@ function KYC({ formData, updateFormData }: FormDataProps) {
       {/* Info Box */}
       <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
         <p className="text-sm text-blue-900 dark:text-blue-400">
-          <strong>📌 Note:</strong> All documents information must be clear.
+          <strong>
+            <NotebookText className="inline mr-2" size={16} /> Note:
+          </strong>{" "}
+          All documents information must be clear.
         </p>
       </div>
     </div>
@@ -498,7 +511,7 @@ function Bank({ formData, updateFormData }: FormDataProps) {
         </p>
       </div>
 
-    {/* Bank Name */}
+      {/* Bank Name */}
       <div>
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
           Bank Name
@@ -506,12 +519,9 @@ function Bank({ formData, updateFormData }: FormDataProps) {
         <input
           value={formData.bankName}
           onChange={(e) => updateFormData("bankName", e.target.value)}
-          placeholder="e.g., HDFC Bank, SBI, ICICI Bank"
-          className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-3 text-gray-900 dark:text-white bg-white dark:bg-gray-700 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+          placeholder="Enter the name of your bank"
+          className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-3 text-gray-900 dark:text-white bg-white dark:bg-gray-700 placeholder:text-xs text-gray-500 dark:placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors uppercase"
         />
-        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-          Enter the name of your bank
-        </p>
       </div>
 
       {/* Account Number */}
@@ -526,12 +536,9 @@ function Bank({ formData, updateFormData }: FormDataProps) {
             const value = e.target.value.replace(/\D/g, "");
             updateFormData("accountNumber", value);
           }}
-          placeholder="123456789012"
-          className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-3 text-gray-900 dark:text-white bg-white dark:bg-gray-700 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+          placeholder="Enter your bank account number (9-18 digits)"
+          className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-3 text-gray-900 dark:text-white bg-white dark:bg-gray-700 placeholder:text-xs text-gray-500 dark:placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors uppercase"
         />
-        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-          Enter your bank account number (9-18 digits)
-        </p>
       </div>
 
       {/* IFSC Code */}
@@ -541,17 +548,15 @@ function Bank({ formData, updateFormData }: FormDataProps) {
         </label>
         <input
           value={formData.ifscCode}
-          onChange={(e) => updateFormData("ifscCode", e.target.value.toUpperCase())}
-          placeholder="HDFC0001234"
+          onChange={(e) =>
+            updateFormData("ifscCode", e.target.value.toUpperCase())
+          }
+          placeholder="Enter your banks 11-character IFSC code"
           maxLength={11}
-          className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-3 text-gray-900 dark:text-white bg-white dark:bg-gray-700 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors uppercase"
+          className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-3 text-gray-900 dark:text-white bg-white dark:bg-gray-700 placeholder:text-xs text-gray-500 dark:placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors uppercase"
         />
-        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-          Enter your banks 11-character IFSC code
-        </p>
       </div>
 
-      
       {/* Account Holder Name */}
       <div>
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -560,26 +565,25 @@ function Bank({ formData, updateFormData }: FormDataProps) {
         <input
           value={formData.accountHolderName}
           onChange={(e) => updateFormData("accountHolderName", e.target.value)}
-          placeholder="As per bank records"
-          className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-3 text-gray-900 dark:text-white bg-white dark:bg-gray-700 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+          placeholder="Enter name exactly as per bank account"
+          className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-3 text-gray-900 dark:text-white bg-white dark:bg-gray-700 placeholder:text-xs text-gray-500 dark:placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors uppercase"
         />
-        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-          Enter name exactly as per bank account
-        </p>
       </div>
-
 
       {/* Warning Box */}
-      <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
-        <p className="text-sm text-yellow-900 dark:text-yellow-400">
-          <strong>⚠️ Important:</strong> Ensure bank details are accurate. All payments will be transferred to this account.
+      <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+        <p className="text-sm text-blue-900 dark:text-blue-400">
+          <strong>
+            <AlertTriangle className="inline mr-1 " size={16} /> Important:
+          </strong>{" "}
+          Ensure bank details are accurate. All payments will be transferred to
+          this account.
         </p>
       </div>
-      
     </div>
   );
 }
- // STEP 4: PHONE VERIFICATION (OTP)
+// STEP 4: PHONE VERIFICATION (OTP)
 // ============================================
 function PhoneVerification({ formData, updateFormData }: FormDataProps) {
   const [timer, setTimer] = useState(0);
@@ -630,7 +634,9 @@ function PhoneVerification({ formData, updateFormData }: FormDataProps) {
         </label>
         <div className="flex gap-3">
           <div className="flex-1 relative">
-            <span className="absolute left-4 top-3.5 text-gray-500 dark:text-gray-400">+91</span>
+            <span className="absolute left-4 top-3.5 text-gray-500 dark:text-gray-400">
+              +91
+            </span>
             <input
               type="tel"
               value={formData.phoneNumber}
@@ -640,15 +646,23 @@ function PhoneVerification({ formData, updateFormData }: FormDataProps) {
               }}
               placeholder="9876543210"
               disabled={formData.isOtpVerified}
-              className="w-full pl-14 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white bg-white dark:bg-gray-700 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="w-full pl-14 pr-4 py-3 border border-blue-300 dark:border-blue-600 rounded-lg text-gray-900 dark:text-white bg-white dark:bg-gray-700 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             />
           </div>
           <button
             onClick={handleSendOtp}
-            disabled={formData.phoneNumber.length !== 10 || timer > 0 || formData.isOtpVerified}
+            disabled={
+              formData.phoneNumber.length !== 10 ||
+              timer > 0 ||
+              formData.isOtpVerified
+            }
             className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all"
           >
-            {formData.isOtpVerified ? "Verified ✓" : timer > 0 ? `${timer}s` : "Send OTP"}
+            {formData.isOtpVerified
+              ? "Verified ✓"
+              : timer > 0
+                ? `${timer}s`
+                : "Send OTP"}
           </button>
         </div>
         <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
@@ -700,7 +714,7 @@ function PhoneVerification({ formData, updateFormData }: FormDataProps) {
           className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4"
         >
           <div className="flex items-center gap-3">
-            <span className="text-2xl">✅</span>
+            <Check className="w-10 h-10 text-green-600" />
             <div>
               <p className="text-sm font-semibold text-green-900 dark:text-green-400">
                 Phone number verified successfully!
@@ -716,26 +730,34 @@ function PhoneVerification({ formData, updateFormData }: FormDataProps) {
       {/* Info Box */}
       <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
         <p className="text-sm text-blue-900 dark:text-blue-400">
-          <strong>📱 Why verify?</strong> We need to confirm your identity and send order updates via SMS.
+          <strong>
+            <Smartphone className="inline mr-2" size={16} /> Why verify?
+          </strong>{" "}
+          We need to confirm your identity and send order updates via SMS.
         </p>
       </div>
     </div>
   );
-} 
+}
 // ============================================
 // STEP 5: REVIEW & SUBMIT
 // ============================================
 
-
 function Review({ formData }: any) {
-  const [showTerms, setShowTerms] = useState(false);
-  
   const sections = [
     {
       title: "Phone Verification",
       items: [
-        { label: "Mobile Number", value: formData.phoneNumber ? `+91 ${formData.phoneNumber}` : "Not provided" },
-        { label: "Verification Status", value: formData.isOtpVerified ? "✅ Verified" : "❌ Not verified" },
+        {
+          label: "Mobile Number",
+          value: formData.phoneNumber
+            ? `+91 ${formData.phoneNumber}`
+            : "Not provided",
+        },
+        {
+          label: "Verification Status",
+          value: formData.isOtpVerified ? " Verified" : " Not verified",
+        },
       ],
     },
     {
@@ -743,10 +765,13 @@ function Review({ formData }: any) {
       items: [
         { label: "Owner Name", value: formData.ownerName || "Not provided" },
         { label: "Store Name", value: formData.storeName || "Not provided" },
-        { label: "Categories", value: formData.storeCategory && formData.storeCategory.length > 0 
-        ? formData.storeCategory.join(", ") 
-        : "Not provided" 
-    },
+        {
+          label: "Categories",
+          value:
+            formData.storeCategory && formData.storeCategory.length > 0
+              ? formData.storeCategory.join(", ")
+              : "Not provided",
+        },
         // { label: "Description", value: formData.storeDescription || "Not provided" },
         // { label: "Address", value: formData.storeAddress || "Not provided" },
       ],
@@ -755,16 +780,35 @@ function Review({ formData }: any) {
       title: "KYC Details",
       items: [
         { label: "PAN Number", value: formData.panNumber || "Not provided" },
-        { label: "Aadhaar Number", value: formData.aadhaarNumber ? formData.aadhaarNumber.replace(/\d(?=\d{4})/g, "X") : "Not provided" },
-        { label: "PAN Document", value: formData.panDocument ? "✅ Uploaded" : "❌ Not uploaded" },
-        { label: "Aadhaar Document", value: formData.aadhaarDocument ? "✅ Uploaded" : "❌ Not uploaded" },
+        {
+          label: "Aadhaar Number",
+          value: formData.aadhaarNumber
+            ? formData.aadhaarNumber.replace(/\d(?=\d{4})/g, "X")
+            : "Not provided",
+        },
+        {
+          label: "PAN Document",
+          value: formData.panDocument ? " Uploaded" : " Not uploaded",
+        },
+        {
+          label: "Aadhaar Document",
+          value: formData.aadhaarDocument ? " Uploaded" : "Not uploaded",
+        },
       ],
     },
     {
       title: "Bank Details",
       items: [
-        { label: "Account Holder", value: formData.accountHolderName || "Not provided" },
-        { label: "Account Number", value: formData.accountNumber ? formData.accountNumber.replace(/\d(?=\d{4})/g, "X") : "Not provided" },
+        {
+          label: "Account Holder",
+          value: formData.accountHolderName || "Not provided",
+        },
+        {
+          label: "Account Number",
+          value: formData.accountNumber
+            ? formData.accountNumber.replace(/\d(?=\d{4})/g, "X")
+            : "Not provided",
+        },
         { label: "IFSC Code", value: formData.ifscCode || "Not provided" },
         { label: "Bank Name", value: formData.bankName || "Not provided" },
       ],
@@ -782,11 +826,6 @@ function Review({ formData }: any) {
           Please review all details before submitting
         </p>
       </div>
-       <TermsModal
-  open={showTerms}
-  onClose={() => setShowTerms(false)}
-  termsContent={termsContent}
-/>
 
       {/* Review Sections */}
       <div className="space-y-4">
@@ -813,43 +852,12 @@ function Review({ formData }: any) {
           </div>
         ))}
       </div>
-      
-
-
-      {/* Terms and Conditions */}
-      <div className="bg-white dark:bg-gray-700 border-2 border-gray-300 dark:border-gray-600 rounded-lg p-5">
-        <label className="flex items-start gap-3 cursor-pointer">
-          <input
-            type="checkbox"
-            className="mt-1 w-5 h-5 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
-          />
-          <div className="flex-1">
-            <p className="text-sm text-gray-900 dark:text-white">
-              I agree to the{" "}
-              <button
-  type="button"
-  onClick={() => setShowTerms(true)}
-  className="text-blue-600 dark:text-blue-400 hover:underline"
->
-
-                Terms and Conditions
-              </button>
-              {" "}and{" "}
-              <a href="/seller/onboarding/privacy_policy" className="text-blue-600 dark:text-blue-400 hover:underline">
-                Privacy Policy
-              </a>
-            </p>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-              By checking this box, you confirm that all information provided is accurate
-            </p>
-          </div>
-        </label>
-      </div>
 
       {/* Info Box */}
       <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-5">
         <p className="text-sm text-blue-900 dark:text-blue-400 font-semibold mb-2">
-          📋 What happens next?
+          <Clipboard className="inline mr-2" size={16} />
+          What happens next?
         </p>
         <ul className="text-sm text-blue-800 dark:text-blue-300 space-y-1 list-disc list-inside">
           <li>Your application will be reviewed within 24-48 hours</li>
@@ -860,50 +868,58 @@ function Review({ formData }: any) {
     </div>
   );
 }
-const termsContent = [
-    {
-      title: '1. Seller Eligibility',
-      content: 'By registering as a seller on Nirmatri Crafts, you confirm that you are highlighting authentic, handcrafted items. We reserve the right to verify the origin of your products and request additional documentation if needed.'
-    },
-    {
-      title: '2. Commissions & Fees',
-      content: 'Nirmatri Crafts charges a standard 10% platform fee on every successful sale. This covers payment processing, marketing for your products, customer support, and platform maintenance. Additional fees may apply for premium features.'
-    },
-    {
-      title: '3. Product Authenticity',
-      content: 'All products must be handmade, handcrafted, or artisanal. Mass-produced items, counterfeit goods, or items misrepresented as handmade are strictly prohibited. We conduct regular quality checks to maintain marketplace integrity.'
-    },
-    {
-      title: '4. Shipping Policy',
-      content: 'Sellers are responsible for packaging products safely and securely. Orders must be dispatched within 48 hours of confirmation unless otherwise specified. Failure to ship on time may result in store penalties, reduced visibility, or account suspension.'
-    },
-    {
-      title: '5. Payout Schedule',
-      content: 'Funds from sales are held in escrow for 7 days post-delivery to handle potential returns or disputes. Payouts are processed every Monday directly to your registered bank account. Minimum payout threshold is ₹500.'
-    },
-    {
-      title: '6. Returns & Refunds',
-      content: 'Sellers must honor our 7-day return policy for damaged or defective items. Return shipping costs for seller errors will be deducted from your account. Customer satisfaction is our priority.'
-    },
-    {
-      title: '7. Prohibited Items',
-      content: 'Mass-produced industrial goods, hazardous materials, illegal substances, weapons, copyrighted designs without permission, and any items violating Indian law are strictly prohibited. Violations may result in immediate account termination.'
-    },
-    {
-      title: '8. Intellectual Property',
-      content: 'You retain ownership of your product designs. However, by listing on Nirmatri, you grant us a license to display, market, and promote your products across our platforms and marketing channels.'
-    },
-    {
-      title: '9. Account Termination',
-      content: 'We reserve the right to suspend or terminate seller accounts for policy violations, fraudulent activity, poor customer ratings, or failure to maintain quality standards. Termination procedures are outlined in our dispute resolution policy.'
-    },
-    {
-      title: '10. Changes to Terms',
-      content: 'Nirmatri reserves the right to modify these terms at any time. Sellers will be notified via email 30 days before changes take effect. Continued use of the platform constitutes acceptance of updated terms.'
-    },
-  ];
-
-  
+// const termsContent = [
+//   {
+//     title: "1. Seller Eligibility",
+//     content:
+//       "By registering as a seller on Nirmatri Crafts, you confirm that you are highlighting authentic, handcrafted items. We reserve the right to verify the origin of your products and request additional documentation if needed.",
+//   },
+//   {
+//     title: "2. Commissions & Fees",
+//     content:
+//       "Nirmatri Crafts charges a standard 10% platform fee on every successful sale. This covers payment processing, marketing for your products, customer support, and platform maintenance. Additional fees may apply for premium features.",
+//   },
+//   {
+//     title: "3. Product Authenticity",
+//     content:
+//       "All products must be handmade, handcrafted, or artisanal. Mass-produced items, counterfeit goods, or items misrepresented as handmade are strictly prohibited. We conduct regular quality checks to maintain marketplace integrity.",
+//   },
+//   {
+//     title: "4. Shipping Policy",
+//     content:
+//       "Sellers are responsible for packaging products safely and securely. Orders must be dispatched within 48 hours of confirmation unless otherwise specified. Failure to ship on time may result in store penalties, reduced visibility, or account suspension.",
+//   },
+//   {
+//     title: "5. Payout Schedule",
+//     content:
+//       "Funds from sales are held in escrow for 7 days post-delivery to handle potential returns or disputes. Payouts are processed every Monday directly to your registered bank account. Minimum payout threshold is ₹500.",
+//   },
+//   {
+//     title: "6. Returns & Refunds",
+//     content:
+//       "Sellers must honor our 7-day return policy for damaged or defective items. Return shipping costs for seller errors will be deducted from your account. Customer satisfaction is our priority.",
+//   },
+//   {
+//     title: "7. Prohibited Items",
+//     content:
+//       "Mass-produced industrial goods, hazardous materials, illegal substances, weapons, copyrighted designs without permission, and any items violating Indian law are strictly prohibited. Violations may result in immediate account termination.",
+//   },
+//   {
+//     title: "8. Intellectual Property",
+//     content:
+//       "You retain ownership of your product designs. However, by listing on Nirmatri, you grant us a license to display, market, and promote your products across our platforms and marketing channels.",
+//   },
+//   {
+//     title: "9. Account Termination",
+//     content:
+//       "We reserve the right to suspend or terminate seller accounts for policy violations, fraudulent activity, poor customer ratings, or failure to maintain quality standards. Termination procedures are outlined in our dispute resolution policy.",
+//   },
+//   {
+//     title: "10. Changes to Terms",
+//     content:
+//       "Nirmatri reserves the right to modify these terms at any time. Sellers will be notified via email 30 days before changes take effect. Continued use of the platform constitutes acceptance of updated terms.",
+//   },
+// ];
 
 /* ============================================ */
 /* 🔹 HELPER COMPONENTS */
@@ -927,7 +943,12 @@ function FileUpload({ label, file, onChange, description }: FileUploadProps) {
         return;
       }
       // Validate file type
-      const validTypes = ["image/jpeg", "image/jpg", "image/png", "application/pdf"];
+      const validTypes = [
+        "image/jpeg",
+        "image/jpg",
+        "image/png",
+        "application/pdf",
+      ];
       if (!validTypes.includes(selectedFile.type)) {
         alert("Only JPG, PNG, and PDF files are allowed");
         return;
@@ -968,7 +989,8 @@ function FileUpload({ label, file, onChange, description }: FileUploadProps) {
           ) : (
             <div>
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                📁 Click to upload or drag and drop
+                <FileUp className="inline mr-2" size={16} /> Click to upload or
+                drag and drop
               </p>
               <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
                 {description}

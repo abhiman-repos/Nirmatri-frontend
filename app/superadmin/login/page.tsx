@@ -2,6 +2,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
+import NirmatriLogo from "@/app/components/Nirmatri";
 
 export default function SuperAdminLogin() {
   const router = useRouter();
@@ -36,9 +37,11 @@ export default function SuperAdminLogin() {
   return (
     <main className="min-h-screen flex items-center justify-center bg-[#F5F7FF] px-6">
       <div className="w-full max-w-md bg-white p-8 rounded-2xl shadow-lg">
-
+         <div className="relative w-full h-20 flex items-center justify-center">
+  <NirmatriLogo />
+</div>
         <h1 className="text-3xl font-semibold text-gray-900 mb-2 text-center">
-          Welcome to Super Admin Panel
+           Super Admin Panel
         </h1>
 
         <p className="text-sm text-gray-500 mb-8 text-center">
@@ -52,7 +55,7 @@ export default function SuperAdminLogin() {
             value={adminId}
             onChange={(e) => setAdminId(e.target.value)}
             placeholder="Super Admin ID"
-            className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full rounded-lg border border-gray-300 px-4 py-3 text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
 
@@ -63,7 +66,7 @@ export default function SuperAdminLogin() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Password"
-            className="w-full rounded-lg border border-gray-300 px-4 py-3 pr-11 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full rounded-lg border border-gray-300 px-4 py-3 pr-11 text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
 
           <button

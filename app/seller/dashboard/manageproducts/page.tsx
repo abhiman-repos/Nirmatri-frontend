@@ -5,8 +5,18 @@ import { useRouter } from "next/navigation";
 import { useTheme } from "@/app/contexts/ThemeContext";
 import Link from "next/link";
 import { Button } from "@/app/components/ui/button";
-import { Select } from "@/app/components/ui/select";
 import { Input } from "@/app/components/ui/input";
+import{
+  AlertTriangle,
+  Cross,
+  Check,
+  Package,
+  Trash2,
+  Clipboard,
+
+ 
+
+} from "lucide-react";
 
 export default function ManageProductsPage() {
   // ============================================
@@ -224,10 +234,10 @@ export default function ManageProductsPage() {
         {/* STATS CARDS */}
         {/* ============================================ */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-          <StatCard title="Total Products" value={stats.total} icon="🏺" color="blue" />
-          <StatCard title="Active" value={stats.active} icon="✅" color="green" />
-          <StatCard title="Low Stock" value={stats.lowStock} icon="⚠️" color="orange" />
-          <StatCard title="Out of Stock" value={stats.outOfStock} icon="❌" color="red" />
+          <StatCard title="Total Products" value={stats.total} icon={Package} color="blue" />
+          <StatCard title="Active" value={stats.active} icon={Check} color="green" />
+          <StatCard title="Low Stock" value={stats.lowStock} icon={AlertTriangle} color="orange" />
+          <StatCard title="Out of Stock" value={stats.outOfStock} icon={Cross} color="red" />
         </div>
 
         {/* ============================================ */}
@@ -396,19 +406,33 @@ export default function ManageProductsPage() {
 /* ============================================ */
 
 // Stat Card
-function StatCard({ title, value, icon, color }: any) {
-  const colorClasses: any = {
-    blue: "border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-900/20",
-    green: "border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/20",
-    orange: "border-orange-200 dark:border-orange-800 bg-orange-50 dark:bg-orange-900/20",
-    red: "border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20",
+function StatCard({
+  title,
+  value,
+  icon: Icon,
+  color,
+}: {
+  title: string;
+  value: number;
+  icon: any;
+  color: "blue" | "green" | "orange" | "red";
+}) {
+  const colorClasses = {
+    blue: "border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-900/20 text-blue-600",
+    green: "border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/20 text-green-600",
+    orange: "border-orange-200 dark:border-orange-800 bg-orange-50 dark:bg-orange-900/20 text-orange-600",
+    red: "border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20 text-red-600",
   };
 
   return (
     <div className={`bg-white dark:bg-gray-800 rounded-xl shadow-sm border-2 p-4 ${colorClasses[color]}`}>
       <div className="flex items-center justify-between mb-2">
-        <span className="text-2xl">{icon}</span>
-        <span className="text-2xl font-bold text-gray-900 dark:text-white">{value}</span>
+        <div className="p-3 rounded-xl bg-white/60 dark:bg-black/20">
+          <Icon className="w-6 h-6" />
+        </div>
+        <span className="text-2xl font-bold text-gray-900 dark:text-white">
+          {value}
+        </span>
       </div>
       <p className="text-sm text-gray-600 dark:text-gray-400">{title}</p>
     </div>
@@ -474,14 +498,14 @@ function ProductCard({ product, isSelected, onSelect, onDelete, onDuplicate }: a
             className="px-3 py-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 text-sm font-medium rounded-lg transition-colors"
             title="Duplicate"
           >
-            📋
+            <Clipboard className="w-4 h-4" />
           </button>
           <button
             onClick={onDelete}
             className="px-3 py-2 bg-red-100 dark:bg-red-900/30 hover:bg-red-200 dark:hover:bg-red-900/50 text-red-600 dark:text-red-400 text-sm font-medium rounded-lg transition-colors"
             title="Delete"
           >
-            🗑️
+            <Trash2 className="w-4 h-4" />
           </button>
         </div>
       </div>

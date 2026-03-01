@@ -14,6 +14,10 @@ import {
   Eye,
   EyeOff,
 } from "lucide-react";
+import { googleLogout } from "@react-oauth/google";
+import { useRouter } from "next/router";
+import { useAuth } from "../../context/AuthContext";
+import { LogOut } from "lucide-react";
 
 export function SettingsSection() {
   const { theme, setTheme } = useTheme();
@@ -23,6 +27,7 @@ export function SettingsSection() {
     sms: false,
     push: true,
   });
+
 
   return (
     <div className="p-6 space-y-10 text-gray-900 dark:text-gray-100">
@@ -81,23 +86,17 @@ export function SettingsSection() {
         <Toggle
           label="Email Notifications"
           value={notifications.email}
-          onChange={() =>
-            setNotifications((p) => ({ ...p, email: !p.email }))
-          }
+          onChange={() => setNotifications((p) => ({ ...p, email: !p.email }))}
         />
         <Toggle
           label="SMS Alerts"
           value={notifications.sms}
-          onChange={() =>
-            setNotifications((p) => ({ ...p, sms: !p.sms }))
-          }
+          onChange={() => setNotifications((p) => ({ ...p, sms: !p.sms }))}
         />
         <Toggle
           label="Push Notifications"
           value={notifications.push}
-          onChange={() =>
-            setNotifications((p) => ({ ...p, push: !p.push }))
-          }
+          onChange={() => setNotifications((p) => ({ ...p, push: !p.push }))}
         />
       </Section>
 
@@ -110,11 +109,14 @@ export function SettingsSection() {
       {/* ================= DANGER ZONE ================= */}
       <Section title="Danger Zone" icon={<Trash2 />} danger>
         <button
-          className="danger-btn"
-          aria-label="Delete account permanently"
+          className="
+          flex items-center gap-3 px-4 py-3 mt-4 rounded-xl
+          text-orange-600 hover:bg-orange-50
+          dark:text-blue-400 dark:hover:bg-blue-500/10
+          transition-colors
+        "
         >
-          <Trash2 size={16} />
-          Delete Account
+          <LogOut className="w-5 h-5" />
         </button>
       </Section>
     </div>
@@ -252,11 +254,6 @@ function ThemeCard({
 }
 
 function Button({ text }: { text: string }) {
-
-  return (
-    <button className="primary-btn">
-      {text}
-    </button>
-  );
+  return <button className="primary-btn">{text}</button>;
 }
 

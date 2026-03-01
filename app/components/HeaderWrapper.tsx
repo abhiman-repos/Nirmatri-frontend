@@ -4,19 +4,6 @@ import { useEffect, useState } from "react";
 import { Header } from "@/app/components/Header";
 import dynamic from "next/dynamic";
 
-const AccountSidebar = dynamic(
-  () => import("@/app/components/AccountSidebar"),
-  { ssr: false }
-);
-
-const LeftPanel = dynamic(
-  () => import("@/app/components/LeftPanel"),
-  { ssr: false }
-);
-
-
-
-
 /* ===================== SECTIONS ===================== */
 import  MyProfileSection  from "@/app/components/userprofile/sections/MyProfileSection";
 import { OrdersSection } from "@/app/components/userprofile/sections/OrdersSection";
@@ -28,6 +15,16 @@ import { ReturnsSection } from "@/app/components/userprofile/sections/ReturnsSec
 import { NotificationsSection } from "@/app/components/userprofile/sections/NotificationsSection";
 import { SupportSection } from "@/app/components/userprofile/sections/SupportSection";
 import { SettingsSection } from "@/app/components/userprofile/sections/SettingsSection";
+
+const AccountSidebar = dynamic(
+  () => import("@/app/components/AccountSidebar"),
+  { ssr: false }
+);
+
+const LeftPanel = dynamic(
+  () => import("@/app/components/LeftPanel"),
+  { ssr: false }
+);
 
 /* ===================== TYPES ===================== */
 export type Section =

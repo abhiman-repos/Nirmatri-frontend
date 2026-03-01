@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
 import { Badge } from "@/app/components/ui/badge";
-import { ImageWithFallback } from "@/app/components/figma/ImageWithFallback";
+import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { Card } from "@/app/components/ui/card";
 
 const sponsoredProducts = [

@@ -1,4 +1,14 @@
 "use client";
+import{
+  
+  CreditCard,
+  Calendar,
+  Pencil,
+  Banknote,
+  Hourglass,
+  Save,
+
+} from "lucide-react";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -165,10 +175,10 @@ export default function BankDetailsPage() {
         {/* STATS CARDS */}
         {/* ============================================ */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-          <StatCard title="Total Payouts" value={stats.totalPayouts} icon="💳" />
-          <StatCard title="Total Earned" value={`₹${stats.totalEarned.toLocaleString()}`} icon="💰" />
-          <StatCard title="Pending Payout" value={`₹${stats.pendingAmount.toLocaleString()}`} icon="⏳" />
-          <StatCard title="Next Payout" value={stats.nextPayout} icon="📅" isDate />
+          <StatCard title="Total Payouts" value={stats.totalPayouts}icon={<Banknote className="w-5 h-5 text-blue-500" />} />
+          <StatCard title="Total Earned" value={`₹${stats.totalEarned.toLocaleString()}`} icon={<CreditCard className="w-5 h-5 text-green-500" />}/>
+          <StatCard title="Pending Payout" value={`₹${stats.pendingAmount.toLocaleString()}`} icon={<Hourglass className="w-5 h-5 text-yellow-500" />} />
+          <StatCard title="Next Payout" value={stats.nextPayout}icon={<Calendar className="w-5 h-5 text-purple-500" />} />
         </div>
 
         {/* ============================================ */}
@@ -184,7 +194,7 @@ export default function BankDetailsPage() {
                 onClick={() => setIsEditing(true)}
                 className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"
               >
-                ✏️ Edit Details
+                <Pencil className="w-4 h-4 mr-2 inline" />Edit Details
               </button>
             ) : (
               <div className="flex gap-3">
@@ -209,7 +219,10 @@ export default function BankDetailsPage() {
                       Saving...
                     </>
                   ) : (
-                    "💾 Save Changes"
+                    <>
+                      <Save className="w-4 h-4 mr-2" />
+                      Save Changes
+                    </>
                   )}
                 </button>
               </div>

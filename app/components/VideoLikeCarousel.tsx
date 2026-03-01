@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 
 import { ChevronLeft, ChevronRight, Heart } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
-import { ImageWithFallback } from "@/app/components/figma/ImageWithFallback";
+import { ImageWithFallback } from "./figma/ImageWithFallback";
 
 const slides = [
   {

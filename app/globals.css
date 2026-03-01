@@ -4,6 +4,8 @@
   */
 @plugin "tailwindcss-animate";
 
+darkMode: "class"
+
 
 :root {
   --color-background: var(--background);
@@ -42,7 +44,24 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+
+
+:root[data-theme="lightgreen"] {
+  --bg-primary: #f0fdf4;
+  --bg-secondary: #dcfce7;
+  --text-primary: #064e3b;
+  --accent-color: #22c55e;
 }
+
+:root[data-theme="dark"] {
+  --bg-primary: #0f172a;
+  --bg-secondary: #1e293b;
+  --text-primary: #f8fafc;
+  --accent-color: #3b82f6;
+}
+}
+
+
 @custom-variant dark (&:is(.dark *));
 
 :root {
@@ -245,4 +264,6 @@ input[type="password"]::-webkit-credentials-auto-fill-button {
 input[type="password"] {
   appearance: none;
 }
+
+
 

@@ -1,6 +1,17 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import {
+  Package,
+  Clock,
+  Settings,
+  Truck,
+  CheckCircle,
+  XCircle,
+  Search,
+  Eye
+} from "lucide-react";
+
 
 // Mock order data
 const mockOrders = [
@@ -169,13 +180,36 @@ export default function OrdersPage() {
   const shippedOrders = orders.filter((o) => o.status === 'shipped').length;
   const deliveredOrders = orders.filter((o) => o.status === 'delivered').length;
 
-  const statusConfig = {
-    pending: { label: 'Pending', class: 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400', icon: '⏳' },
-    processing: { label: 'Processing', class: 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400', icon: '⚙️' },
-    shipped: { label: 'Shipped', class: 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400', icon: '🚚' },
-    delivered: { label: 'Delivered', class: 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400', icon: '✅' },
-    cancelled: { label: 'Cancelled', class: 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400', icon: '❌' },
-  };
+
+    const statusConfig = {
+  pending: {
+    label: 'Pending',
+    class: 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400',
+    icon: Clock,
+  },
+  processing: {
+    label: 'Processing',
+    class: 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400',
+    icon: Settings,
+  },
+  shipped: {
+    label: 'Shipped',
+    class: 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400',
+    icon: Truck,
+  },
+  delivered: {
+    label: 'Delivered',
+    class: 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400',
+    icon: CheckCircle,
+  },
+  cancelled: {
+    label: 'Cancelled',
+    class: 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400',
+    icon: XCircle,
+  },
+};
+
+
 
   const paymentConfig = {
     paid: { label: 'Paid', class: 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400' },
@@ -203,21 +237,17 @@ export default function OrdersPage() {
                 <h1 className="text-3xl font-semibold text-gray-900 dark:text-white">Orders</h1>
                 <p className="text-gray-600 dark:text-gray-400 mt-1">Manage and track all your orders</p>
               </div>
-              {/* <div className="flex items-center gap-3">
-               
-                <button className="flex items-center gap-2 px-6 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-200">
-                  📊 Export Orders
-                </button>
-              </div> */}
+              
             </div>
 
             {/* Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
-              <StatCard label="Total Orders" value={totalOrders} icon="📦" color="blue" darkMode={darkMode} />
-              <StatCard label="Pending" value={pendingOrders} icon="⏳" color="yellow" darkMode={darkMode} />
-              <StatCard label="Processing" value={processingOrders} icon="⚙️" color="purple" darkMode={darkMode} />
-              <StatCard label="Shipped" value={shippedOrders} icon="🚚" color="indigo" darkMode={darkMode} />
-              <StatCard label="Delivered" value={deliveredOrders} icon="✅" color="green" darkMode={darkMode} />
+              <StatCard label="Total Orders" value={totalOrders} icon={Package} color="blue" />
+              <StatCard label="Pending" value={pendingOrders} icon={Clock} color="yellow" />
+              <StatCard label="Processing" value={processingOrders} icon={Settings} color="indigo" />
+              <StatCard label="Shipped" value={shippedOrders} icon={Truck} color="purple" />
+              <StatCard label="Delivered" value={deliveredOrders} icon={CheckCircle} color="green" />
+
             </div>
           </div>
 
@@ -233,7 +263,8 @@ export default function OrdersPage() {
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="w-full pl-10 pr-4 py-2.5 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
-                  <span className="absolute left-3 top-3 text-gray-400">🔍</span>
+                 <Search className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
+
                 </div>
               </div>
 
@@ -304,7 +335,8 @@ export default function OrdersPage() {
                         <td className="px-6 py-4 font-semibold text-gray-900 dark:text-white">₹{order.total.toLocaleString()}</td>
                         <td className="px-6 py-4">
                           <span className={`inline-flex items-center gap-1 px-3 py-1 text-xs font-semibold rounded-full ${status.class}`}>
-                            <span>{status.icon}</span>
+                            <status.icon className="w-4 h-4" />
+
                             {status.label}
                           </span>
                         </td>
@@ -320,7 +352,8 @@ export default function OrdersPage() {
                               onClick={() => handleViewDetails(order)}
                               className="p-2 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 rounded transition-colors"
                             >
-                              👁️
+                             <Eye className="w-5 h-5" />
+
                             </button>
                           </div>
                         </td>
@@ -346,29 +379,40 @@ export default function OrdersPage() {
   );
 }
 
-function StatCard({ label, value, icon, color, darkMode }: {
+function StatCard({
+  label,
+  value,
+  icon: Icon,
+  color = "blue",
+}: {
   label: string;
   value: number;
-  icon: string;
-  color: string;
-  darkMode: boolean;
+  icon: any;
+  color?: "blue" | "yellow" | "purple" | "indigo" | "green";
 }) {
   const colorClasses = {
-    blue: 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300',
-    yellow: 'bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800 text-yellow-700 dark:text-yellow-300',
-    purple: 'bg-purple-50 dark:bg-purple-900/20 border-purple-200 dark:border-purple-800 text-purple-700 dark:text-purple-300',
-    indigo: 'bg-indigo-50 dark:bg-indigo-900/20 border-indigo-200 dark:border-indigo-800 text-indigo-700 dark:text-indigo-300',
-    green: 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800 text-green-700 dark:text-green-300',
+    blue: "bg-blue-50 dark:bg-blue-900/20 text-blue-600",
+    yellow: "bg-yellow-50 dark:bg-yellow-900/20 text-yellow-600",
+    purple: "bg-purple-50 dark:bg-purple-900/20 text-purple-600",
+    indigo: "bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600",
+    green: "bg-green-50 dark:bg-green-900/20 text-green-600",
   };
 
   return (
-    <div className={`${colorClasses[color as keyof typeof colorClasses]} border rounded-lg p-4`}>
+    <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-sm font-medium opacity-80">{label}</p>
-          <p className="text-2xl font-bold mt-1">{value}</p>
+          <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+            {label}
+          </p>
+          <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">
+            {value}
+          </p>
         </div>
-        <span className="text-3xl">{icon}</span>
+
+        <div className={`p-3 rounded-xl ${colorClasses[color]}`}>
+          <Icon className="w-6 h-6" />
+        </div>
       </div>
     </div>
   );
@@ -381,12 +425,12 @@ function OrderDetailsModal({ order, onClose, onUpdateStatus, darkMode }: {
   darkMode: boolean;
 }) {
   const statusConfig = {
-    pending: { label: 'Pending', class: 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400', icon: '⏳' },
-    processing: { label: 'Processing', class: 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400', icon: '⚙️' },
-    shipped: { label: 'Shipped', class: 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400', icon: '🚚' },
-    delivered: { label: 'Delivered', class: 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400', icon: '✅' },
-    cancelled: { label: 'Cancelled', class: 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400', icon: '❌' },
-  };
+  pending: { label: 'Pending', class: '...', icon: Clock },
+  processing: { label: 'Processing', class: '...', icon: Settings },
+  shipped: { label: 'Shipped', class: '...', icon: Truck },
+  delivered: { label: 'Delivered', class: '...', icon: CheckCircle },
+  cancelled: { label: 'Cancelled', class: '...', icon: XCircle },
+};
 
   const status = statusConfig[order.status as keyof typeof statusConfig];
 
