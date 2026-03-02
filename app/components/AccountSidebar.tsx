@@ -1,9 +1,9 @@
 "use client";
-
 import clsx from "clsx";
 import type { Section } from "@/app/components/HeaderWrapper";
 
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import {
   User,
   ShoppingBag,
@@ -22,6 +22,11 @@ import {
 
 /* ===================== TYPES ===================== */
 
+type User = {
+  name?: string;
+  email?: string;
+};
+
 type AccountSidebarProps = {
   open: boolean;
   onClose: () => void;
@@ -39,6 +44,19 @@ export default function AccountSidebar({
 }: AccountSidebarProps) {
   const router = useRouter();
 
+const [user] = useState<User | null>(() => {
+  try {
+    const storedUser = localStorage.getItem("user");
+
+    if (!storedUser || storedUser === "undefined") return null;
+
+    return JSON.parse(storedUser);
+  } catch (err) {
+    console.error("Invalid user in localStorage", err);
+    localStorage.removeItem("user");
+    return null;
+  }
+});
   return (
     <>
       {/* ================= OVERLAY ================= */}
@@ -112,15 +130,15 @@ export default function AccountSidebar({
                 shadow-md
               "
             >
-              RK
+              {user?.name ? user.name.charAt(0).toUpperCase() : "G"}
             </div>
 
             <div>
               <p className="font-semibold text-gray-900 dark:text-gray-100">
-                Rahul Kumar
+                {user?.name || "Guest User"}
               </p>
               <p className="text-xs text-gray-500 dark:text-gray-400">
-                +91 98765 43210
+                {user?.email || ""}
               </p>
             </div>
           </div>
@@ -142,16 +160,14 @@ export default function AccountSidebar({
   <button
     type="button" // ⭐ MOST IMPORTANT
     onClick={(e) => {
-      e.preventDefault(); // ⭐ safety
+  e.preventDefault();
 
-      // 🔐 AUTH CLEAR
-      document.cookie = "loggedIn=; path=/; max-age=0";
-      localStorage.removeItem("loggedIn"); // optional
-
-      onClose();
-
-      // 🔁 LANDING PAGE
-      router.replace("/");
+ const handleLogout = () => {
+  localStorage.removeItem("token");
+  localStorage.removeItem("user");
+  router.push("/login");
+};         
+ handleLogout();
     }}
     className="
       w-full flex items-center gap-3

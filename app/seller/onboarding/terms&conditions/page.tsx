@@ -18,25 +18,43 @@ export default function SellerTermsPage() {
   const handleBack = () => {
     router.back();
   };
-
   const handleConfirm = async () => {
-    if (!agreed) return;
-    
-    setIsSubmitting(true);
-    
-    // Simulate API call to save terms acceptance
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    // TODO: Replace with actual API call
-    // await fetch('/api/seller/accept-terms', {
-    //   method: 'POST',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify({ accepted: true, timestamp: new Date() })
-    // });
-    
-    // Redirect to dashboard or next step
-    router.push('/seller/dashboard/');
-  };
+  if (!agreed) return;
+  setIsSubmitting(true);
+  try {
+    // login ke time save kiya hua token
+    const token = localStorage.getItem("token");
+
+    const res = await fetch(
+      "http://127.0.0.1:8000/api/seller/accept-terms/",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          accepted: true,
+        }),
+      }
+    );
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.error || "Failed to accept terms");
+    }
+
+    // ✅ Terms accepted → Admin approval wait page
+    router.push("/seller/pending-approval");
+
+  } catch (error: any) {
+    alert(error.message || "Something went wrong");
+  } finally {
+    setIsSubmitting(false);
+  }
+};
+
 
   // ============================================
   // TERMS CONTENT

@@ -18,7 +18,7 @@ const LeftPanel = dynamic(
 
 
 /* ===================== SECTIONS ===================== */
-import { MyProfileSection } from "@/app/components/userprofile/sections/MyProfileSection";
+import  MyProfileSection  from "@/app/components/userprofile/sections/MyProfileSection";
 import { OrdersSection } from "@/app/components/userprofile/sections/OrdersSection";
 import { AddressesSection } from "@/app/components/userprofile/sections/AddressesSection";
 import { WishlistSection } from "@/app/components/userprofile/sections/WishlistSection";

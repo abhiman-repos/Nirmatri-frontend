@@ -21,8 +21,7 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
   const data = new FormData(form);
 
   const payload = {
-    first_name: data.get("firstName")?.toString().trim(),
-    last_name: data.get("lastName")?.toString().trim(),
+    full_name: data.get("fullName")?.toString().trim(),
     email: data.get("email")?.toString().trim(),
     password: data.get("password")?.toString(),
     confirm_password: data.get("confirm")?.toString(),
@@ -30,8 +29,7 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 
   // ================= VALIDATION =================
   if (
-    !payload.first_name ||
-    !payload.last_name ||
+    !payload.full_name ||
     !payload.email ||
     !payload.password ||
     !payload.confirm_password
@@ -54,7 +52,7 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 
   try {
     const res = await fetch(
-      "http://127.0.0.1:8000/api/auth/sellerRegister/",
+      "http://127.0.0.1:8000/api/seller/register/",
       {
         method: "POST",
         headers: {
@@ -112,17 +110,10 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
             {/* ================= FORM ================= */}
             <form className="space-y-5" onSubmit={handleSubmit}>
               {/* NAME */}
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols gap-4">
                 <input
-                  name="firstName"
-                  placeholder="First name"
-                  className="w-full rounded-lg border px-4 py-3 text-sm
-                  text-gray-900 placeholder:text-gray-500
-                  focus:ring-2 focus:ring-blue-500 outline-none"
-                />
-                <input
-                  name="lastName"
-                  placeholder="Last name"
+                  name="fullName"
+                  placeholder="Full name"
                   className="w-full rounded-lg border px-4 py-3 text-sm
                   text-gray-900 placeholder:text-gray-500
                   focus:ring-2 focus:ring-blue-500 outline-none"

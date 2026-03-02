@@ -4,6 +4,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTheme } from "@/app/contexts/ThemeContext";
 import { motion } from "framer-motion";
+import { Select } from "react-day-picker";
+import { Button } from "@/app/components/ui/button";
 
 export default function AddProductPage() {
   // ============================================
@@ -383,7 +385,7 @@ function BasicInfoTab({ productData, updateProductData, errors, categories, sele
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Category *
           </label>
-          <select
+          <Select
             value={productData.category}
             onChange={(e) => {
               updateProductData("category", e.target.value);
@@ -397,7 +399,7 @@ function BasicInfoTab({ productData, updateProductData, errors, categories, sele
             {categories.map((cat: any) => (
               <option key={cat.name} value={cat.name}>{cat.name}</option>
             ))}
-          </select>
+          </Select>
           {errors.category && <p className="text-red-500 text-sm mt-1">{errors.category}</p>}
         </div>
 
@@ -405,7 +407,7 @@ function BasicInfoTab({ productData, updateProductData, errors, categories, sele
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Subcategory
           </label>
-          <select
+          <Select
             value={productData.subCategory}
             onChange={(e) => updateProductData("subCategory", e.target.value)}
             disabled={!productData.category}
@@ -415,7 +417,7 @@ function BasicInfoTab({ productData, updateProductData, errors, categories, sele
             {selectedCategory?.subcategories.map((sub: string) => (
               <option key={sub} value={sub}>{sub}</option>
             ))}
-          </select>
+          </Select>
         </div>
       </div>
 
@@ -635,7 +637,7 @@ function InventoryTab({ productData, updateProductData, errors }: any) {
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
           Shipping Class
         </label>
-        <select
+        <Select
           value={productData.shippingClass}
           onChange={(e) => updateProductData("shippingClass", e.target.value)}
           className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white bg-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
@@ -644,7 +646,7 @@ function InventoryTab({ productData, updateProductData, errors }: any) {
           <option value="express">Express Shipping</option>
           <option value="fragile">Fragile / Special Handling</option>
           <option value="oversized">Oversized Item</option>
-        </select>
+        </Select>
       </div>
     </div>
   );
@@ -702,14 +704,14 @@ function ImagesTab({ productData, handleImageUpload, removeImage, errors }: any)
                   className="w-full h-full object-cover"
                 />
               </div>
-              <button
+              <Button
                 onClick={() => removeImage(index)}
                 className="absolute -top-2 -right-2 bg-red-500 hover:bg-red-600 text-white rounded-full p-1.5 shadow-lg opacity-0 group-hover:opacity-100 transition-all"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
-              </button>
+              </Button>
               {index === 0 && (
                 <div className="absolute top-2 left-2 bg-blue-600 text-white text-xs px-2 py-1 rounded">
                   Main
@@ -828,7 +830,7 @@ function AdditionalTab({ productData, updateProductData, currentTag, setCurrentT
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
           Return Policy
         </label>
-        <select
+        <Select
           value={productData.returnPolicy}
           onChange={(e) => updateProductData("returnPolicy", e.target.value)}
           className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white bg-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
@@ -837,7 +839,7 @@ function AdditionalTab({ productData, updateProductData, currentTag, setCurrentT
           <option value="14days">14 Days Return</option>
           <option value="30days">30 Days Return</option>
           <option value="noreturn">No Returns (Final Sale)</option>
-        </select>
+        </Select>
       </div>
     </div>
   );

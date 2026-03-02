@@ -1,15 +1,8 @@
 "use client";
 
-import { Search, LogIn, Menu } from "lucide-react";
-import { ShoppingCart } from "lucide-react";
-
+import { Search, LogIn, Menu, ShoppingCart } from "lucide-react";
 import Link from "next/link";
-import {
-  useEffect,
-  useRef,
-  useState,
-  useTransition,
-} from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { useRouter, usePathname } from "next/navigation";
 
 import { Button } from "@/app/components/ui/button";
@@ -23,10 +16,11 @@ import {
   DropdownMenuTrigger,
 } from "@/app/components/ui/dropdown-menu";
 
-/* 🔹 PROPS */
+
 type HeaderProps = {
   onUserClick?: () => void;
 };
+
 
 export function Header({ onUserClick }: HeaderProps) {
   const [showTopBar, setShowTopBar] = useState(true);
@@ -81,10 +75,13 @@ const [cartCount, setCartCount] = useState<number>(0);
       document.removeEventListener("mousedown", handleClickOutside);
   }, [mobileSearchOpen]);
 
+
+
   /* ❌ LOGIN / AUTH PAGES PE HEADER HIDE */
 if (
   pathname.startsWith("/userauth") ||
-  pathname.startsWith("/seller")
+  pathname.startsWith("/seller") ||
+  pathname.startsWith("/superadmin")
 ) {
   return null;
 }
@@ -95,7 +92,6 @@ if (
     setIsLoggedIn(false);
     router.replace("/");
   };
-
   return (
     <>
       {/* 🔍 MOBILE SEARCH SHEET */}
@@ -126,9 +122,9 @@ if (
         <div className="h-14">
           <div className="max-w-7xl mx-auto h-full px-4 flex items-center gap-3">
             {/* LOGO */}
-            <Link href="/" className="flex-shrink-0">
+          
               <NirmatriLogo />
-            </Link>
+           
 
             {/* DESKTOP SEARCH */}
             <div className="hidden md:flex flex-1 justify-center">
@@ -177,9 +173,6 @@ if (
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => router.push("/seller/login")}>
                       Login as Seller
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => router.push("/userauth/login")}>
-                      Super Admin 
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>

@@ -16,15 +16,15 @@ export default function Page() {
 
   /* 🔒 HOME PAGE GUARD */
   useEffect(() => {
-    const isLoggedIn =
-      typeof window !== "undefined" &&
-      localStorage.getItem("loggedIn") === "true";
+    const isLoggedIn = localStorage.getItem("loggedIn");
 
     if (!isLoggedIn) {
-      router.replace("/");
+      
       alert("You must be logged in to access the home page.");
+      router.replace("/");
     }
-  }, [router]);
+  },
+   []);
 
 
   return (

@@ -66,7 +66,7 @@ export function WishlistSection() {
       <div>
         <h1 className="text-2xl md:text-3xl font-bold flex items-center gap-2 text-gray-900 dark:text-gray-100">
           My Wishlist
-          <Heart className="w-6 h-6 text-orange-500 dark:text-blue-400 fill-current" />
+          <Heart className="w-6 h-6 text-red-500 dark:text-blue-400 fill-current" />
         </h1>
         <p className="text-gray-600 dark:text-gray-400 mt-1">
           {wishlistItems.length} items saved for later
@@ -81,7 +81,7 @@ export function WishlistSection() {
             className="
               group overflow-hidden transition-all duration-300
               bg-white dark:bg-[#0f0f10]
-              border border-orange-200 dark:border-white/10
+              border border-green-200 dark:border-white/10
               hover:-translate-y-1 hover:shadow-xl
             "
           >
@@ -148,7 +148,7 @@ export function WishlistSection() {
                     onClick={() => handleAddToCart(item.id)}
                     className="
                       flex-1 gap-2
-                      bg-orange-500 hover:bg-orange-600 text-white
+                      bg-green-500 hover:bg-green-600 text-white
                       dark:bg-blue-500 dark:hover:bg-blue-400 dark:text-black
                       disabled:bg-orange-300 dark:disabled:bg-blue-500/40
                     "
@@ -173,7 +173,7 @@ export function WishlistSection() {
                     disabled={removingId === item.id}
                     onClick={() => handleRemove(item.id)}
                     className="
-                      border-orange-300 text-orange-600 hover:bg-orange-50
+                      border-green-300 text-gray-600 hover:bg-green-50
                       dark:border-blue-400 dark:text-blue-400 dark:hover:bg-blue-400/10
                     "
                   >

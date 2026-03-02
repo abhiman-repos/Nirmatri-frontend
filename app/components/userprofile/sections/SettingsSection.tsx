@@ -1,6 +1,6 @@
-"use client";
+" use client";
 
-import { useState } from "react";
+import { useState, useId } from "react";
 import { useTheme } from "@/app/contexts/ThemeContext";
 import {
   User,
@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 
 export function SettingsSection() {
-  const { theme, setTheme } = useTheme(); // ✅ GLOBAL THEME
+  const { theme, setTheme } = useTheme();
   const [showPassword, setShowPassword] = useState(false);
   const [notifications, setNotifications] = useState({
     email: true,
@@ -24,10 +24,8 @@ export function SettingsSection() {
     push: true,
   });
 
-
   return (
     <div className="p-6 space-y-10 text-gray-900 dark:text-gray-100">
-
       {/* ================= HEADER ================= */}
       <header>
         <h1 className="text-2xl font-semibold">Account Settings</h1>
@@ -36,35 +34,25 @@ export function SettingsSection() {
         </p>
       </header>
 
-      {/* ================= PROFILE ================= */}
-      <Section title="Profile" icon={<User />}>
-        <Input label="Full Name" defaultValue="Rahul Kumar" />
-        <Input label="Email Address" defaultValue="rahul@gmail.com" />
-        <Input label="Mobile Number" defaultValue="+91 9876543210" />
-        <Button text="Save Changes" />
-      </Section>
-
-      {/* ================= PASSWORD ================= */}
+      {/* ================= SECURITY ================= */}
       <Section title="Security" icon={<Lock />}>
-        <div className="space-y-3">
-          <Input
-            label="Current Password"
-            type={showPassword ? "text" : "password"}
-            rightIcon={
-              showPassword ? (
-                <EyeOff onClick={() => setShowPassword(false)} />
-              ) : (
-                <Eye onClick={() => setShowPassword(true)} />
-              )
-            }
-          />
-          <Input label="New Password" type="password" />
-          <Input label="Confirm Password" type="password" />
-          <Button text="Update Password" />
-        </div>
+        <Input
+          label="Current Password"
+          type={showPassword ? "text" : "password"}
+          rightIcon={
+            showPassword ? (
+              <EyeOff onClick={() => setShowPassword(false)} />
+            ) : (
+              <Eye onClick={() => setShowPassword(true)} />
+            )
+          }
+        />
+        <Input label="New Password" type="password" />
+        <Input label="Confirm Password" type="password" />
+        <Button text="Update Password" />
       </Section>
 
-      {/* ================= THEME ================= */}
+      {/* ================= APPEARANCE ================= */}
       <Section title="Appearance" icon={<Moon />}>
         <div className="grid grid-cols-3 gap-3">
           <ThemeCard
@@ -115,19 +103,20 @@ export function SettingsSection() {
 
       {/* ================= PRIVACY ================= */}
       <Section title="Privacy" icon={<Shield />}>
-        <Toggle label="Make profile private" value />
+        <Toggle label="Make profile private" value={true} />
         <Toggle label="Search engine visibility" value={false} />
       </Section>
 
       {/* ================= DANGER ZONE ================= */}
       <Section title="Danger Zone" icon={<Trash2 />} danger>
-        <button className="danger-btn">
+        <button
+          className="danger-btn"
+          aria-label="Delete account permanently"
+        >
           <Trash2 size={16} />
           Delete Account
         </button>
       </Section>
-
-      
     </div>
   );
 }
@@ -167,18 +156,33 @@ function Input({
   type = "text",
   defaultValue,
   rightIcon,
-}: any) {
+}: {
+  label: string;
+  type?: string;
+  defaultValue?: string;
+  rightIcon?: React.ReactNode;
+}) {
+  const id = useId();
+
   return (
     <div className="space-y-1">
-      <label className="text-sm">{label}</label>
+      <label htmlFor={id} className="text-sm font-medium">
+        {label}
+      </label>
+
       <div className="relative">
         <input
+          id={id}
           type={type}
           defaultValue={defaultValue}
-          className="input"
+          className="input w-full"
         />
+
         {rightIcon && (
-          <span className="absolute right-3 top-3 cursor-pointer">
+          <span
+            className="absolute right-3 top-3 cursor-pointer"
+            aria-hidden="true"
+          >
             {rightIcon}
           </span>
         )}
@@ -187,12 +191,24 @@ function Input({
   );
 }
 
-function Toggle({ label, value, onChange }: any) {
+function Toggle({
+  label,
+  value = false,
+  onChange,
+}: {
+  label: string;
+  value?: boolean;
+  onChange?: () => void;
+}) {
   return (
     <div className="flex items-center justify-between">
       <span>{label}</span>
+
       <button
+        type="button"
         onClick={onChange}
+        aria-label={label}
+        aria-pressed={value ? "true" : "false"}
         className={`w-12 h-6 rounded-full transition ${
           value ? "bg-blue-600" : "bg-gray-300"
         }`}
@@ -207,10 +223,22 @@ function Toggle({ label, value, onChange }: any) {
   );
 }
 
-function ThemeCard({ label, icon, active, onClick }: any) {
+function ThemeCard({
+  label,
+  icon,
+  active,
+  onClick,
+}: {
+  label: string;
+  icon: React.ReactNode;
+  active: boolean;
+  onClick: () => void;
+}) {
   return (
     <button
+      type="button"
       onClick={onClick}
+      aria-label={`Switch to ${label} theme`}
       className={`p-4 rounded-xl border flex flex-col items-center gap-2 ${
         active
           ? "border-blue-600 bg-blue-50 dark:bg-blue-900/20"
@@ -224,9 +252,11 @@ function ThemeCard({ label, icon, active, onClick }: any) {
 }
 
 function Button({ text }: { text: string }) {
+
   return (
     <button className="primary-btn">
       {text}
     </button>
   );
 }
+
