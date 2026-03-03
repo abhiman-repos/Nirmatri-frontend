@@ -58,7 +58,7 @@
 
             {/* HEADER */}
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl md:text-3xl dark:text-gray-100">
+              <h2 className="text-2xl md:text-3xl dark:text-brown">
                 Shop by Category
               </h2>
 

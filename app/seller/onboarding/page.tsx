@@ -230,7 +230,7 @@ export default function SellerOnboardingPage() {
 
             <button
               onClick={nextStep}
-              className="px-8 py-2.5 rounded-lg bg-green-900 hover:bg-[#98fbcb] text-white hover:text-black font-medium transition-all duration-200 shadow-md hover:shadow-lg"
+              className="px-8 py-2.5 rounded-lg bg-[#1a3a2a] text-white hover:bg-white hover:text-black font-medium transition-all duration-200 shadow-md hover:shadow-lg"
             >
               {currentStep === steps.length - 1 ? "Submit & Finish" : "Continue →"}
             </button>

@@ -103,8 +103,8 @@ const [loading, setLoading] = useState(false);
     flex items-center justify-center gap-2
     transition-all duration-300
     ${loading
-      ? "bg-[#0F5132] cursor-not-allowed"
-      : "bg-[#0F5132] hover:bg-[#1B7D47] hover:shadow-lg"}
+      ? "bg-[#1a3a2a] cursor-not-allowed"
+      : "bg-[#1a3a2a] hover:bg-white hover:shadow-lg hover:text-black"}
   `}
 >
   {loading ? (

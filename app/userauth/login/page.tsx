@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Loader2, Eye, EyeOff } from "lucide-react";
+import { useAuth } from "@/app/contexts/AuthContext"; // ✅ ADD THIS
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -13,62 +14,44 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
 
   const router = useRouter();
+  const { isLoggedIn, login } = useAuth(); // ✅ USE CONTEXT
 
-  // 🔒 Redirect to home if already logged in
+  // 🔒 already logged in → home
   useEffect(() => {
-    const logged = localStorage.getItem("loggedIn");
-    if (logged === "true") {
+    if (isLoggedIn) {
       router.replace("/home");
     }
-  }, [router]);
+  }, [isLoggedIn, router]);
 
   const handleLogin = () => {
-    // ================= VALIDATION =================
     if (!email || !password) {
       setError("Please enter email and password");
       return;
     }
-
     if (!email.includes("@")) {
       setError("Please enter a valid email address");
       return;
     }
-
     if (password.length < 6) {
       setError("Password must be at least 6 characters");
       return;
     }
 
-    // ================= SUCCESS =================
     setError("");
     setLoading(true);
 
-    // Simulate API call delay
     setTimeout(() => {
-      localStorage.setItem("loggedIn", "true"); // mark user as logged in
+      login(); // ✅ SINGLE SOURCE OF TRUTH
       setLoading(false);
-      router.replace("/home"); // redirect to user home page
+      router.replace("/home");
     }, 1000);
   };
 
   return (
     <main className="min-h-screen bg-transparent flex items-center justify-center px-4 text-gray-900">
       <div className="w-full max-w-xl bg-white/40 backdrop-blur-xl rounded-2xl border border-white/50 shadow-lg p-12">
-        {/* HEADER */}
-        <div className="flex items-center justify-between mb-12">
-          <div className="flex items-center gap-3">
-            <div className="h-11 w-11 rounded-full bg-blue-600 text-white flex items-center justify-center font-semibold">
-              N
-            </div>
-            <span className="text-base font-semibold text-gray-800">
-              Nirmatri
-            </span>
-          </div>
-        </div>
-
         <h1 className="text-3xl font-semibold text-gray-900 mb-10">Login</h1>
 
-        {/* EMAIL */}
         <div className="mb-8">
           <label className="block text-sm text-gray-600 mb-2">Email</label>
           <input
@@ -80,7 +63,6 @@ export default function LoginPage() {
           />
         </div>
 
-        {/* PASSWORD */}
         <div className="mb-4">
           <label className="block text-sm text-gray-600 mb-2">Password</label>
           <div className="relative">
@@ -101,36 +83,37 @@ export default function LoginPage() {
           </div>
         </div>
 
-        {/* ERROR */}
         {error && <p className="text-sm text-red-600 mb-6">{error}</p>}
 
-        {/* FORGOT */}
         <div className="text-right mb-10">
-          <Link href="/userauth/forgot-password" className="text-sm text-blue-600 hover:underline">
+          <Link href="/forgot-password" className="text-sm text-[#1a3a2a] hover:underline">
             Forgot password?
           </Link>
         </div>
 
-        {/* LOGIN BUTTON */}
         <button
           onClick={handleLogin}
           disabled={loading}
-          className="w-full rounded-xl bg-green-900 py-4 text-white text-sm font-medium hover:bg-[#72bf6a] transition flex items-center justify-center gap-2 disabled:opacity-70"
+          className={`w-full rounded-xl py-4 text-sm font-medium transition flex items-center justify-center gap-2
+            ${
+              loading
+                ? "bg-[#1a3a2a] cursor-not-allowed opacity-70"
+                : "bg-[#1a3a2a] text-white hover:bg-white hover:shadow-lg hover:text-black"
+            }
+          `}
         >
           {loading && <Loader2 className="h-4 w-4 animate-spin" />}
           {loading ? "Logging in..." : "Login"}
         </button>
 
-        {/* GOOGLE */}
         <button className="mt-6 w-full flex items-center justify-center gap-3 rounded-xl border border-gray-300/60 bg-white/70 py-4 text-sm font-medium text-gray-700 hover:bg-white transition">
           <img src="/google.jpg" className="h-5 w-5" alt="Google" />
           Continue with Google
         </button>
 
-        {/* REGISTER */}
         <p className="mt-10 text-sm text-gray-700 text-center">
           Don’t have an account?{" "}
-          <Link href="/userauth/signup" className="text-blue-600 hover:underline">
+          <Link href="/userauth/signup" className="text-[#1a3a2a] hover:underline">
             Register
           </Link>
         </p>

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import HeaderWrapper from "@/app/components/HeaderWrapper";
 import { ThemeProvider } from "@/app/contexts/ThemeContext";
+import { AuthProvider } from "@/app/contexts/AuthContext"; // ✅ ADD THIS
 
 export const metadata: Metadata = {
   title: "Nirmatri",
@@ -15,22 +16,25 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-     <body
-  className="
-   min-h-screen
-bg-gradient-to-br from-[#F0FFF4] via-[#C6F6D5] to-[#9AE6B4] text-[#22543D]
-  "
->
-        {/*  THEME PROVIDER (ROOT) */}
-        <ThemeProvider>
-          {/*  HEADER + SIDEBAR CONTROLLER */}
-          <HeaderWrapper />
+      <body
+        className="
+          min-h-screen
+          bg-[#EAF2EC]
+        "
+      >
+        {/* 🔐 AUTH PROVIDER (ROOT) */}
+        <AuthProvider>
+          {/* 🎨 THEME PROVIDER */}
+          <ThemeProvider>
+            {/* 🧭 HEADER + SIDEBAR */}
+            <HeaderWrapper />
 
-          {/*  PAGE CONTENT */}
-         <main className="min-h-screen">
-  {children}
-</main>
-        </ThemeProvider>
+            {/* 📄 PAGE CONTENT */}
+            <main className="min-h-screen">
+              {children}
+            </main>
+          </ThemeProvider>
+        </AuthProvider>
       </body>
     </html>
   );

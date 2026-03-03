@@ -4,12 +4,14 @@ import { useState } from "react";
 import Link from "next/link";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/app/contexts/AuthContext";
 
 export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   const router = useRouter();
+  const { login } = useAuth();
 
   const handleRegister = () => {
     const firstName = (
@@ -27,13 +29,13 @@ export default function RegisterPage() {
     const password = (
       document.getElementById("password") as HTMLInputElement
     )?.value;
+    
 
     const confirm = (
       document.getElementById("confirm") as HTMLInputElement
     )?.value;
 
     // ================= VALIDATION =================
-
     if (!firstName || !lastName || !email || !password || !confirm) {
       setError("Please fill all fields");
       return;
@@ -58,28 +60,20 @@ export default function RegisterPage() {
     setError("");
     setLoading(true);
 
-    // 🔁 Fake API call (backend baad me)
+    // 🔁 Fake API call (backend later)
     setTimeout(() => {
       setLoading(false);
-      router.push("/home");
+
+      // ✅ SINGLE SOURCE OF TRUTH
+      login();  
+      // ✅ prevent going back to register
+      router.replace("/home");
     }, 2000);
   };
 
   return (
     <main className="min-h-screen bg-[#F4F7FD] flex justify-center">
       <div className="w-full max-w-4xl px-7 py-12">
-        {/* ================= TOP BAR ================= */}
-        <div className="flex items-center justify-between mb-10">
-          <div className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-semibold">
-              N
-            </div>
-            <span className="text-sm font-semibold text-gray-800">
-              Nirmatri
-            </span>
-          </div>
-        </div>
-
         {/* ================= TITLE ================= */}
         <h1 className="text-3xl font-semibold text-gray-900 mb-8">
           Register
@@ -157,29 +151,38 @@ export default function RegisterPage() {
             </div>
           </div>
 
-          {/* ================= ERROR ================= */}
+          {/* ERROR */}
           {error && (
             <p className="text-sm text-red-600 mb-4">
               {error}
             </p>
           )}
 
-          {/* ================= SUBMIT ================= */}
+          {/* SUBMIT */}
           <button
+            type="button"
             onClick={handleRegister}
             disabled={loading}
-            className="w-full rounded-xl bg-blue-600 py-3 text-white text-sm font-medium
-                       hover:bg-blue-700 transition flex items-center justify-center gap-2
-                       disabled:opacity-70"
+            className={`w-full rounded-xl py-3 text-sm font-medium transition
+              flex items-center justify-center gap-2
+              ${
+                loading
+                  ? "bg-[#1a3a2a] cursor-not-allowed opacity-70"
+                  : "bg-[#1a3a2a] text-white hover:bg-[#EAF2EC] hover:text-black hover:shadow-lg"
+              }
+            `}
           >
             {loading && <Loader2 className="h-4 w-4 animate-spin" />}
             {loading ? "Creating your account..." : "Create your account"}
           </button>
 
-          {/* ================= FOOTER ================= */}
+          {/* FOOTER */}
           <p className="mt-6 text-sm text-gray-600 text-center">
             Already have an account?{" "}
-            <Link href="/login" className="text-blue-600 hover:underline">
+            <Link
+              href="/userauth/login"
+              className="text-[#1a3a2a] hover:underline"
+            >
               Log in
             </Link>
           </p>

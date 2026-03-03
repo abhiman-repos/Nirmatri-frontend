@@ -1,24 +1,24 @@
-"use client";
+  "use client";
 
-import { VideoLikeCarousel } from "@/app/components/VideoLikeCarousel";
-import { CategoryShowcase } from "@/app/components/CategoryShowcase";
-import { SponsoredProducts } from "@/app/components/SponsoredProducts";
-import { ArtisanSpotlight } from "@/app/components/ArtisanSpotlight";
-import { WhyShopWithUs } from "@/app/components/WhyShopWithUs";
-import { NirmatriFooter } from "@/app/components/NirmatriFooter";
-import { ThemeProvider } from "@/app/contexts/ThemeContext";
+  import { VideoLikeCarousel } from "@/app/components/VideoLikeCarousel";
+  import { CategoryShowcase } from "@/app/components/CategoryShowcase";
+  import { SponsoredProducts } from "@/app/components/SponsoredProducts";
+  import { ArtisanSpotlight } from "@/app/components/ArtisanSpotlight";
+  import { WhyShopWithUs } from "@/app/components/WhyShopWithUs";
+  import { NirmatriFooter } from "@/app/components/NirmatriFooter";
+  import PrivateRoute from "@/app/components/PrivateRoute";
 
-export default function Page() {
-  return (
-    
-      <div className="min-h-screen bg-transparent transition-colors duration-300">
-        <VideoLikeCarousel />
-        <CategoryShowcase />
-        <SponsoredProducts />
-        <ArtisanSpotlight />
-        <WhyShopWithUs />
-        <NirmatriFooter />
-      </div> 
-
-  );
-}
+  export default function HomePage() {
+    return (
+      // <PrivateRoute>
+        <div className="min-h-screen bg-transparent transition-colors duration-300">
+          <VideoLikeCarousel />
+          <CategoryShowcase />
+          <SponsoredProducts />
+          <ArtisanSpotlight />
+          <WhyShopWithUs />
+          <NirmatriFooter />
+        </div>
+      // </PrivateRoute>
+    );
+  }

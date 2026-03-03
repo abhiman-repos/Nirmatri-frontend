@@ -186,7 +186,7 @@ export default function SellerRegisterPage() {
                 className={`w-full rounded-lg py-3 text-white font-medium transition-all ${
                   loading || !agreeTerms
                     ? "bg-[#75975e] cursor-not-allowed"
-                    : "bg-green-900 hover:bg-[#8bca84] hover:shadow-lg"
+                    : "bg-[#1a3a2a] hover:bg-white hover:text-black hover:shadow-lg"
                 }`}
               >
                 {loading ? "Creating account..." : "Create Seller Account"}
@@ -195,7 +195,7 @@ export default function SellerRegisterPage() {
 
             <p className="mt-6 text-sm text-gray-600 text-center">
               Already have an account?{" "}
-              <Link href="/seller/login" className="text-green-900 font-medium hover:underline">
+              <Link href="/seller/login" className="text-[#1a3a2a] font-medium hover:underline">
                 Login
               </Link>
             </p>
