@@ -14,9 +14,7 @@ import {
   Eye,
   EyeOff,
 } from "lucide-react";
-import { googleLogout } from "@react-oauth/google";
-import { useRouter } from "next/router";
-import { useAuth } from "../../context/AuthContext";
+
 import { LogOut } from "lucide-react";
 
 export function SettingsSection() {

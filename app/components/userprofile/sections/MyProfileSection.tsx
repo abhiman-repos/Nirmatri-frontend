@@ -1,5 +1,6 @@
 "use client";
 
+import { emitWarning } from "process";
 import { useState, useEffect } from "react";
 import {
   FiEdit,
@@ -11,13 +12,14 @@ import {
   FiPhone,
 } from "react-icons/fi";
 
+
+
 export default function PersonalInformationPage() {
   // Initialize state from localStorage
 
   // State for personal information
   const [userData, setUserData] = useState({
-    firstName: "",
-    lastName: "",
+    name: "",
     gender: "",
     email: "",
     mobile: "",
@@ -33,26 +35,27 @@ export default function PersonalInformationPage() {
           return;
         }
 
-        const res = await fetch("http://127.0.0.1:8000/api/auth/profile/", {
+        const res = await fetch("http://127.0.0.1:8000/api/auth/userinfo/", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
 
         const data = await res.json();
+        
+        localStorage.setItem("name", data.name)
+        localStorage.setItem("email", data.email)
 
         if (res.ok) {
           setUserData({
-            firstName: data.firstName || "",
-            lastName: data.lastName || "",
+            name: data.name || "",
             gender: data.gender || "",
             email: data.email || "",
             mobile: data.phone || "",
           });
 
           setFormData({
-            firstName: data.firstName || "",
-            lastName: data.lastName || "",
+            name: data.name || "",
             gender: data.gender || "",
             email: data.email || "",
             mobile: data.phone || "",
@@ -233,16 +236,12 @@ export default function PersonalInformationPage() {
           {!editing.personalInfo ? (
             <div style={styles.displayContent}>
               <div style={styles.infoRow}>
-                <span style={styles.infoLabel}>First Name:</span>
+                <span style={styles.infoLabel}>Name:</span>
                 <span style={styles.infoValue}>
-                  {userData.firstName || "Not set"}
+                  {userData.name || "Not set"}
                 </span>
               </div>
               <div style={styles.infoRow}>
-                <span style={styles.infoLabel}>Last Name:</span>
-                <span style={styles.infoValue}>
-                  {userData.lastName || "Not set"}
-                </span>
               </div>
               <div style={styles.infoRow}>
                 <span style={styles.infoLabel}>Your Gender:</span>
@@ -261,25 +260,9 @@ export default function PersonalInformationPage() {
                   type="text"
                   id="firstName"
                   name="firstName"
-                  value={formData.firstName}
+                  value={formData.name}
                   onChange={handleInputChange}
                   placeholder="Enter first name"
-                  style={styles.formInput}
-                  onFocus={inputFocus}
-                  onBlur={inputBlur}
-                />
-              </div>
-              <div style={styles.formGroup}>
-                <label htmlFor="lastName" style={styles.formLabel}>
-                  Last Name
-                </label>
-                <input
-                  type="text"
-                  id="lastName"
-                  name="lastName"
-                  value={formData.lastName}
-                  onChange={handleInputChange}
-                  placeholder="Enter last name"
                   style={styles.formInput}
                   onFocus={inputFocus}
                   onBlur={inputBlur}

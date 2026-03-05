@@ -16,6 +16,7 @@ import {
   Settings,
 } from "lucide-react";
 import { useAuth } from "@/app/components/context/AuthContext";
+import axios from "axios";
 
 /* ===================== TYPES ===================== */
 
@@ -30,6 +31,15 @@ type AccountSidebarProps = {
   onSelect?: (section: Section) => void;
 };
 
+
+const userName = localStorage.getItem("name");
+const email = localStorage.getItem("email");
+
+const initials = userName
+  ?.split(" ")
+  .map((n) => n[0])
+  .join("")
+  .toUpperCase();
 /* ===================== COMPONENT ===================== */
 
 export default function AccountSidebar({
@@ -113,15 +123,15 @@ export default function AccountSidebar({
                 shadow-md
               "
             >
-              RK
+            {initials}
             </div>
 
             <div>
               <p className="font-semibold text-gray-900 dark:text-gray-100">
-                Rahul Kumar
+                {userName}
               </p>
               <p className="text-xs text-gray-500 dark:text-gray-400">
-                +91 98765 43210
+                {email}
               </p>
             </div>
           </div>
@@ -178,13 +188,16 @@ export default function AccountSidebar({
                   const token = localStorage.getItem("auth_token");
 
                   if (token) {
-                    await fetch("http://127.0.0.1:8000/api/auth/logout/", {
-                      method: "POST",
-                      headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${token}`,
+                    await axios.post(
+                      "http://127.0.0.1:8000/api/auth/logOut/",
+                      {},
+                      {
+                        headers: {
+                          Authorization: `Bearer ${token}`,
+                          "Content-Type": "application/json",
+                        },
                       },
-                    });
+                    );
                   }
                 } catch (error) {
                   console.error("Logout API error:", error);
@@ -199,13 +212,7 @@ export default function AccountSidebar({
                 // redirect
                 router.replace("/");
               }}
-              className="
-    w-full flex items-center gap-3
-    px-4 py-3 rounded-xl
-    hover:bg-red-50
-    dark:hover:bg-red-900/20
-    font-medium transition
-  "
+              className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-red-50 dark:hover:bg-red-900/20 font-medium transition"
             >
               <LogOut className="h-4 w-4" />
               Logout

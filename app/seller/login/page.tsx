@@ -98,6 +98,7 @@ const [loading, setLoading] = useState(false);
       router.push("/seller/dashboard");
     }, 1500);
   }}
+  
   className={`
     w-full rounded-lg py-3
     font-medium text-white
