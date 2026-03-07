@@ -13,6 +13,18 @@ import {
   AlertTriangle,
   ShoppingCart,
 } from "lucide-react";
+import { useEffect } from "react";
+import { useRouter } from "next/router";
+
+const router = useRouter();
+
+useEffect(() => {
+  const token = localStorage.getItem("seller_token");
+
+  if (!token) {
+    router.push("/seller/login");
+  }
+}, []);
 
 export default function SellerDashboardPage() {
   const seller = {

@@ -5,22 +5,53 @@ import Link from "next/link";
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import Image from "next/image";
-
-
+import axios from "axios";
 
 export default function SellerLoginPage() {
-    const router = useRouter();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const router = useRouter();
 
   const [showPassword, setShowPassword] = useState(false);
-const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const handleLogin = async () => {
+    if (!email || !password) {
+      setError("Email and password are required");
+      return;
+    }
+
+    setLoading(true);
+    setError("");
+
+    try {
+      const res = await axios.post("http://127.0.0.1:8000/api/seller/login/", {
+        email,
+        password,
+      });
+
+      // save token
+      localStorage.setItem("seller_token", res.data.token);
+
+      // redirect
+      router.push("/seller/dashboard");
+    } catch (err: any) {
+      if (err.response) {
+        setError(err.response.data.error);
+      } else {
+        setError("Server not reachable");
+      }
+    }
+
+    setLoading(false);
+  };
 
   return (
     <main className="min-h-screen flex bg-[#F5F7FF] overflow-hidden">
-
       {/* LEFT – LOGIN FORM */}
       <div className="w-full lg:w-[45%] flex items-center justify-center px-8">
         <div className="w-full max-w-md">
-
           {/* TITLE */}
           <h1 className="text-3xl font-semibold text-gray-900 mb-2">
             Welcome to Seller Panel
@@ -33,6 +64,8 @@ const [loading, setLoading] = useState(false);
           <div className="mb-4">
             <input
               type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               placeholder="Email"
               className="
                 w-full rounded-lg border border-gray-300
@@ -48,6 +81,8 @@ const [loading, setLoading] = useState(false);
             <input
               type={showPassword ? "text" : "password"}
               placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               className="
                 w-full rounded-lg border border-gray-300
                 px-4 py-3 pr-11 text-sm
@@ -84,41 +119,27 @@ const [loading, setLoading] = useState(false);
             </Link>
           </div>
 
+          {error && <p className="text-red-500 text-sm mb-3">{error}</p>}
           {/* SIGN IN */}
           <button
-  type="button"
-  disabled={loading}
-  onClick={() => {
-    setLoading(true);
-
-    setTimeout(() => {
-      setLoading(false);
-
-      // ✅ LOGIN SUCCESS → DASHBOARD
-      router.push("/seller/dashboard");
-    }, 1500);
-  }}
-  
-  className={`
-    w-full rounded-lg py-3
-    font-medium text-white
-    flex items-center justify-center gap-2
-    transition-all duration-300
-    ${loading
-      ? "bg-blue-400 cursor-not-allowed"
-      : "bg-blue-600 hover:bg-blue-700 hover:shadow-lg"}
-  `}
->
-  {loading ? (
-    <>
-      <span className="h-5 w-5 rounded-full border-2 border-white/30 border-t-white animate-spin" />
-      Signing In...
-    </>
-  ) : (
-    "Sign In"
-  )}
-</button>
-
+            type="button"
+            disabled={loading}
+            onClick={handleLogin}
+            className={`w-full rounded-lg py-3 font-medium text-white flex items-center justify-center gap-2 transition-all duration-300 ${
+              loading
+                ? "bg-blue-400 cursor-not-allowed"
+                : "bg-blue-600 hover:bg-blue-700 hover:shadow-lg"
+            }`}
+          >
+            {loading ? (
+              <>
+                <span className="h-5 w-5 rounded-full border-2 border-white/30 border-t-white animate-spin" />
+                Signing In...
+              </>
+            ) : (
+              "Sign In"
+            )}
+          </button>
 
           {/* REGISTER */}
           <p className="mt-8 text-sm text-gray-600">
@@ -135,7 +156,6 @@ const [loading, setLoading] = useState(false);
 
       {/* RIGHT – CURVED BACKGROUND + INFO */}
       <div className="hidden lg:flex w-[55%] relative overflow-hidden">
-
         {/* CURVED BLUE PANEL */}
         <div className="absolute inset-0 bg-gradient-to-br from-blue-500 via-indigo-500 to-blue-600 rounded-l-[140px]" />
 
@@ -145,7 +165,6 @@ const [loading, setLoading] = useState(false);
 
         {/* CONTENT */}
         <div className="relative z-10 w-full flex items-center justify-between px-16">
-
           {/* LEFT INFO */}
           <div className="max-w-sm text-white">
             <h2 className="text-3xl font-semibold mb-4">
@@ -180,8 +199,8 @@ const [loading, setLoading] = useState(false);
           {/* RIGHT IMAGE */}
           <Image
             src="/user.png"
-            width={10} 
-            height={10}
+            width={450}
+            height={450}
             alt="Seller Login Illustration"
             className="max-w-[480px] w-full h-auto drop-shadow-2xl translate-y-4"
           />

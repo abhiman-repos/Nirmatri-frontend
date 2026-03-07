@@ -12,6 +12,7 @@ import {
   NotebookText,
   FileUp,
 } from "lucide-react";
+import axios from "axios";
 
 // ============================================
 // CONFIGURATION
@@ -19,51 +20,74 @@ import {
 const steps = ["Store Info", "KYC", "Bank", "Phone Verification", "Review"];
 
 export default function SellerOnboardingPage() {
-  // ============================================
-  // STATE MANAGEMENT
-  // ============================================
   const [currentStep, setCurrentStep] = useState(0);
-  const [showSuccess, setShowSuccess] = useState(false); // Get current theme (light/dark)
+  const [showSuccess, setShowSuccess] = useState(false);
+
   const router = useRouter();
 
-  // Form data state for all steps
   const [formData, setFormData] = useState({
-    // Store Info
     ownerName: "",
     storeName: "",
-    storeCategory: [] as string[],
-    // storeDescription: "",
-    // storeAddress: "",
-
-    // KYC
+    storeCategory: [],
     panNumber: "",
     aadhaarNumber: "",
-    panDocument: null as File | null,
-    aadhaarDocument: null as File | null,
-
-    // Bank Details
+    panDocument: null,
+    aadhaarDocument: null,
     accountHolderName: "",
     accountNumber: "",
     ifscCode: "",
     bankName: "",
-
-    // Phone Verification
     phoneNumber: "",
     otp: "",
     isOtpSent: false,
     isOtpVerified: false,
   });
 
-  // ============================================
-  // FORM UPDATE HANDLER
-  // ============================================
   const updateFormData = (
     field: string,
-    value: string | string[] | File | null | boolean,
+    value: string | string[] | File | boolean | number | null,
   ) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
+    setFormData((prev: any) => ({
+      ...prev,
+      [field]: value,
+    }));
   };
 
+  useEffect(() => {
+    const step = localStorage.getItem("seller_onboarding_step");
+
+    if (step) {
+      setCurrentStep(Number(step));
+    }
+  }, []);
+
+  const dataToSave = {
+    ...formData,
+    panDocument: null,
+    aadhaarDocument: null,
+  };
+  // ✅ Save form data automatically
+  useEffect(() => {
+    localStorage.setItem("seller_onboarding_data", JSON.stringify(formData));
+  }, [formData]);
+
+  // ✅ Save current step
+  useEffect(() => {
+    localStorage.setItem("seller_onboarding_step", currentStep.toString());
+  }, [currentStep]);
+
+  // ✅ Restore form data after refresh
+  useEffect(() => {
+    const savedData = localStorage.getItem("seller_onboarding_data");
+
+    if (savedData) {
+      setFormData(JSON.parse(savedData));
+    }
+  }, []);
+
+  // ✅ Restore step
+
+  localStorage.setItem("seller_onboarding_data", JSON.stringify(dataToSave));
   // ============================================
   // NAVIGATION HANDLERS
   // ============================================
@@ -71,23 +95,24 @@ export default function SellerOnboardingPage() {
     if (currentStep < steps.length - 1) {
       setCurrentStep((prev) => prev + 1);
     } else {
-      // ✅ FINAL STEP: SUBMIT FOR APPROVAL
       setShowSuccess(true);
 
       try {
-        // 🔐 Call backend to mark onboarding complete
-        await fetch("/api/seller/onboarding/submit", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            onboardingCompleted: true,
-            status: "PENDING_APPROVAL",
-          }),
-        });
+        const token = localStorage.getItem("auth_token");
 
-        // ⏳ show success screen briefly
+        await axios.post(
+          "http://127.0.0.1:8000/api/seller/onboarding/",
+          
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          },
+        );
+
+        // clear storage after success
+        localStorage.removeItem("seller_onboarding_data");
+
         setTimeout(() => {
           router.push("/seller/pending-approval");
         }, 2000);
@@ -288,7 +313,7 @@ interface FormDataProps {
   };
   updateFormData: (
     field: string,
-    value: string | string[] | File | null | boolean,
+    value: string | string[] | File | boolean | number | null,
   ) => void;
 }
 
@@ -361,7 +386,6 @@ function StoreInfo({ formData, updateFormData }: FormDataProps) {
           placeholder="Enter your full name as per your ID"
           className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-3 text-gray-900 dark:text-white bg-white dark:bg-gray-700 placeholder:text-xs text-gray-500 dark:placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors uppercase"
         />
-
       </div>
 
       {/* Store Categories - Multi-select */}
@@ -644,7 +668,7 @@ function PhoneVerification({ formData, updateFormData }: FormDataProps) {
                 const value = e.target.value.replace(/\D/g, "").slice(0, 10);
                 updateFormData("phoneNumber", value);
               }}
-              placeholder="9876543210"
+              placeholder="XXXXXXXX"
               disabled={formData.isOtpVerified}
               className="w-full pl-14 pr-4 py-3 border border-blue-300 dark:border-blue-600 rounded-lg text-gray-900 dark:text-white bg-white dark:bg-gray-700 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             />
@@ -868,62 +892,6 @@ function Review({ formData }: any) {
     </div>
   );
 }
-// const termsContent = [
-//   {
-//     title: "1. Seller Eligibility",
-//     content:
-//       "By registering as a seller on Nirmatri Crafts, you confirm that you are highlighting authentic, handcrafted items. We reserve the right to verify the origin of your products and request additional documentation if needed.",
-//   },
-//   {
-//     title: "2. Commissions & Fees",
-//     content:
-//       "Nirmatri Crafts charges a standard 10% platform fee on every successful sale. This covers payment processing, marketing for your products, customer support, and platform maintenance. Additional fees may apply for premium features.",
-//   },
-//   {
-//     title: "3. Product Authenticity",
-//     content:
-//       "All products must be handmade, handcrafted, or artisanal. Mass-produced items, counterfeit goods, or items misrepresented as handmade are strictly prohibited. We conduct regular quality checks to maintain marketplace integrity.",
-//   },
-//   {
-//     title: "4. Shipping Policy",
-//     content:
-//       "Sellers are responsible for packaging products safely and securely. Orders must be dispatched within 48 hours of confirmation unless otherwise specified. Failure to ship on time may result in store penalties, reduced visibility, or account suspension.",
-//   },
-//   {
-//     title: "5. Payout Schedule",
-//     content:
-//       "Funds from sales are held in escrow for 7 days post-delivery to handle potential returns or disputes. Payouts are processed every Monday directly to your registered bank account. Minimum payout threshold is ₹500.",
-//   },
-//   {
-//     title: "6. Returns & Refunds",
-//     content:
-//       "Sellers must honor our 7-day return policy for damaged or defective items. Return shipping costs for seller errors will be deducted from your account. Customer satisfaction is our priority.",
-//   },
-//   {
-//     title: "7. Prohibited Items",
-//     content:
-//       "Mass-produced industrial goods, hazardous materials, illegal substances, weapons, copyrighted designs without permission, and any items violating Indian law are strictly prohibited. Violations may result in immediate account termination.",
-//   },
-//   {
-//     title: "8. Intellectual Property",
-//     content:
-//       "You retain ownership of your product designs. However, by listing on Nirmatri, you grant us a license to display, market, and promote your products across our platforms and marketing channels.",
-//   },
-//   {
-//     title: "9. Account Termination",
-//     content:
-//       "We reserve the right to suspend or terminate seller accounts for policy violations, fraudulent activity, poor customer ratings, or failure to maintain quality standards. Termination procedures are outlined in our dispute resolution policy.",
-//   },
-//   {
-//     title: "10. Changes to Terms",
-//     content:
-//       "Nirmatri reserves the right to modify these terms at any time. Sellers will be notified via email 30 days before changes take effect. Continued use of the platform constitutes acceptance of updated terms.",
-//   },
-// ];
-
-/* ============================================ */
-/* 🔹 HELPER COMPONENTS */
-/* ============================================ */
 
 // File Upload Component
 interface FileUploadProps {
