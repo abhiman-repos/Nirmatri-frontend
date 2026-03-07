@@ -41,7 +41,7 @@ export default function SellerDashboardPage() {
   ];
 
   return (
-    <main className="min-h-screen bg-[#F8FAFC] dark:bg-gray-900 p-4 md:p-8">
+    <main className="min-h-screen bg-transparent dark:bg-gray-900 p-4 md:p-8">
       
       {/* HEADER */}
       <div className="mb-10">

@@ -15,7 +15,7 @@ export default function SellerLayout({
   
 
   return (
-    <div className="min-h-screen flex bg-slate-50 dark:bg-gray-900 transition-colors">
+    <div className="min-h-screen flex bg-transparent transition-colors">
       {/* ================= SIDEBAR (Enhanced Divider & Depth) ================= */}
       <aside className="w-64 bg-[#0F172A] dark:bg-gray-950 text-[#CBD5E1] hidden md:flex flex-col fixed h-screen z-50 border-r border-white/[0.06] shadow-[4px_0_24px_rgba(0,0,0,0.3)]">
         {/* Sidebar Header */}

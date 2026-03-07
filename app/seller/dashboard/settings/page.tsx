@@ -28,7 +28,7 @@ export default function SellerSettingsPage() {
 
   return (
     <div className={darkMode ? 'dark' : ''}>
-      <main className="min-h-screen bg-gray-50 dark:bg-gray-900 p-8 transition-colors duration-300">
+      <main className="min-h-screen bg-transparent dark:bg-gray-900 p-8 transition-colors duration-300">
         <div className="max-w-3xl mx-auto">
           <header className="mb-8">
             <h1 className="text-3xl font-semibold text-gray-900 dark:text-white">Store Settings</h1>

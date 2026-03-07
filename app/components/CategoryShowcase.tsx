@@ -1,7 +1,7 @@
     "use client";
     import Link from "next/link";
     import { useState, useRef, useEffect } from "react";
-    import { ImageWithFallback } from "./figma/ImageWithFallback";
+    import { ImageWithFallback } from "@/app/components/figma/ImageWithFallback";
     import { ArrowRight, SlidersHorizontal } from "lucide-react";
 
     const categories = [
@@ -58,7 +58,7 @@
 
             {/* HEADER */}
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl md:text-3xl dark:text-gray-100">
+              <h2 className="text-2xl md:text-3xl dark:text-brown">
                 Shop by Category
               </h2>
 

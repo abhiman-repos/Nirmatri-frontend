@@ -3,7 +3,6 @@
 import { Search, LogIn, Menu, ShoppingCart } from "lucide-react";
 import { useEffect, useRef, useState, useTransition } from "react";
 import { useRouter, usePathname } from "next/navigation";
-
 import { Button } from "@/app/components/ui/button";
 import { Input } from "@/app/components/ui/input";
 import { Sheet, SheetContent } from "@/app/components/ui/sheet";
@@ -30,11 +29,11 @@ export function Header({ onUserClick }: HeaderProps) {
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const [sheetSearchOpen, setSheetSearchOpen] = useState(false);
 
-  const [, startTransition] = useTransition();
-
+  const { isLoggedIn } = useAuth(); // 🔐 auth state
   const router = useRouter();
   const pathname = usePathname();
   const searchRef = useRef<HTMLDivElement>(null);
+  const [, startTransition] = useTransition();
 
   /* ⏱️ TOP BAR AUTO HIDE */
   useEffect(() => {
@@ -88,19 +87,20 @@ export function Header({ onUserClick }: HeaderProps) {
         </SheetContent>
       </Sheet>
 
-      <header className="sticky top-0 z-50 backdrop-blur-xl bg-gradient-green-black-purple">
+      <header className="bg-[rgba(5, 62, 33, 0.5)] backdrop-blur-md sticky top-0 z-50">
         {/* 🔹 TOP BAR */}
         <div
           className={`overflow-hidden transition-all duration-500 ${
             showTopBar ? "max-h-10" : "max-h-0"
           }`}
         >
-          <div className="bg-gradient-to-r from-[#CF9893] via-[#6968A6] to-[#085078] text-white text-xs py-2 text-center">
+          <div className="bg-gradient-to-r from-green-800 via-emerald-700 to-teal-800 text-white text-xs py-2 text-center">
             Where tradition is handcrafted into elegance
           </div>
         </div>
 
         {/* 🔹 MAIN HEADER */}
+        
         <div className="h-14">
           <div className="max-w-7xl mx-auto h-full px-4 flex items-center gap-3">
             <NirmatriLogo />
@@ -119,10 +119,12 @@ export function Header({ onUserClick }: HeaderProps) {
                   type="submit"
                   className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 rounded-full"
                 >
-                  <Search className="h-5 w-5 text-green-500" />
+                  <Search className="h-6 w-6 text-white" />
                 </Button>
               </form>
             </div>
+
+
 
             {/* ACTIONS */}
             <div className="flex items-center gap-2 ml-auto">
@@ -137,10 +139,12 @@ export function Header({ onUserClick }: HeaderProps) {
               </Button>
 
               {!isLoggedIn ? (
-                /* 🔴 GUEST MODE */
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="outline" className="h-8 px-3 gap-1.5">
+                    <Button
+                      variant="outline"
+                      className="h-8 px-3 gap-1.5 bg-[#EAF2EC] hover:bg-white"
+                    >
                       <LogIn className="h-4 w-4" />
                       Login
                     </Button>

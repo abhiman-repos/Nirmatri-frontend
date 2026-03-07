@@ -3,6 +3,8 @@ import clsx from "clsx";
 import type { Section } from "@/app/components/HeaderWrapper";
 
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/app/contexts/AuthContext"; // ✅ FIX
+
 import {
   User,
   ShoppingBag,
@@ -48,7 +50,7 @@ export default function AccountSidebar({
   onSelect,
 }: AccountSidebarProps) {
   const router = useRouter();
-  const { logout } = useAuth();
+  const { logout } = useAuth(); // ✅ FIX
 
   return (
     <>
@@ -57,7 +59,7 @@ export default function AccountSidebar({
         <div
           className="
             fixed inset-0 z-[60]
-            bg-black/40 backdrop-blur-sm
+            bg-transparent backdrop-blur-sm
             lg:top-14
           "
           onClick={onClose}
@@ -70,7 +72,7 @@ export default function AccountSidebar({
           "fixed inset-0 z-[70]",
           "lg:inset-auto lg:right-0 lg:top-14 lg:bottom-0",
           "w-full lg:w-[330px]",
-          "bg-white dark:bg-gray-900",
+          "bg-[#EAF2EC]",
           "border-l border-gray-200 dark:border-gray-800",
           "shadow-[0_0_40px_rgba(0,0,0,0.18)]",
           "transition-transform duration-300 ease-out",
@@ -78,25 +80,12 @@ export default function AccountSidebar({
         )}
       >
         {/* ================= HEADER ================= */}
-        <div
-          className="
-            h-14 px-5
-            flex items-center justify-between
-            border-b border-gray-200 dark:border-gray-800
-          "
-        >
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-            My Account
-          </h2>
+        <div className="h-14 px-5 flex items-center justify-between border-b">
+          <h2 className="text-lg font-semibold">My Account</h2>
 
           <button
             onClick={onClose}
-            aria-label="Close sidebar"
-            className="
-              rounded-full p-2
-              hover:bg-gray-100 dark:hover:bg-gray-800
-              transition
-            "
+            className="rounded-full p-2 hover:bg-gray-100 transition"
           >
             ✕
           </button>
@@ -136,7 +125,7 @@ export default function AccountSidebar({
             </div>
           </div>
 
-          {/* ================= MENU ================= */}
+          {/* MENU */}
           <div className="mt-6 space-y-1">
             <MenuItem
               icon={<User />}
@@ -238,22 +227,14 @@ function MenuItem({
   return (
     <div
       onClick={onClick}
-      className="
-        group flex items-center justify-between
-        px-4 py-3 rounded-xl
-        cursor-pointer
-        transition-all duration-200
-        hover:bg-gray-100 dark:hover:bg-gray-800
-      "
+      className="flex items-center justify-between px-4 py-3 rounded-xl cursor-pointer hover:bg-gray-100 transition"
     >
-      <div className="flex items-center gap-3 text-sm font-medium text-gray-800 dark:text-gray-200">
-        <span className="text-gray-500 group-hover:text-blue-600 transition">
-          {icon}
-        </span>
+      <div className="flex items-center gap-3 text-sm font-medium">
+        {icon}
         {label}
       </div>
 
-      <ChevronRight className="h-4 w-4 opacity-40 group-hover:opacity-100" />
+      <ChevronRight className="h-4 w-4 opacity-40" />
     </div>
   );
 }

@@ -5,6 +5,8 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { AuthProvider } from "@/app/components/context/AuthContext";
 import HeaderWrapper from "@/app/components/HeaderWrapper";
+import { ThemeProvider } from "@/app/contexts/ThemeContext";
+import { AuthProvider } from "@/app/contexts/AuthContext"; // ✅ ADD THIS
 
 export const metadata: Metadata = {
   title: "Nirmatri",

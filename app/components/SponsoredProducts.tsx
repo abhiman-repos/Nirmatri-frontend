@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   Star,
   TrendingUp,
@@ -56,6 +57,8 @@ const sponsoredProducts = [
 ];
 
 export function SponsoredProducts() {
+  const router = useRouter();
+
   const [loading, setLoading] = useState<{
     id: number | null;
     type: "cart" | "buy" | null;
@@ -65,7 +68,7 @@ export function SponsoredProducts() {
     Math.round(((original - current) / original) * 100);
 
   return (
-    <section className="py-12 px-4 bg-gradient-to-b from-blue-50/30 to-white dark:from-gray-950 dark:to-gray-900">
+    <section className="py-12 px-4 bg-transparent">
       <div className="max-w-7xl mx-auto">
         {/* HEADER */}
         <div className="flex items-center gap-3 mb-8">
@@ -88,9 +91,12 @@ export function SponsoredProducts() {
           {sponsoredProducts.map((product) => (
             <Card
               key={product.id}
-              className="group overflow-hidden bg-white dark:bg-gray-800 transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl"
+              onClick={() =>
+                router.push("/products/hand-embroidered-kurta-set")
+              }
+              className="group overflow-hidden bg-[#F7F3EE] dark:bg-gray-800 transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl cursor-pointer"
             >
-              {/* IMAGE (clean – no cart icon) */}
+              {/* IMAGE */}
               <div className="relative h-[200px] md:h-[230px] lg:h-[260px] overflow-hidden bg-gray-100">
                 <ImageWithFallback
                   src={product.image}
@@ -105,15 +111,14 @@ export function SponsoredProducts() {
                 </div>
 
                 <Badge
-  className="
-    absolute top-3 right-3
-    bg-black text-white
-    dark:bg-white dark:text-blue-950
-  "
->
-  {product.badge}
-</Badge>
-
+                  className="
+                    absolute top-3 right-3
+                    bg-black text-white
+                    dark:bg-white dark:text-blue-950
+                  "
+                >
+                  {product.badge}
+                </Badge>
 
                 {/* Discount */}
                 <div className="absolute top-12 right-3 bg-red-600 text-white text-xs px-3 py-1 rounded-full font-bold">
@@ -123,17 +128,14 @@ export function SponsoredProducts() {
 
               {/* INFO */}
               <div className="p-4 space-y-2">
-                {/* NAME */}
                 <h3 className="text-sm font-medium line-clamp-2 dark:text-gray-100">
                   {product.name}
                 </h3>
 
-                {/* ARTISAN */}
                 <p className="text-xs text-gray-500 dark:text-gray-400">
                   by {product.artisan}
                 </p>
 
-                {/* RATING ONLY */}
                 <div className="flex items-center">
                   <div className="flex items-center gap-1 bg-green-600 text-white px-2 py-[2px] rounded text-xs font-semibold">
                     <Star className="h-3 w-3 fill-white" />
@@ -141,7 +143,6 @@ export function SponsoredProducts() {
                   </div>
                 </div>
 
-                {/* PRICE */}
                 <div className="flex items-center gap-2 pt-1">
                   <span className="text-lg font-bold text-blue-900 dark:text-blue-400">
                     ₹{product.price.toLocaleString()}
@@ -153,12 +154,12 @@ export function SponsoredProducts() {
 
                 {/* ACTION BUTTONS */}
                 <div className="flex gap-2 pt-2">
-                  {/* ADD TO CART */}
                   <Button
                     size="sm"
-                    className="flex-1 bg-blue-900 hover:bg-blue-950 text-sm"
+                    className="flex-1 bg-[#1a3a2a] hover:bg-[#EAF2EC] hover:text-black text-sm"
                     disabled={loading.id === product.id}
-                    onClick={() => {
+                    onClick={(e) => {
+                      e.stopPropagation();
                       setLoading({ id: product.id, type: "cart" });
                       setTimeout(
                         () => setLoading({ id: null, type: null }),
@@ -177,13 +178,13 @@ export function SponsoredProducts() {
                     )}
                   </Button>
 
-                  {/* BUY NOW */}
                   <Button
                     size="sm"
                     variant="outline"
-                    className="flex-1 text-sm border-blue-900 text-blue-900 hover:bg-blue-50 dark:border-blue-400 dark:text-blue-400"
+                    className="flex-1 text-sm border-bluen-900 text-brown hover:bg-blue-50 dark:border-blue-400 dark:text-blue-400"
                     disabled={loading.id === product.id}
-                    onClick={() => {
+                    onClick={(e) => {
+                      e.stopPropagation();
                       setLoading({ id: product.id, type: "buy" });
                       setTimeout(
                         () => setLoading({ id: null, type: null }),

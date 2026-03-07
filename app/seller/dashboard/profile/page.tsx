@@ -20,7 +20,7 @@ export default function SellerProfilePage() {
 
   return (
     <div className={darkMode ? "dark" : ""}>
-      <main className="min-h-screen bg-[#F6F9F8] dark:bg-gray-900 p-6 transition-colors duration-300">
+      <main className="min-h-screen bg-transparent dark:bg-gray-900 p-6 transition-colors duration-300">
         <div className="max-w-2xl mx-auto bg-white dark:bg-gray-800 rounded-xl shadow dark:shadow-none dark:border dark:border-gray-700 p-6">
           <h1 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">
             Seller Profile & Settings
@@ -32,7 +32,7 @@ export default function SellerProfilePage() {
             <Input label="Email" value="seller@nirmatri.com" />
             <Input label="Phone" value="+91 9876543210" />
 
-            <button className="mt-4 w-full rounded-lg bg-blue-600 py-2 text-white font-medium hover:bg-blue-700 transition-colors">
+            <button className="mt-4 w-full rounded-lg bg-green-900 py-2 text-white font-medium hover:bg-[#9adbb3] hover:text-black transition-colors">
               Save Changes
             </button>
           </div>
