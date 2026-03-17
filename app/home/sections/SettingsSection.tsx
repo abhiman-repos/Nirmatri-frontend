@@ -1,24 +1,18 @@
 " use client";
 
 import { useState, useId } from "react";
-import { useTheme } from "@/app/contexts/ThemeContext";
+
 import {
-  User,
   Lock,
   Bell,
   Shield,
-  Moon,
-  Sun,
-  Laptop,
-  Trash2,
   Eye,
   EyeOff,
 } from "lucide-react";
 
-import { LogOut } from "lucide-react";
 
 export function SettingsSection() {
-  const { theme, setTheme } = useTheme();
+
   const [showPassword, setShowPassword] = useState(false);
   const [notifications, setNotifications] = useState({
     email: true,
@@ -56,28 +50,7 @@ export function SettingsSection() {
       </Section>
 
       {/* ================= APPEARANCE ================= */}
-      <Section title="Appearance" icon={<Moon />}>
-        <div className="grid grid-cols-3 gap-3">
-          <ThemeCard
-            label="Light"
-            active={theme === "light"}
-            icon={<Sun />}
-            onClick={() => setTheme("light")}
-          />
-          <ThemeCard
-            label="Dark"
-            active={theme === "dark"}
-            icon={<Moon />}
-            onClick={() => setTheme("dark")}
-          />
-          <ThemeCard
-            label="System"
-            active={theme === "system"}
-            icon={<Laptop />}
-            onClick={() => setTheme("system")}
-          />
-        </div>
-      </Section>
+     
 
       {/* ================= NOTIFICATIONS ================= */}
       <Section title="Notifications" icon={<Bell />}>
@@ -104,19 +77,7 @@ export function SettingsSection() {
         <Toggle label="Search engine visibility" value={false} />
       </Section>
 
-      {/* ================= DANGER ZONE ================= */}
-      <Section title="Danger Zone" icon={<Trash2 />} danger>
-        <button
-          className="
-          flex items-center gap-3 px-4 py-3 mt-4 rounded-xl
-          text-orange-600 hover:bg-orange-50
-          dark:text-blue-400 dark:hover:bg-blue-500/10
-          transition-colors
-        "
-        >
-          <LogOut className="w-5 h-5" />
-        </button>
-      </Section>
+      
     </div>
   );
 }

@@ -6,6 +6,8 @@ import { useRouter } from "next/navigation";
 import { Loader2, Eye, EyeOff } from "lucide-react";
 
 
+import axios from "axios";
+
 import GoogleAuthButton from "@/lib/google-auth";
 import { useAuth } from "@/app/components/context/AuthContext";
 
@@ -40,6 +42,7 @@ export default function Login() {
     }
 
     // ✅ Use AuthContext (MOST IMPORTANT)
+    localStorage.setItem("token", data.token);
     login(data.token);
 
     // Optional: store user info
@@ -152,9 +155,7 @@ export default function Login() {
           {loading ? "Logging in..." : "Login"}
         </button>
 
-        <button
-        >
-
+        < button>
         </button>
 
         {/* ================= GOOGLE ================= */}

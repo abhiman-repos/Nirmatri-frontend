@@ -32,6 +32,7 @@ export default function GoogleAuthButton() {
           }
 
           // 🔐 Save token via AuthContext
+          localStorage.setItem("auth_token", res.data.token);
           login(res.data.token);
 
           // Optional: store user

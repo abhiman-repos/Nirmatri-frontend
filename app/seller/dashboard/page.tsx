@@ -14,17 +14,11 @@ import {
   ShoppingCart,
 } from "lucide-react";
 import { useEffect } from "react";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 
-const router = useRouter();
 
-useEffect(() => {
-  const token = localStorage.getItem("seller_token");
 
-  if (!token) {
-    router.push("/seller/login");
-  }
-}, []);
+
 
 export default function SellerDashboardPage() {
   const seller = {
@@ -40,6 +34,16 @@ export default function SellerDashboardPage() {
     pendingOrders: 6,
   };
 
+  const router = useRouter();
+
+  useEffect(() => {
+  const token = localStorage.getItem("seller_token");
+
+  if (!token) {
+    router.push("/seller/login");
+  }
+}, []);
+
   const orders = [
     { id: "ORD-1001", product: "Handmade Vase", status: "Delivered", amount: "₹1,200" },
     { id: "ORD-1002", product: "Clay Pot Set", status: "Shipped", amount: "₹2,450" },
@@ -53,7 +57,7 @@ export default function SellerDashboardPage() {
   ];
 
   return (
-    <main className="min-h-screen bg-[#F8FAFC] dark:bg-gray-900 p-4 md:p-8">
+    <main className="min-h-screen bg-transparent dark:bg-gray-900 p-4 md:p-8">
       
       {/* HEADER */}
       <div className="mb-10">

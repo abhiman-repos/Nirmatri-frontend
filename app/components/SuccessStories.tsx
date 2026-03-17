@@ -1,6 +1,6 @@
 import { Star, Quote } from "lucide-react";
 import { Card } from "@/app/components/ui/card";
-import { ImageWithFallback } from "@/app/components/context/AuthContext.tsx/ImageWithFallback";
+import { ImageWithFallback } from "./figma/ImageWithFallback";
 
 const testimonials = [
   {

@@ -1,6 +1,5 @@
 "use client";
 
-import { emitWarning } from "process";
 import { useState, useEffect } from "react";
 import {
   FiEdit,
@@ -11,8 +10,6 @@ import {
   FiMail,
   FiPhone,
 } from "react-icons/fi";
-
-
 
 export default function PersonalInformationPage() {
   // Initialize state from localStorage
@@ -29,22 +26,24 @@ export default function PersonalInformationPage() {
     const fetchProfile = async () => {
       try {
         const token = localStorage.getItem("auth_token");
+        console.log("TOKEN:", token);
 
         if (!token) {
           console.error("No token found");
           return;
         }
 
-        const res = await fetch("http://127.0.0.1:8000/api/auth/userinfo/", {
+        const res = await fetch("http://127.0.0.1:8000/api/user/profile/", {
           headers: {
+            "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
         });
 
         const data = await res.json();
-        
-        localStorage.setItem("name", data.name)
-        localStorage.setItem("email", data.email)
+
+        localStorage.setItem("name", data.name);
+        localStorage.setItem("email", data.email);
 
         if (res.ok) {
           setUserData({
@@ -68,7 +67,7 @@ export default function PersonalInformationPage() {
       }
     };
 
-    fetchProfile();
+    fetchProfile(); // ⭐ IMPORTANT
   }, []);
 
   // State for editing mode
@@ -107,7 +106,7 @@ export default function PersonalInformationPage() {
       const token = localStorage.getItem("auth_token");
 
       const res = await fetch(
-        "http://127.0.0.1:8000/api/auth/profile/update/",
+        "http://127.0.0.1:8000/api/user/profile/update/",
         {
           method: "PUT",
           headers: {
@@ -133,7 +132,6 @@ export default function PersonalInformationPage() {
   };
 
   // CSS Styles as JavaScript objects
-  
 
   // Mouse hover effects ko handle karne ke liye inline styles
   const buttonHover = (
@@ -241,8 +239,7 @@ export default function PersonalInformationPage() {
                   {userData.name || "Not set"}
                 </span>
               </div>
-              <div style={styles.infoRow}>
-              </div>
+              <div style={styles.infoRow}></div>
               <div style={styles.infoRow}>
                 <span style={styles.infoLabel}>Your Gender:</span>
                 <span style={styles.infoValue}>
@@ -253,16 +250,16 @@ export default function PersonalInformationPage() {
           ) : (
             <div style={styles.editForm}>
               <div style={styles.formGroup}>
-                <label htmlFor="firstName" style={styles.formLabel}>
-                  First Name
+                <label htmlFor="name" style={styles.formLabel}>
+                  Full Name
                 </label>
                 <input
                   type="text"
-                  id="firstName"
-                  name="firstName"
+                  id="name"
+                  name="name"
                   value={formData.name}
                   onChange={handleInputChange}
-                  placeholder="Enter first name"
+                  placeholder="Enter Full  name"
                   style={styles.formInput}
                   onFocus={inputFocus}
                   onBlur={inputBlur}
@@ -508,192 +505,192 @@ export default function PersonalInformationPage() {
 }
 
 const styles: { [key: string]: React.CSSProperties } = {
-    container: {
-      maxWidth: "800px",
-      margin: "0 auto",
-      padding: "2rem",
-      fontFamily:
-        "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif",
-      backgroundColor: "#120e31",
-      minHeight: "100vh",
-    },
-    header: {
-      display: "flex",
-      justifyContent: "space-between",
-      alignItems: "center",
-      marginBottom: "2rem",
-      paddingBottom: "1rem",
-      borderBottom: "1px solid #e5e7eb",
-    },
-    title: {
-      fontSize: "1.875rem",
-      fontWeight: "700",
-      color: "#f5f5f5",
-      margin: "0",
-    },
-    saveAllButton: {
-      display: "flex",
-      alignItems: "center",
-      gap: "0.5rem",
-      backgroundColor: "#10b981",
-      color: "white",
-      border: "none",
-      padding: "0.75rem 1.5rem",
-      borderRadius: "0.5rem",
-      fontWeight: "600",
-      cursor: "pointer",
-      transition: "background-color 0.2s",
-    },
-    sectionsContainer: {
-      display: "flex",
-      flexDirection: "column",
-      gap: "1.5rem",
-    },
-    sectionCard: {
-      backgroundColor: "white",
-      borderRadius: "0.75rem",
-      boxShadow:
-        "0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)",
-      overflow: "hidden",
-      transition: "box-shadow 0.3s",
-    },
-    sectionHeader: {
-      display: "flex",
-      justifyContent: "space-between",
-      alignItems: "center",
-      padding: "1.5rem 1.5rem 0",
-    },
-    sectionTitle: {
-      display: "flex",
-      alignItems: "center",
-      gap: "0.75rem",
-    },
-    sectionIcon: {
-      fontSize: "1.25rem",
-      color: "#6b7280",
-    },
-    sectionTitleH2: {
-      fontSize: "1.25rem",
-      fontWeight: "600",
-      color: "#111827",
-      margin: "0",
-    },
-    editButton: {
-      display: "flex",
-      alignItems: "center",
-      gap: "0.5rem",
-      padding: "0.5rem 1rem",
-      borderRadius: "0.375rem",
-      fontWeight: "500",
-      cursor: "pointer",
-      border: "none",
-      backgroundColor: "#f3f4f6",
-      color: "#374151",
-      transition: "all 0.2s",
-    },
-    cancelButton: {
-      display: "flex",
-      alignItems: "center",
-      gap: "0.5rem",
-      padding: "0.5rem 1rem",
-      borderRadius: "0.375rem",
-      fontWeight: "500",
-      cursor: "pointer",
-      border: "none",
-      backgroundColor: "#fef2f2",
-      color: "#dc2626",
-      transition: "all 0.2s",
-    },
-    saveButton: {
-      display: "flex",
-      alignItems: "center",
-      gap: "0.5rem",
-      padding: "0.5rem 1rem",
-      borderRadius: "0.375rem",
-      fontWeight: "500",
-      cursor: "pointer",
-      border: "none",
-      backgroundColor: "#dbeafe",
-      color: "#1d4ed8",
-      marginTop: "1rem",
-      transition: "all 0.2s",
-    },
-    editControls: {
-      display: "flex",
-      gap: "0.5rem",
-    },
-    displayContent: {
-      padding: "1.5rem",
-    },
-    infoRow: {
-      display: "flex",
-      marginBottom: "1rem",
-      paddingBottom: "0.75rem",
-      borderBottom: "1px solid #070707",
-    },
-    infoLabel: {
-      fontWeight: "500",
-      color: "#4b5563",
-      minWidth: "140px",
-    },
-    infoValue: {
-      color: "#111827",
-      fontWeight: "400",
-    },
-    emailValue: {
-      color: "#2563eb",
-    },
-    editForm: {
-      padding: "1.5rem",
-      borderTop: "1px solid #f3f4f6",
-    },
-    formGroup: {
-      marginBottom: "1.5rem",
-    },
-    formLabel: {
-      display: "block",
-      fontWeight: "500",
-      color: "#374151",
-      marginBottom: "0.5rem",
-    },
-    formInput: {
-      width: "100%",
-      padding: "0.75rem",
-      border: "1px solid #d1d5db",
-      borderRadius: "0.375rem",
-      fontSize: "1rem",
-      transition: "border-color 0.2s",
-    },
-    genderOptions: {
-      display: "flex",
-      gap: "1.5rem",
-      marginTop: "0.5rem",
-    },
-    radioLabel: {
-      display: "flex",
-      alignItems: "center",
-      gap: "0.5rem",
-      cursor: "pointer",
-      fontWeight: "400",
-      color: "#4b5563",
-    },
-    radioCustom: {
-      display: "inline-block",
-      width: "1.25rem",
-      height: "1.25rem",
-      border: "2px solid #d1d5db",
-      borderRadius: "50%",
-      position: "relative",
-      transition: "all 0.2s",
-    },
-    footerNote: {
-      marginTop: "2rem",
-      padding: "1rem",
-      backgroundColor: "#f0f9ff",
-      borderRadius: "0.5rem",
-      color: "#0369a1",
-      fontSize: "0.875rem",
-      textAlign: "center",
-      border: "1px solid #bae6fd",
-    },
-  };
+  container: {
+    maxWidth: "800px",
+    margin: "0 auto",
+    padding: "2rem",
+    fontFamily:
+      "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif",
+    backgroundColor: "#120e31",
+    minHeight: "100vh",
+  },
+  header: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: "2rem",
+    paddingBottom: "1rem",
+    borderBottom: "1px solid #e5e7eb",
+  },
+  title: {
+    fontSize: "1.875rem",
+    fontWeight: "700",
+    color: "#f5f5f5",
+    margin: "0",
+  },
+  saveAllButton: {
+    display: "flex",
+    alignItems: "center",
+    gap: "0.5rem",
+    backgroundColor: "#10b981",
+    color: "white",
+    border: "none",
+    padding: "0.75rem 1.5rem",
+    borderRadius: "0.5rem",
+    fontWeight: "600",
+    cursor: "pointer",
+    transition: "background-color 0.2s",
+  },
+  sectionsContainer: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "1.5rem",
+  },
+  sectionCard: {
+    backgroundColor: "white",
+    borderRadius: "0.75rem",
+    boxShadow:
+      "0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)",
+    overflow: "hidden",
+    transition: "box-shadow 0.3s",
+  },
+  sectionHeader: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: "1.5rem 1.5rem 0",
+  },
+  sectionTitle: {
+    display: "flex",
+    alignItems: "center",
+    gap: "0.75rem",
+  },
+  sectionIcon: {
+    fontSize: "1.25rem",
+    color: "#6b7280",
+  },
+  sectionTitleH2: {
+    fontSize: "1.25rem",
+    fontWeight: "600",
+    color: "#111827",
+    margin: "0",
+  },
+  editButton: {
+    display: "flex",
+    alignItems: "center",
+    gap: "0.5rem",
+    padding: "0.5rem 1rem",
+    borderRadius: "0.375rem",
+    fontWeight: "500",
+    cursor: "pointer",
+    border: "none",
+    backgroundColor: "#f3f4f6",
+    color: "#374151",
+    transition: "all 0.2s",
+  },
+  cancelButton: {
+    display: "flex",
+    alignItems: "center",
+    gap: "0.5rem",
+    padding: "0.5rem 1rem",
+    borderRadius: "0.375rem",
+    fontWeight: "500",
+    cursor: "pointer",
+    border: "none",
+    backgroundColor: "#fef2f2",
+    color: "#dc2626",
+    transition: "all 0.2s",
+  },
+  saveButton: {
+    display: "flex",
+    alignItems: "center",
+    gap: "0.5rem",
+    padding: "0.5rem 1rem",
+    borderRadius: "0.375rem",
+    fontWeight: "500",
+    cursor: "pointer",
+    border: "none",
+    backgroundColor: "#dbeafe",
+    color: "#1d4ed8",
+    marginTop: "1rem",
+    transition: "all 0.2s",
+  },
+  editControls: {
+    display: "flex",
+    gap: "0.5rem",
+  },
+  displayContent: {
+    padding: "1.5rem",
+  },
+  infoRow: {
+    display: "flex",
+    marginBottom: "1rem",
+    paddingBottom: "0.75rem",
+    borderBottom: "1px solid #070707",
+  },
+  infoLabel: {
+    fontWeight: "500",
+    color: "#4b5563",
+    minWidth: "140px",
+  },
+  infoValue: {
+    color: "#111827",
+    fontWeight: "400",
+  },
+  emailValue: {
+    color: "#2563eb",
+  },
+  editForm: {
+    padding: "1.5rem",
+    borderTop: "1px solid #f3f4f6",
+  },
+  formGroup: {
+    marginBottom: "1.5rem",
+  },
+  formLabel: {
+    display: "block",
+    fontWeight: "500",
+    color: "#374151",
+    marginBottom: "0.5rem",
+  },
+  formInput: {
+    width: "100%",
+    padding: "0.75rem",
+    border: "1px solid #d1d5db",
+    borderRadius: "0.375rem",
+    fontSize: "1rem",
+    transition: "border-color 0.2s",
+  },
+  genderOptions: {
+    display: "flex",
+    gap: "1.5rem",
+    marginTop: "0.5rem",
+  },
+  radioLabel: {
+    display: "flex",
+    alignItems: "center",
+    gap: "0.5rem",
+    cursor: "pointer",
+    fontWeight: "400",
+    color: "#4b5563",
+  },
+  radioCustom: {
+    display: "inline-block",
+    width: "1.25rem",
+    height: "1.25rem",
+    border: "2px solid #d1d5db",
+    borderRadius: "50%",
+    position: "relative",
+    transition: "all 0.2s",
+  },
+  footerNote: {
+    marginTop: "2rem",
+    padding: "1rem",
+    backgroundColor: "#f0f9ff",
+    borderRadius: "0.5rem",
+    color: "#0369a1",
+    fontSize: "0.875rem",
+    textAlign: "center",
+    border: "1px solid #bae6fd",
+  },
+};

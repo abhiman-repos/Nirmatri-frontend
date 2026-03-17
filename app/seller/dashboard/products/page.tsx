@@ -22,13 +22,6 @@ import {
 // ==========================================================
 const mockProducts = [
   { id: 1, name: 'Handmade Terracotta Vase', category: 'Home Decor', price: 1200, stock: 45, status: 'active', image : '/products/terracotta-vase.png', sales: 342, rating: 4.8 },
-  { id: 2, name: 'Hand-painted Ceramic Plates', category: 'Kitchenware', price: 1800, stock: 28, status: 'active', image : '/products/terracotta-vase.png', sales: 289, rating: 4.9 },
-  { id: 3, name: 'Wooden Wall Art', category: 'Home Decor', price: 980, stock: 15, status: 'active', image : '/products/terracotta-vase.png', sales: 267, rating: 4.7 },
-  { id: 4, name: 'Handwoven Jute Basket', category: 'Storage', price: 675, stock: 0, status: 'out_of_stock', image : '/products/terracotta-vase.png', sales: 198, rating: 4.6 },
-  { id: 5, name: 'Ceramic Dinner Set', category: 'Kitchenware', price: 3200, stock: 12, status: 'active', image : '/products/terracotta-vase.png', sales: 156, rating: 4.9 },
-  { id: 6, name: 'Handcrafted Clay Pot Set', category: 'Kitchenware', price: 2450, stock: 8, status: 'low_stock', image : '/products/terracotta-vase.png', sales: 145, rating: 4.5 },
-  { id: 7, name: 'Bamboo Serving Tray', category: 'Kitchenware', price: 850, stock: 34, status: 'active', image : '/products/terracotta-vase.png', sales: 98, rating: 4.4 },
-  { id: 8, name: 'Embroidered Wall Hanging', category: 'Home Decor', price: 1500, stock: 0, status: 'inactive', image : '/products/terracotta-vase.png', sales: 76, rating: 4.3 },
 ];
 
 // ==========================================================
@@ -96,7 +89,7 @@ function ProductsPageContent() {
 
   return (
     <div className={darkMode ? 'dark' : ''}>
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+      <div className="min-h-screen bg-transparent dark:bg-gray-900 transition-colors duration-300">
         <main className="p-8">
           {/* Header */}
           <div className="mb-8">

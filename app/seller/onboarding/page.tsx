@@ -3,16 +3,14 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
+import TermsModal from "@/app/components/TermsModal";
 import { Input } from "@/app/components/ui/input";
 import {
-  Clipboard,
-  Check,
+  Clipboard, Check,
   Smartphone,
-  AlertTriangle,
-  NotebookText,
-  FileUp,
+  AlertTriangle, NotebookText,
+  FileUp
 } from "lucide-react";
-import axios from "axios";
 
 // ============================================
 // CONFIGURATION
@@ -20,119 +18,110 @@ import axios from "axios";
 const steps = ["Store Info", "KYC", "Bank", "Phone Verification", "Review"];
 
 export default function SellerOnboardingPage() {
+  // ============================================
+  // STATE MANAGEMENT
+  // ============================================
   const [currentStep, setCurrentStep] = useState(0);
-  const [showSuccess, setShowSuccess] = useState(false);
-
+  const [showSuccess, setShowSuccess] = useState(false); // Get current theme (light/dark)
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
+  // Form data state for all steps
   const [formData, setFormData] = useState({
+
+    // Store Info 
     ownerName: "",
     storeName: "",
-    storeCategory: [],
+    storeCategory: [] as string[],
+    // storeDescription: "",
+    // storeAddress: "",
+
+    // KYC
     panNumber: "",
     aadhaarNumber: "",
-    panDocument: null,
-    aadhaarDocument: null,
+    panDocument: null as File | null,
+    aadhaarDocument: null as File | null,
+
+    // Bank Details
     accountHolderName: "",
     accountNumber: "",
     ifscCode: "",
     bankName: "",
+
+    // Phone Verification
     phoneNumber: "",
     otp: "",
     isOtpSent: false,
     isOtpVerified: false,
   });
 
-  const updateFormData = (
-    field: string,
-    value: string | string[] | File | boolean | number | null,
-  ) => {
-    setFormData((prev: any) => ({
-      ...prev,
-      [field]: value,
-    }));
+  // ============================================
+  // FORM UPDATE HANDLER
+  // ============================================
+  const updateFormData = (field: string, value: string | string[] | File | null | boolean) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  useEffect(() => {
-    const step = localStorage.getItem("seller_onboarding_step");
-
-    if (step) {
-      setCurrentStep(Number(step));
-    }
-  }, []);
-
-  const dataToSave = {
-    ...formData,
-    panDocument: null,
-    aadhaarDocument: null,
-  };
-  // ✅ Save form data automatically
-  useEffect(() => {
-    localStorage.setItem("seller_onboarding_data", JSON.stringify(formData));
-  }, [formData]);
-
-  // ✅ Save current step
-  useEffect(() => {
-    localStorage.setItem("seller_onboarding_step", currentStep.toString());
-  }, [currentStep]);
-
-  // ✅ Restore form data after refresh
-  useEffect(() => {
-    const savedData = localStorage.getItem("seller_onboarding_data");
-
-    if (savedData) {
-      setFormData(JSON.parse(savedData));
-    }
-  }, []);
-
-  // ✅ Restore step
-
-  localStorage.setItem("seller_onboarding_data", JSON.stringify(dataToSave));
   // ============================================
   // NAVIGATION HANDLERS
-  // ============================================
   const nextStep = async () => {
     if (currentStep < steps.length - 1) {
       setCurrentStep((prev) => prev + 1);
-    } else {
+      return;
+    }
+
+    // FINAL SUBMIT
+    try {
+      setLoading(true);
+
+      const token = localStorage.getItem("token");
+
+      const payload = new FormData();
+
+      Object.entries(formData).forEach(([key, value]) => {
+        if (value !== null) {
+          payload.append(key, value as any);
+        }
+      });
+
+      const res = await fetch(
+        "http://127.0.0.1:8000/api/seller/info/",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(formData),
+        }
+      );
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(data.error || "Submission failed");
+        setLoading(false);
+        return;
+      }
+
       setShowSuccess(true);
 
-      try {
-        const token = localStorage.getItem("auth_token");
+      setTimeout(() => {
+        router.push("/seller/pending-approval");
+      }, 2000);
 
-        await axios.post(
-          "http://127.0.0.1:8000/api/seller/onboarding/",
-          
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          },
-        );
-
-        // clear storage after success
-        localStorage.removeItem("seller_onboarding_data");
-
-        setTimeout(() => {
-          router.push("/seller/pending-approval");
-        }, 2000);
-      } catch (error) {
-        console.error("Submission failed", error);
-      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
     }
   };
 
   const prevStep = () => {
-    if (currentStep > 0) {
-      setCurrentStep((prev) => prev - 1);
-    }
+    if (currentStep > 0) setCurrentStep((prev) => prev - 1);
   };
-
-  // ============================================
-  // RENDER
-  // ============================================
   return (
-    <main className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center px-4 py-8 transition-colors duration-200">
+    <main className="min-h-screen bg-transparent flex items-center justify-center px-4 py-8 transition-colors duration-200">
       <div className="w-full max-w-4xl bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 md:p-8 transition-colors duration-200">
         {/* ============================================ */}
         {/* 🔹 STEPPER HEADER */}
@@ -144,13 +133,12 @@ export default function SellerOnboardingPage() {
                 {/* Step Circle */}
                 <div
                   className={`h-9 w-9 md:h-10 md:w-10 rounded-full flex items-center justify-center text-xs md:text-sm font-medium transition-all duration-300
-                  ${
-                    index < currentStep
+                  ${index < currentStep
                       ? "bg-green-600 text-white" // Completed
                       : index === currentStep
                         ? "bg-blue-600 text-white shadow-lg scale-110" // Current
                         : "bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400" // Upcoming
-                  }`}
+                    }`}
                 >
                   {index < currentStep ? "✓" : index + 1}
                 </div>
@@ -158,11 +146,10 @@ export default function SellerOnboardingPage() {
                 {/* Step Label (hidden on small screens) */}
                 <span
                   className={`ml-2 md:ml-3 text-xs md:text-sm font-medium hidden sm:block transition-colors duration-300
-                  ${
-                    index <= currentStep
+                  ${index <= currentStep
                       ? "text-gray-900 dark:text-white"
                       : "text-gray-400 dark:text-gray-500"
-                  }`}
+                    }`}
                 >
                   {step}
                 </span>
@@ -172,9 +159,6 @@ export default function SellerOnboardingPage() {
                   <div className="flex-1 h-[2px] mx-2 md:mx-4 bg-gray-200 dark:bg-gray-700 overflow-hidden">
                     <div
                       className="h-full bg-blue-600 transition-all duration-500"
-                      style={{
-                        width: index < currentStep ? "100%" : "0%",
-                      }}
                     />
                   </div>
                 )}
@@ -185,8 +169,7 @@ export default function SellerOnboardingPage() {
           {/* Progress Indicator */}
           <div className="text-center">
             <p className="text-sm text-gray-600 dark:text-gray-400">
-              Step {currentStep + 1} of {steps.length} •{" "}
-              {Math.round(((currentStep + 1) / steps.length) * 100)}% Complete
+              Step {currentStep + 1} of {steps.length} • {Math.round(((currentStep + 1) / steps.length) * 100)}% Complete
             </p>
           </div>
         </div>
@@ -204,24 +187,10 @@ export default function SellerOnboardingPage() {
               transition={{ duration: 0.35, ease: "easeOut" }}
               className="min-h-[400px]"
             >
-              {currentStep === 0 && (
-                <StoreInfo
-                  formData={formData}
-                  updateFormData={updateFormData}
-                />
-              )}
-              {currentStep === 1 && (
-                <KYC formData={formData} updateFormData={updateFormData} />
-              )}
-              {currentStep === 2 && (
-                <Bank formData={formData} updateFormData={updateFormData} />
-              )}
-              {currentStep === 3 && (
-                <PhoneVerification
-                  formData={formData}
-                  updateFormData={updateFormData}
-                />
-              )}
+              {currentStep === 0 && <StoreInfo formData={formData} updateFormData={updateFormData} />}
+              {currentStep === 1 && <KYC formData={formData} updateFormData={updateFormData} />}
+              {currentStep === 2 && <Bank formData={formData} updateFormData={updateFormData} />}
+              {currentStep === 3 && <PhoneVerification formData={formData} updateFormData={updateFormData} />}
               {currentStep === 4 && <Review formData={formData} />}
             </motion.div>
           </AnimatePresence>
@@ -271,13 +240,19 @@ export default function SellerOnboardingPage() {
               ← Back
             </button>
 
-            <button
+            {/* <button
               onClick={nextStep}
               className="px-8 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium transition-all duration-200 shadow-md hover:shadow-lg"
             >
-              {currentStep === steps.length - 1
-                ? "Submit & Finish"
-                : "Continue →"}
+              {currentStep === steps.length - 1 ? "Submit & Finish" : "Continue →"}
+            </button> */}
+
+            <button
+              type="button"
+              onClick={nextStep}
+              className="px-8 py-2.5 rounded-lg bg-green-900 hover:bg-[#98fbcb] text-white hover:text-black font-medium transition-all duration-200 shadow-md hover:shadow-lg"
+            >
+              {currentStep === steps.length - 1 ? "Submit & Finish" : "Continue →"}
             </button>
           </div>
         )}
@@ -295,8 +270,9 @@ export default function SellerOnboardingPage() {
 // ============================================
 interface FormDataProps {
   formData: {
+    ownername?: string;
     ownerName?: string;
-    storeName?: string;
+    storeName: string;
     storeCategory: string[];
     panNumber: string;
     aadhaarNumber: string;
@@ -311,10 +287,7 @@ interface FormDataProps {
     isOtpSent: boolean;
     isOtpVerified: boolean;
   };
-  updateFormData: (
-    field: string,
-    value: string | string[] | File | boolean | number | null,
-  ) => void;
+  updateFormData: (field: string, value: string | string[] | File | null | boolean) => void;
 }
 
 function StoreInfo({ formData, updateFormData }: FormDataProps) {
@@ -338,7 +311,7 @@ function StoreInfo({ formData, updateFormData }: FormDataProps) {
       // Remove category if already selected
       updateFormData(
         "storeCategory",
-        currentCategories.filter((c: string) => c !== category),
+        currentCategories.filter((c: string) => c !== category)
       );
     } else {
       // Add category if not selected
@@ -362,18 +335,6 @@ function StoreInfo({ formData, updateFormData }: FormDataProps) {
           Tell us about your handmade goods store
         </p>
       </div>
-      {/* Store Name */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-          Store Name
-        </label>
-        <input
-          value={formData.storeName}
-          onChange={(e) => updateFormData("storeName", e.target.value)}
-          placeholder="e.g. Nirmatri Crafts"
-          className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-3 text-gray-900 dark:text-white bg-white dark:bg-gray-700 placeholder:text-xs text-gray-500 dark:placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors uppercase"
-        />
-      </div>
 
       {/* Owner Name */}
       <div>
@@ -383,10 +344,28 @@ function StoreInfo({ formData, updateFormData }: FormDataProps) {
         <Input
           value={formData.ownerName}
           onChange={(e) => updateFormData("ownerName", e.target.value)}
-          placeholder="Enter your full name as per your ID"
-          className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-3 text-gray-900 dark:text-white bg-white dark:bg-gray-700 placeholder:text-xs text-gray-500 dark:placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors uppercase"
+          placeholder="Type your full name"
+          className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-3 text-gray-900 dark:text-white bg-white dark:bg-gray-700 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
         />
+        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+          Enter your full name as it appears on your ID
+        </p>
       </div>
+      {/* Store Name */}
+      {/* <div>
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          Store Name
+        </label>
+        <input
+          value={formData.storeName}
+          onChange={(e) => updateFormData("storeName", e.target.value)}
+          placeholder="e.g., Nirmatri Crafts"
+          className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-3 text-gray-900 dark:text-white bg-white dark:bg-gray-700 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+        />
+        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+          Choose a unique name for your store
+        </p>
+      </div> */}
 
       {/* Store Categories - Multi-select */}
       <div>
@@ -404,11 +383,10 @@ function StoreInfo({ formData, updateFormData }: FormDataProps) {
               key={cat}
               type="button"
               onClick={() => handleCategoryToggle(cat)}
-              className={`px-4 py-2 rounded-lg border-2 text-sm font-medium transition-all duration-200 ${
-                isCategorySelected(cat)
-                  ? "bg-blue-600 border-blue-600 text-white shadow-md hover:bg-blue-700 hover:border-blue-700"
-                  : "bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-blue-400 dark:hover:border-blue-500"
-              }`}
+              className={`px-4 py-2 rounded-lg border-2 text-sm font-medium transition-all duration-200 ${isCategorySelected(cat)
+                ? "bg-blue-600 border-blue-600 text-white shadow-md hover:bg-blue-700 hover:border-blue-700"
+                : "bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-blue-400 dark:hover:border-blue-500"
+                }`}
             >
               {isCategorySelected(cat) && <span className="mr-1">✓</span>}
               {cat}
@@ -420,16 +398,49 @@ function StoreInfo({ formData, updateFormData }: FormDataProps) {
         {formData.storeCategory && formData.storeCategory.length > 0 && (
           <div className="mt-3 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
             <p className="text-sm text-blue-900 dark:text-blue-400">
-              <strong>{formData.storeCategory.length}</strong>{" "}
-              {formData.storeCategory.length === 1 ? "category" : "categories"}{" "}
-              selected: {formData.storeCategory.join(", ")}
+              <strong>{formData.storeCategory.length}</strong> {formData.storeCategory.length === 1 ? 'category' : 'categories'} selected: {formData.storeCategory.join(", ")}
             </p>
           </div>
         )}
       </div>
+
+      {/* Store Description
+      <div>
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          Store Description
+        </label>
+        <textarea
+          value={formData.storeDescription}
+          onChange={(e) => updateFormData("storeDescription", e.target.value)}
+          placeholder="Describe your products and what makes them special..."
+          rows={4}
+          className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-3 text-gray-900 dark:text-white bg-white dark:bg-gray-700 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors resize-none"
+        />
+        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+          Write a brief description about your store and products
+        </p>
+      </div>
+
+      Store Address
+      <div>
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          Store Address
+        </label>
+        <textarea
+          value={formData.storeAddress}
+          onChange={(e) => updateFormData("storeAddress", e.target.value)}
+          placeholder="Full business address with city, state, and pincode"
+          rows={3}
+          className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-3 text-gray-900 dark:text-white bg-white dark:bg-gray-700 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors resize-none"
+        />
+        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+          Enter your complete business address
+        </p>
+      </div> */}
     </div>
   );
 }
+
 
 // ============================================
 // STEP 2: KYC DETAILS
@@ -458,13 +469,14 @@ function KYC({ formData, updateFormData }: FormDataProps) {
         </label>
         <input
           value={formData.panNumber}
-          onChange={(e) =>
-            updateFormData("panNumber", e.target.value.toUpperCase())
-          }
-          placeholder="your 10-character PAN number (e.g., ABCDE1234F)"
+          onChange={(e) => updateFormData("panNumber", e.target.value.toUpperCase())}
+          placeholder="ABCDE1234F"
           maxLength={10}
-          className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-3 text-gray-900 dark:text-white bg-white dark:bg-gray-700 placeholder:text-xs text-gray-500 dark:placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors uppercase"
+          className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-3 text-gray-900 dark:text-white bg-white dark:bg-gray-700 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors uppercase"
         />
+        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+          Enter your 10-character PAN number (e.g., ABCDE1234F)
+        </p>
       </div>
 
       {/* Aadhaar Number */}
@@ -479,10 +491,13 @@ function KYC({ formData, updateFormData }: FormDataProps) {
             const value = e.target.value.replace(/\D/g, "").slice(0, 12);
             updateFormData("aadhaarNumber", value);
           }}
-          placeholder="Enter your 12-digit Aadhaar number"
+          placeholder="123456789012"
           maxLength={12}
-          className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-3 text-gray-900 dark:text-white bg-white dark:bg-gray-700 placeholder:text-xs text-gray-500 dark:placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors uppercase"
+          className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-3 text-gray-900 dark:text-white bg-white dark:bg-gray-700 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
         />
+        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+          Enter your 12-digit Aadhaar number
+        </p>
       </div>
 
       {/* File Uploads */}
@@ -490,29 +505,22 @@ function KYC({ formData, updateFormData }: FormDataProps) {
         <FileUpload
           label="PAN Card Document"
           file={formData.panDocument}
-          onChange={(file: File | null) =>
-            handleFileUpload("panDocument", file)
-          }
+          onChange={(file: File | null) => handleFileUpload("panDocument", file)}
           description="Upload clear photo or PDF of your PAN card (Max 5MB)"
         />
 
         <FileUpload
           label="Aadhaar Card Document"
           file={formData.aadhaarDocument}
-          onChange={(file: File | null) =>
-            handleFileUpload("aadhaarDocument", file)
-          }
+          onChange={(file: File | null) => handleFileUpload("aadhaarDocument", file)}
           description="Upload clear photo or PDF of your Aadhaar card (Max 5MB)"
         />
       </div>
 
       {/* Info Box */}
       <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
-        <p className="text-sm text-blue-900 dark:text-blue-400">
-          <strong>
-            <NotebookText className="inline mr-2" size={16} /> Note:
-          </strong>{" "}
-          All documents information must be clear.
+        <p className="text-sm text-green-900 dark:text-blue-400">
+          <strong><NotebookText className="inline mr-2" size={16} /> Note:</strong> All documents information must be clear.
         </p>
       </div>
     </div>
@@ -543,9 +551,12 @@ function Bank({ formData, updateFormData }: FormDataProps) {
         <input
           value={formData.bankName}
           onChange={(e) => updateFormData("bankName", e.target.value)}
-          placeholder="Enter the name of your bank"
-          className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-3 text-gray-900 dark:text-white bg-white dark:bg-gray-700 placeholder:text-xs text-gray-500 dark:placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors uppercase"
+          placeholder="e.g., HDFC Bank, SBI, ICICI Bank"
+          className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-3 text-gray-900 dark:text-white bg-white dark:bg-gray-700 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
         />
+        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+          Enter the name of your bank
+        </p>
       </div>
 
       {/* Account Number */}
@@ -560,9 +571,12 @@ function Bank({ formData, updateFormData }: FormDataProps) {
             const value = e.target.value.replace(/\D/g, "");
             updateFormData("accountNumber", value);
           }}
-          placeholder="Enter your bank account number (9-18 digits)"
-          className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-3 text-gray-900 dark:text-white bg-white dark:bg-gray-700 placeholder:text-xs text-gray-500 dark:placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors uppercase"
+          placeholder="123456789012"
+          className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-3 text-gray-900 dark:text-white bg-white dark:bg-gray-700 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
         />
+        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+          Enter your bank account number (9-18 digits)
+        </p>
       </div>
 
       {/* IFSC Code */}
@@ -572,14 +586,16 @@ function Bank({ formData, updateFormData }: FormDataProps) {
         </label>
         <input
           value={formData.ifscCode}
-          onChange={(e) =>
-            updateFormData("ifscCode", e.target.value.toUpperCase())
-          }
-          placeholder="Enter your banks 11-character IFSC code"
+          onChange={(e) => updateFormData("ifscCode", e.target.value.toUpperCase())}
+          placeholder="HDFC0001234"
           maxLength={11}
-          className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-3 text-gray-900 dark:text-white bg-white dark:bg-gray-700 placeholder:text-xs text-gray-500 dark:placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors uppercase"
+          className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-3 text-gray-900 dark:text-white bg-white dark:bg-gray-700 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors uppercase"
         />
+        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+          Enter your banks 11-character IFSC code
+        </p>
       </div>
+
 
       {/* Account Holder Name */}
       <div>
@@ -589,30 +605,33 @@ function Bank({ formData, updateFormData }: FormDataProps) {
         <input
           value={formData.accountHolderName}
           onChange={(e) => updateFormData("accountHolderName", e.target.value)}
-          placeholder="Enter name exactly as per bank account"
-          className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-3 text-gray-900 dark:text-white bg-white dark:bg-gray-700 placeholder:text-xs text-gray-500 dark:placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors uppercase"
+          placeholder="As per bank records"
+          className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-3 text-gray-900 dark:text-white bg-white dark:bg-gray-700 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
         />
-      </div>
-
-      {/* Warning Box */}
-      <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
-        <p className="text-sm text-blue-900 dark:text-blue-400">
-          <strong>
-            <AlertTriangle className="inline mr-1 " size={16} /> Important:
-          </strong>{" "}
-          Ensure bank details are accurate. All payments will be transferred to
-          this account.
+        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+          Enter name exactly as per bank account
         </p>
       </div>
+
+
+      {/* Warning Box */}
+      <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
+        <p className="text-sm text-red-900 dark:text-red-400">
+          <strong><AlertTriangle className="inline mr-2" size={16} /> Important:</strong> Ensure bank details are accurate. All payments will be transferred to this account.
+        </p>
+      </div>
+
     </div>
   );
 }
-// STEP 4: PHONE VERIFICATION (OTP)
-// ============================================
+// STEP 4: =======PHONE VERIFICATION (OTP)=======
+
 function PhoneVerification({ formData, updateFormData }: FormDataProps) {
   const [timer, setTimer] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  // OTP timer countdown
+  // OTP Countdown Timer
   useEffect(() => {
     if (timer > 0) {
       const interval = setInterval(() => {
@@ -622,20 +641,87 @@ function PhoneVerification({ formData, updateFormData }: FormDataProps) {
     }
   }, [timer]);
 
-  const handleSendOtp = () => {
-    if (formData.phoneNumber.length === 10) {
+  // ==============================
+  // SEND OTP
+  // ==============================
+  const handleSendOtp = async () => {
+    if (formData.phoneNumber.length !== 10) return;
+
+    setLoading(true);
+    setError("");
+
+    try {
+      const token = localStorage.getItem("token");
+
+      const res = await fetch(
+        "http://127.0.0.1:8000/api/seller/send-otp/",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            phone_number: formData.phoneNumber,
+          }),
+        }
+      );
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to send OTP");
+      }
+
       updateFormData("isOtpSent", true);
-      setTimer(60); // 60 seconds countdown
-      // TODO: Call API to send OTP
-      console.log("Sending OTP to:", formData.phoneNumber);
+      setTimer(60);
+
+
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleVerifyOtp = () => {
-    if (formData.otp.length === 6) {
+  // ==============================
+  // VERIFY OTP
+  // ==============================
+  const handleVerifyOtp = async () => {
+    if (formData.otp.length !== 6) return;
+
+    setLoading(true);
+    setError("");
+
+    try {
+      const token = localStorage.getItem("token");
+
+      const res = await fetch(
+        "http://127.0.0.1:8000/api/seller/verify-otp/",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            otp: formData.otp,
+          }),
+        }
+      );
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || "Invalid OTP");
+      }
+
       updateFormData("isOtpVerified", true);
-      // TODO: Call API to verify OTP
-      console.log("Verifying OTP:", formData.otp);
+
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -658,9 +744,7 @@ function PhoneVerification({ formData, updateFormData }: FormDataProps) {
         </label>
         <div className="flex gap-3">
           <div className="flex-1 relative">
-            <span className="absolute left-4 top-3.5 text-gray-500 dark:text-gray-400">
-              +91
-            </span>
+            <span className="absolute left-4 top-3.5 text-gray-500 dark:text-gray-400">+91</span>
             <input
               type="tel"
               value={formData.phoneNumber}
@@ -668,25 +752,29 @@ function PhoneVerification({ formData, updateFormData }: FormDataProps) {
                 const value = e.target.value.replace(/\D/g, "").slice(0, 10);
                 updateFormData("phoneNumber", value);
               }}
-              placeholder="XXXXXXXX"
+              placeholder="9876543210"
               disabled={formData.isOtpVerified}
-              className="w-full pl-14 pr-4 py-3 border border-blue-300 dark:border-blue-600 rounded-lg text-gray-900 dark:text-white bg-white dark:bg-gray-700 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="w-full pl-14 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white bg-white dark:bg-gray-700 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             />
           </div>
           <button
+            type="button"
             onClick={handleSendOtp}
             disabled={
-              formData.phoneNumber.length !== 10 ||
+              formData.phoneNumber.trim().length !== 10 ||
               timer > 0 ||
-              formData.isOtpVerified
+              formData.isOtpVerified ||
+              loading
             }
             className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all"
           >
-            {formData.isOtpVerified
-              ? "Verified ✓"
-              : timer > 0
-                ? `${timer}s`
-                : "Send OTP"}
+            {loading
+              ? "Sending..."
+              : formData.isOtpVerified
+                ? "Verified ✓"
+                : timer > 0
+                  ? `${timer}s`
+                  : "Send OTP"}
           </button>
         </div>
         <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
@@ -753,11 +841,8 @@ function PhoneVerification({ formData, updateFormData }: FormDataProps) {
 
       {/* Info Box */}
       <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
-        <p className="text-sm text-blue-900 dark:text-blue-400">
-          <strong>
-            <Smartphone className="inline mr-2" size={16} /> Why verify?
-          </strong>{" "}
-          We need to confirm your identity and send order updates via SMS.
+        <p className="text-sm text-green-900 dark:text-blue-400">
+          <strong><Smartphone className="inline mr-2" size={16} /> Why verify?</strong> We need to confirm your identity and send order updates via SMS.
         </p>
       </div>
     </div>
@@ -767,21 +852,18 @@ function PhoneVerification({ formData, updateFormData }: FormDataProps) {
 // STEP 5: REVIEW & SUBMIT
 // ============================================
 
+
 function Review({ formData }: any) {
+  const [showTerms, setShowTerms] = useState(false);
+
+
+
   const sections = [
     {
       title: "Phone Verification",
       items: [
-        {
-          label: "Mobile Number",
-          value: formData.phoneNumber
-            ? `+91 ${formData.phoneNumber}`
-            : "Not provided",
-        },
-        {
-          label: "Verification Status",
-          value: formData.isOtpVerified ? " Verified" : " Not verified",
-        },
+        { label: "Mobile Number", value: formData.phoneNumber ? `+91 ${formData.phoneNumber}` : "Not provided" },
+        { label: "Verification Status", value: formData.isOtpVerified ? " Verified" : " Not verified" },
       ],
     },
     {
@@ -790,11 +872,9 @@ function Review({ formData }: any) {
         { label: "Owner Name", value: formData.ownerName || "Not provided" },
         { label: "Store Name", value: formData.storeName || "Not provided" },
         {
-          label: "Categories",
-          value:
-            formData.storeCategory && formData.storeCategory.length > 0
-              ? formData.storeCategory.join(", ")
-              : "Not provided",
+          label: "Categories", value: formData.storeCategory && formData.storeCategory.length > 0
+            ? formData.storeCategory.join(", ")
+            : "Not provided"
         },
         // { label: "Description", value: formData.storeDescription || "Not provided" },
         // { label: "Address", value: formData.storeAddress || "Not provided" },
@@ -804,35 +884,16 @@ function Review({ formData }: any) {
       title: "KYC Details",
       items: [
         { label: "PAN Number", value: formData.panNumber || "Not provided" },
-        {
-          label: "Aadhaar Number",
-          value: formData.aadhaarNumber
-            ? formData.aadhaarNumber.replace(/\d(?=\d{4})/g, "X")
-            : "Not provided",
-        },
-        {
-          label: "PAN Document",
-          value: formData.panDocument ? " Uploaded" : " Not uploaded",
-        },
-        {
-          label: "Aadhaar Document",
-          value: formData.aadhaarDocument ? " Uploaded" : "Not uploaded",
-        },
+        { label: "Aadhaar Number", value: formData.aadhaarNumber ? formData.aadhaarNumber.replace(/\d(?=\d{4})/g, "X") : "Not provided" },
+        { label: "PAN Document", value: formData.panDocument ? " Uploaded" : " Not uploaded" },
+        { label: "Aadhaar Document", value: formData.aadhaarDocument ? " Uploaded" : "Not uploaded" },
       ],
     },
     {
       title: "Bank Details",
       items: [
-        {
-          label: "Account Holder",
-          value: formData.accountHolderName || "Not provided",
-        },
-        {
-          label: "Account Number",
-          value: formData.accountNumber
-            ? formData.accountNumber.replace(/\d(?=\d{4})/g, "X")
-            : "Not provided",
-        },
+        { label: "Account Holder", value: formData.accountHolderName || "Not provided" },
+        { label: "Account Number", value: formData.accountNumber ? formData.accountNumber.replace(/\d(?=\d{4})/g, "X") : "Not provided" },
         { label: "IFSC Code", value: formData.ifscCode || "Not provided" },
         { label: "Bank Name", value: formData.bankName || "Not provided" },
       ],
@@ -850,6 +911,13 @@ function Review({ formData }: any) {
           Please review all details before submitting
         </p>
       </div>
+      <TermsModal
+        open={showTerms}
+        onClose={() => setShowTerms(false)}
+        termsContent={termsContent}
+      />
+
+
 
       {/* Review Sections */}
       <div className="space-y-4">
@@ -877,13 +945,47 @@ function Review({ formData }: any) {
         ))}
       </div>
 
+
+
+      {/* Terms and Conditions */}
+      <div className="bg-white dark:bg-gray-700 border-2 border-gray-300 dark:border-gray-600 rounded-lg p-5">
+        <label className="flex items-start gap-3 cursor-pointer">
+          <input
+            type="checkbox"
+            className="mt-1 w-5 h-5 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
+          />
+          <div className="flex-1">
+            <p className="text-sm text-gray-900 dark:text-white">
+              I agree to the{" "}
+              <button
+                type="button"
+                onClick={() => setShowTerms(true)}
+                className="text-blue-600 dark:text-blue-400 hover:underline"
+              >
+
+                Terms and Conditions
+              </button>
+              {" "}and{" "}
+              <a href="/seller/onboarding/privacy_policy" className="text-blue-600 dark:text-blue-400 hover:underline">
+                Privacy Policy
+              </a>
+            </p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+              By checking this box, you confirm that all information provided is accurate
+            </p>
+          </div>
+        </label>
+      </div>
+
+
+
       {/* Info Box */}
       <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-5">
-        <p className="text-sm text-blue-900 dark:text-blue-400 font-semibold mb-2">
+        <p className="text-sm text-green-900 dark:text-blue-400 font-semibold mb-2">
           <Clipboard className="inline mr-2" size={16} />
           What happens next?
         </p>
-        <ul className="text-sm text-blue-800 dark:text-blue-300 space-y-1 list-disc list-inside">
+        <ul className="text-sm text-green-900 dark:text-blue-300 space-y-1 list-disc list-inside">
           <li>Your application will be reviewed within 24-48 hours</li>
           <li>You will receive an email confirmation once approved</li>
           <li>You can then start adding products and receiving orders</li>
@@ -892,6 +994,54 @@ function Review({ formData }: any) {
     </div>
   );
 }
+const termsContent = [
+  {
+    title: '1. Seller Eligibility',
+    content: 'By registering as a seller on Nirmatri Crafts, you confirm that you are highlighting authentic, handcrafted items. We reserve the right to verify the origin of your products and request additional documentation if needed.'
+  },
+  {
+    title: '2. Commissions & Fees',
+    content: 'Nirmatri Crafts charges a standard 10% platform fee on every successful sale. This covers payment processing, marketing for your products, customer support, and platform maintenance. Additional fees may apply for premium features.'
+  },
+  {
+    title: '3. Product Authenticity',
+    content: 'All products must be handmade, handcrafted, or artisanal. Mass-produced items, counterfeit goods, or items misrepresented as handmade are strictly prohibited. We conduct regular quality checks to maintain marketplace integrity.'
+  },
+  {
+    title: '4. Shipping Policy',
+    content: 'Sellers are responsible for packaging products safely and securely. Orders must be dispatched within 48 hours of confirmation unless otherwise specified. Failure to ship on time may result in store penalties, reduced visibility, or account suspension.'
+  },
+  {
+    title: '5. Payout Schedule',
+    content: 'Funds from sales are held in escrow for 7 days post-delivery to handle potential returns or disputes. Payouts are processed every Monday directly to your registered bank account. Minimum payout threshold is ₹500.'
+  },
+  {
+    title: '6. Returns & Refunds',
+    content: 'Sellers must honor our 7-day return policy for damaged or defective items. Return shipping costs for seller errors will be deducted from your account. Customer satisfaction is our priority.'
+  },
+  {
+    title: '7. Prohibited Items',
+    content: 'Mass-produced industrial goods, hazardous materials, illegal substances, weapons, copyrighted designs without permission, and any items violating Indian law are strictly prohibited. Violations may result in immediate account termination.'
+  },
+  {
+    title: '8. Intellectual Property',
+    content: 'You retain ownership of your product designs. However, by listing on Nirmatri, you grant us a license to display, market, and promote your products across our platforms and marketing channels.'
+  },
+  {
+    title: '9. Account Termination',
+    content: 'We reserve the right to suspend or terminate seller accounts for policy violations, fraudulent activity, poor customer ratings, or failure to maintain quality standards. Termination procedures are outlined in our dispute resolution policy.'
+  },
+  {
+    title: '10. Changes to Terms',
+    content: 'Nirmatri reserves the right to modify these terms at any time. Sellers will be notified via email 30 days before changes take effect. Continued use of the platform constitutes acceptance of updated terms.'
+  },
+];
+
+
+
+/* ============================================ */
+/* 🔹 HELPER COMPONENTS */
+/* ============================================ */
 
 // File Upload Component
 interface FileUploadProps {
@@ -911,12 +1061,7 @@ function FileUpload({ label, file, onChange, description }: FileUploadProps) {
         return;
       }
       // Validate file type
-      const validTypes = [
-        "image/jpeg",
-        "image/jpg",
-        "image/png",
-        "application/pdf",
-      ];
+      const validTypes = ["image/jpeg", "image/jpg", "image/png", "application/pdf"];
       if (!validTypes.includes(selectedFile.type)) {
         alert("Only JPG, PNG, and PDF files are allowed");
         return;
@@ -931,11 +1076,10 @@ function FileUpload({ label, file, onChange, description }: FileUploadProps) {
         {label}
       </label>
       <div
-        className={`relative border-2 border-dashed rounded-lg p-4 transition-all ${
-          file
-            ? "border-green-500 dark:border-green-600 bg-green-50 dark:bg-green-900/20"
-            : "border-gray-300 dark:border-gray-600 hover:border-blue-500 dark:hover:border-blue-600 bg-white dark:bg-gray-700"
-        }`}
+        className={`relative border-2 border-dashed rounded-lg p-4 transition-all ${file
+          ? "border-green-500 dark:border-green-600 bg-green-50 dark:bg-green-900/20"
+          : "border-gray-300 dark:border-gray-600 hover:border-blue-500 dark:hover:border-blue-600 bg-white dark:bg-gray-700"
+          }`}
       >
         <Input
           type="file"
@@ -957,8 +1101,7 @@ function FileUpload({ label, file, onChange, description }: FileUploadProps) {
           ) : (
             <div>
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                <FileUp className="inline mr-2" size={16} /> Click to upload or
-                drag and drop
+                <FileUp className="inline mr-2" size={16} /> Click to upload or drag and drop
               </p>
               <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
                 {description}

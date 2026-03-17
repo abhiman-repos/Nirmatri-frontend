@@ -30,117 +30,7 @@ const mockOrders = [
     date: '2026-01-27',
     deliveryDate: '2026-01-30',
   },
-  {
-    id: 'ORD-1090',
-    customer: {
-      name: 'Rahul Verma',
-      email: 'rahul.v@email.com',
-      phone: '+91 98765 43211',
-      address: '456 Park Street, Kolkata, West Bengal - 700016',
-    },
-    items: [{ name: 'Clay Pot Set', quantity: 1, price: 2450 }],
-    total: 2450,
-    status: 'shipped',
-    payment: 'paid',
-    date: '2026-01-27',
-    deliveryDate: '2026-01-31',
-  },
-  {
-    id: 'ORD-1089',
-    customer: {
-      name: 'Anita Desai',
-      email: 'anita.desai@email.com',
-      phone: '+91 98765 43212',
-      address: '789 Linking Road, Mumbai, Maharashtra - 400050',
-    },
-    items: [{ name: 'Wooden Wall Art', quantity: 1, price: 980 }],
-    total: 980,
-    status: 'pending',
-    payment: 'paid',
-    date: '2026-01-26',
-    deliveryDate: '2026-01-30',
-  },
-  {
-    id: 'ORD-1088',
-    customer: {
-      name: 'Vikram Singh',
-      email: 'vikram.singh@email.com',
-      phone: '+91 98765 43213',
-      address: '321 Rajpath, New Delhi, Delhi - 110001',
-    },
-    items: [{ name: 'Handwoven Basket', quantity: 2, price: 675 }],
-    total: 1350,
-    status: 'processing',
-    payment: 'paid',
-    date: '2026-01-26',
-    deliveryDate: '2026-01-29',
-  },
-  {
-    id: 'ORD-1087',
-    customer: {
-      name: 'Meera Kapoor',
-      email: 'meera.k@email.com',
-      phone: '+91 98765 43214',
-      address: '654 Civil Lines, Jaipur, Rajasthan - 302006',
-    },
-    items: [{ name: 'Ceramic Dinner Set', quantity: 1, price: 3200 }],
-    total: 3200,
-    status: 'delivered',
-    payment: 'paid',
-    date: '2026-01-25',
-    deliveryDate: '2026-01-28',
-  },
-  {
-    id: 'ORD-1086',
-    customer: {
-      name: 'Arjun Reddy',
-      email: 'arjun.reddy@email.com',
-      phone: '+91 98765 43215',
-      address: '987 Banjara Hills, Hyderabad, Telangana - 500034',
-    },
-    items: [
-      { name: 'Bamboo Serving Tray', quantity: 2, price: 850 },
-      { name: 'Handmade Vase', quantity: 1, price: 1200 },
-    ],
-    total: 2900,
-    status: 'cancelled',
-    payment: 'refunded',
-    date: '2026-01-24',
-    deliveryDate: '-',
-  },
-  {
-    id: 'ORD-1085',
-    customer: {
-      name: 'Sneha Patel',
-      email: 'sneha.patel@email.com',
-      phone: '+91 98765 43216',
-      address: '147 Ashram Road, Ahmedabad, Gujarat - 380009',
-    },
-    items: [{ name: 'Hand-painted Ceramic Plates', quantity: 1, price: 1800 }],
-    total: 1800,
-    status: 'pending',
-    payment: 'pending',
-    date: '2026-01-26',
-    deliveryDate: '2026-01-30',
-  },
-  {
-    id: 'ORD-1084',
-    customer: {
-      name: 'Karthik Iyer',
-      email: 'karthik.iyer@email.com',
-      phone: '+91 98765 43217',
-      address: '258 Anna Salai, Chennai, Tamil Nadu - 600002',
-    },
-    items: [
-      { name: 'Wooden Wall Art', quantity: 2, price: 980 },
-      { name: 'Ceramic Dinner Set', quantity: 1, price: 3200 },
-    ],
-    total: 5160,
-    status: 'processing',
-    payment: 'paid',
-    date: '2026-01-25',
-    deliveryDate: '2026-01-29',
-  },
+
 ];
 
 export default function OrdersPage() {
@@ -157,12 +47,6 @@ export default function OrdersPage() {
     const savedMode = localStorage.getItem('darkMode') === 'true';
     setDarkMode(savedMode);
   }, []);
-
-  const toggleDarkMode = () => {
-    const newMode = !darkMode;
-    setDarkMode(newMode);
-    localStorage.setItem('darkMode', String(newMode));
-  };
 
   // Filter orders
   const filteredOrders = orders.filter((order) => {
@@ -181,7 +65,7 @@ export default function OrdersPage() {
   const deliveredOrders = orders.filter((o) => o.status === 'delivered').length;
 
 
-    const statusConfig = {
+  const statusConfig = {
   pending: {
     label: 'Pending',
     class: 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400',
@@ -228,7 +112,7 @@ export default function OrdersPage() {
 
   return (
     <div className={`${darkMode ? 'dark' : ''}`}>
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+      <div className="min-h-screen bg-transparent dark:bg-gray-900 transition-colors duration-300">
         <main className="p-8">
           {/* Header */}
           <div className="mb-8">
@@ -418,7 +302,7 @@ function StatCard({
   );
 }
 
-function OrderDetailsModal({ order, onClose, onUpdateStatus, darkMode }: {
+function OrderDetailsModal({ order, onClose }: {
   order: any;
   onClose: () => void;
   onUpdateStatus: (orderId: string, status: string) => void;

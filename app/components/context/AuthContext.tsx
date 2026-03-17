@@ -30,12 +30,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const logout = () => {
-    localStorage.removeItem("auth_token");
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    localStorage.removeItem("loggedIn");
+    console.log("LOGOUT CALLED");
     localStorage.removeItem("name");
     localStorage.removeItem("email");
+    localStorage.removeItem("auth_token");
+    localStorage.removeItem("token");
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("user");
+
     setIsLoggedIn(false);
   };
 
@@ -45,7 +47,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     </AuthContext.Provider>
   );
 }
-
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) throw new Error("useAuth must be used inside AuthProvider");

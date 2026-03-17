@@ -5,16 +5,16 @@ import { Header } from "@/app/components/Header";
 import dynamic from "next/dynamic";
 
 /* ===================== SECTIONS ===================== */
-import  MyProfileSection  from "@/app/components/userprofile/sections/MyProfileSection";
-import { OrdersSection } from "@/app/components/userprofile/sections/OrdersSection";
-import { AddressesSection } from "@/app/components/userprofile/sections/AddressesSection";
-import { WishlistSection } from "@/app/components/userprofile/sections/WishlistSection";
-import { CartSection } from "@/app/components/userprofile/sections/CartSection";
-import { PaymentsSection } from "@/app/components/userprofile/sections/PaymentsSection";
-import { ReturnsSection } from "@/app/components/userprofile/sections/ReturnsSection";
-import { NotificationsSection } from "@/app/components/userprofile/sections/NotificationsSection";
-import { SupportSection } from "@/app/components/userprofile/sections/SupportSection";
-import { SettingsSection } from "@/app/components/userprofile/sections/SettingsSection";
+import  MyProfileSection  from "@/app/home/sections/MyProfileSection";
+import { OrdersSection } from "@/app/home/sections/OrdersSection";
+import { AddressesSection } from "@/app/home/sections/AddressesSection";
+import { WishlistSection } from "@/app/home/sections/WishlistSection";
+import { CartSection } from "@/app/home/sections/CartSection";
+import { PaymentsSection } from "@/app/home/sections/PaymentsSection";
+import { ReturnsSection } from "@/app/home/sections/ReturnsSection";
+import { NotificationsSection } from "@/app/home/sections/NotificationsSection";
+import { SupportSection } from "@/app/home/sections/SupportSection";
+import { SettingsSection } from "@/app/home/sections/SettingsSection";
 
 const AccountSidebar = dynamic(
   () => import("@/app/components/AccountSidebar"),

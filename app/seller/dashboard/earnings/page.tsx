@@ -55,7 +55,7 @@ export default function EarningsPage() {
 
   return (
     <div className={darkMode ? 'dark' : ''}>
-      <main className="p-8 bg-gray-50 dark:bg-gray-900 min-h-screen transition-colors duration-300">
+      <main className="p-8 bg-transparent dark:bg-gray-900 min-h-screen transition-colors duration-300">
         
         {/* Header */}
         <div className="mb-8 flex justify-between items-center">

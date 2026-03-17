@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import "./globals.css";
 
-import { ThemeProvider } from "./contexts/ThemeContext";
 import { GoogleOAuthProvider } from "@react-oauth/google";
-import { AuthProvider } from "@/app/components/context/AuthContext";
 import HeaderWrapper from "@/app/components/HeaderWrapper";
+import { AuthProvider } from "./components/context/AuthContext"; // ✅ ADD THIS
+import "leaflet/dist/leaflet.css"; 
+import { CartProvider } from "./components/context/CartContext";
 
 export const metadata: Metadata = {
   title: "Nirmatri",
@@ -18,17 +19,23 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="antialiased">
-        <ThemeProvider>
+      <body
+        className="
+          min-h-screen
+          bg-[#EAF2EC]
+        "
+      >
+
           <GoogleOAuthProvider
             clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!}
           >
             <AuthProvider>
               <HeaderWrapper />
+              <CartProvider>
               {children}
+              </CartProvider>
             </AuthProvider>
           </GoogleOAuthProvider>
-        </ThemeProvider>
       </body>
     </html>
   );

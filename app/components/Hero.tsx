@@ -1,18 +1,12 @@
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
-import { ImageWithFallback } from "@/app/components/context/AuthContext.tsx/ImageWithFallback";
 
 export function Hero() {
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Background Image */}
       <div className="absolute inset-0 z-0">
-        <ImageWithFallback
-          src="https://images.unsplash.com/photo-1739742465651-7a775fff3ac5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb2Rlcm4lMjB0ZWNoJTIwaGVyb3xlbnwxfHx8fDE3Njg5ODAxMzV8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
-          alt="Hero Background"
-          className="w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 bg-black/50" />
+        <div className="bg-transparent" />
       </div>
 
       {/* Content */}

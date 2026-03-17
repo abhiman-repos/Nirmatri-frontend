@@ -41,7 +41,7 @@ export function NirmatriFooter() {
   };
 
   return (
-    <footer className="bg-[#1a3a2a] transition-colors duration-300">
+    <footer  className="bg-[#1A3A2A] backdrop-blur-md sticky top-0 z-50">
       {/* Newsletter */}
       <div className="bg-gradient-to-r from-[#EAF2EC] to-[#1a3a2a] py-8 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">

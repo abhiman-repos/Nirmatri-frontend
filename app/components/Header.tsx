@@ -3,7 +3,6 @@
 import { Search, LogIn, Menu, ShoppingCart } from "lucide-react";
 import { useEffect, useRef, useState, useTransition } from "react";
 import { useRouter, usePathname } from "next/navigation";
-
 import { Button } from "@/app/components/ui/button";
 import { Input } from "@/app/components/ui/input";
 import { Sheet, SheetContent } from "@/app/components/ui/sheet";
@@ -14,7 +13,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/app/components/ui/dropdown-menu";
-
 import { useAuth } from "./context/AuthContext";
 
 type HeaderProps = {
@@ -22,19 +20,17 @@ type HeaderProps = {
 };
 
 export function Header({ onUserClick }: HeaderProps) {
-  const { isLoggedIn } = useAuth();
-
   const [showTopBar, setShowTopBar] = useState(true);
   const [cartCount] = useState<number>(0);
 
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const [sheetSearchOpen, setSheetSearchOpen] = useState(false);
 
-  const [, startTransition] = useTransition();
-
+  const { isLoggedIn } = useAuth(); // 🔐 auth state
   const router = useRouter();
   const pathname = usePathname();
   const searchRef = useRef<HTMLDivElement>(null);
+  const [, startTransition] = useTransition();
 
   /* ⏱️ TOP BAR AUTO HIDE */
   useEffect(() => {
@@ -65,7 +61,6 @@ export function Header({ onUserClick }: HeaderProps) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [mobileSearchOpen]);
 
-  /* ❌ HIDE HEADER ON AUTH PAGES */
   if (
     pathname.startsWith("/userauth") ||
     pathname.startsWith("/seller") ||
@@ -80,7 +75,12 @@ export function Header({ onUserClick }: HeaderProps) {
       <Sheet open={sheetSearchOpen} onOpenChange={setSheetSearchOpen}>
         <SheetContent side="top" className="p-4 bg-[#6968A6]">
           <form action="/search" className="flex gap-2">
-            <Input autoFocus name="q" type="search" placeholder="Search products..." />
+            <Input
+              autoFocus
+              name="q"
+              type="search"
+              placeholder="Search products..."
+            />
             <Button size="icon" type="submit">
               <Search className="h-4 w-4 text-blue-500" />
             </Button>
@@ -88,19 +88,20 @@ export function Header({ onUserClick }: HeaderProps) {
         </SheetContent>
       </Sheet>
 
-      <header className="sticky top-0 z-50 backdrop-blur-xl bg-gradient-green-black-purple">
+      <header className="bg-[#3D6B4F] backdrop-blur-md sticky top-0 z-50 ">
         {/* 🔹 TOP BAR */}
         <div
           className={`overflow-hidden transition-all duration-500 ${
             showTopBar ? "max-h-10" : "max-h-0"
           }`}
         >
-          <div className="bg-gradient-to-r from-[#CF9893] via-[#6968A6] to-[#085078] text-white text-xs py-2 text-center">
+          <div className="bg-gradient-to-r from-green-800 via-emerald-700 to-teal-800 text-white text-xs py-2 text-center">
             Where tradition is handcrafted into elegance
           </div>
         </div>
 
         {/* 🔹 MAIN HEADER */}
+
         <div className="h-14">
           <div className="max-w-7xl mx-auto h-full px-4 flex items-center gap-3">
             <NirmatriLogo />
@@ -119,7 +120,7 @@ export function Header({ onUserClick }: HeaderProps) {
                   type="submit"
                   className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 rounded-full"
                 >
-                  <Search className="h-5 w-5 text-green-500" />
+                  <Search className="h-6 w-6 text-white" />
                 </Button>
               </form>
             </div>
@@ -137,19 +138,25 @@ export function Header({ onUserClick }: HeaderProps) {
               </Button>
 
               {!isLoggedIn ? (
-                /* 🔴 GUEST MODE */
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="outline" className="h-8 px-3 gap-1.5">
+                    <Button
+                      variant="outline"
+                      className="h-8 px-3 gap-1.5 bg-[#EAF2EC] hover:bg-white"
+                    >
                       <LogIn className="h-4 w-4" />
                       Login
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={() => router.push("/userauth/login")}>
+                    <DropdownMenuItem
+                      onClick={() => router.push("/userauth/login")}
+                    >
                       Continue as User
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => router.push("/seller/login")}>
+                    <DropdownMenuItem
+                      onClick={() => router.push("/seller/login")}
+                    >
                       Login as Seller
                     </DropdownMenuItem>
                   </DropdownMenuContent>
@@ -161,9 +168,10 @@ export function Header({ onUserClick }: HeaderProps) {
                     variant="ghost"
                     size="icon"
                     className="relative rounded-full hover:bg-white/10"
-                    onClick={() => router.push("/cart")}
+                    onClick={() => router.push("/home/card")}
                   >
                     <ShoppingCart className="h-6 w-6 text-white" />
+
                     {cartCount > 0 && (
                       <span className="absolute -top-1 -right-1 h-5 min-w-[20px] rounded-full bg-orange-500 text-white text-[11px] font-bold flex items-center justify-center px-1">
                         {cartCount}
