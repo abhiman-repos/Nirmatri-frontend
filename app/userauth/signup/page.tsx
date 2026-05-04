@@ -4,39 +4,22 @@ import { useState } from "react";
 import Link from "next/link";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/app/contexts/AuthContext";
+import axios from "axios";
+import { useAuth } from "@/app/components/context/AuthContext";
 
 export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirm, setConfirm] = useState("");
 
   const router = useRouter();
   const { login } = useAuth();
 
-  const handleRegister = () => {
-    const firstName = (
-      document.getElementById("firstName") as HTMLInputElement
-    )?.value.trim();
-
-    const lastName = (
-      document.getElementById("lastName") as HTMLInputElement
-    )?.value.trim();
-
-    const email = (
-      document.getElementById("email") as HTMLInputElement
-    )?.value.trim();
-
-    const password = (
-      document.getElementById("password") as HTMLInputElement
-    )?.value;
-    
-
-    const confirm = (
-      document.getElementById("confirm") as HTMLInputElement
-    )?.value;
-
-    // ================= VALIDATION =================
-    if (!firstName || !lastName || !email || !password || !confirm) {
+  const handleRegister = async () => {
+    if (!fullName || !email || !password || !confirm) {
       setError("Please fill all fields");
       return;
     }
@@ -56,69 +39,68 @@ export default function RegisterPage() {
       return;
     }
 
-    // ================= SUCCESS =================
-    setError("");
-    setLoading(true);
+    try {
+      setLoading(true);
+      setError("");
 
-    // 🔁 Fake API call (backend later)
-    setTimeout(() => {
+      const res = await axios.post("http://localhost:8000/api/user/register/", {
+        name: fullName,
+        email,
+        password,
+      });
+
+      const data = res.data;
+
+      if (data.token) {
+        localStorage.setItem("auth_token", data.token); // ✅ fixed
+        login(data.token);
+        router.replace("/home");
+      }
+    } catch (err: any) {
+      if (err.response?.data?.error) {
+        setError(err.response.data.error);
+      } else {
+        setError("Registration failed");
+      }
+    } finally {
       setLoading(false);
-
-      // ✅ SINGLE SOURCE OF TRUTH
-      login();  
-      // ✅ prevent going back to register
-      router.replace("/home");
-    }, 2000);
+    }
   };
 
   return (
     <main className="min-h-screen bg-[#F4F7FD] flex justify-center">
       <div className="w-full max-w-4xl px-7 py-12">
         {/* ================= TITLE ================= */}
-        <h1 className="text-3xl font-semibold text-gray-900 mb-8">
-          Register
-        </h1>
+        <h1 className="text-3xl font-semibold text-gray-900 mb-8">Register</h1>
 
         {/* ================= FORM CARD ================= */}
         <div className="bg-white rounded-3xl border shadow-sm p-14">
           {/* NAME */}
-          <div className="grid grid-cols-2 gap-6 mb-6">
+          <div className="grid gap-6 mb-6">
             <div>
               <label className="block text-sm text-gray-600 mb-2">
-                First Name
+                Full Name
               </label>
               <input
-                id="firstName"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
                 className="w-full rounded-xl border px-4 py-3 text-sm text-gray-900
                            focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="First name"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm text-gray-600 mb-2">
-                Last Name
-              </label>
-              <input
-                id="lastName"
-                className="w-full rounded-xl border px-4 py-3 text-sm text-gray-900
-                           focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Last name"
+                placeholder="Full name"
               />
             </div>
           </div>
 
           {/* EMAIL */}
           <div className="mb-6">
-            <label className="block text-sm text-gray-600 mb-2">
-              Email
-            </label>
+            <label className="block text-sm text-gray-600 mb-2">Email</label>
             <input
-              id="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               type="email"
               className="w-full rounded-xl border px-4 py-3 text-sm text-gray-900
-                         focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="you@email.com"
+              focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="example@email.com"
             />
           </div>
 
@@ -129,10 +111,11 @@ export default function RegisterPage() {
                 Password
               </label>
               <input
-                id="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 type="password"
                 className="w-full rounded-xl border px-4 py-3 text-sm text-gray-900
-                           focus:outline-none focus:ring-2 focus:ring-blue-500"
+                focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Create password"
               />
             </div>
@@ -142,7 +125,8 @@ export default function RegisterPage() {
                 Confirm Password
               </label>
               <input
-                id="confirm"
+                value={confirm}
+                onChange={(e) => setConfirm(e.target.value)}
                 type="password"
                 className="w-full rounded-xl border px-4 py-3 text-sm text-gray-900
                            focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -151,12 +135,8 @@ export default function RegisterPage() {
             </div>
           </div>
 
-          {/* ERROR */}
-          {error && (
-            <p className="text-sm text-red-600 mb-4">
-              {error}
-            </p>
-          )}
+          {/* ================= ERROR ================= */}
+          {error && <p className="text-sm text-red-600 mb-4">{error}</p>}
 
           {/* SUBMIT */}
           <button

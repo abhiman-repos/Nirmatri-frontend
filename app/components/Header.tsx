@@ -1,21 +1,19 @@
 "use client";
 
 import { Search, LogIn, Menu, ShoppingCart } from "lucide-react";
-import Link from "next/link";
 import { useEffect, useRef, useState, useTransition } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { Button } from "@/app/components/ui/button";
 import { Input } from "@/app/components/ui/input";
 import { Sheet, SheetContent } from "@/app/components/ui/sheet";
 import NirmatriLogo from "@/app/components/Nirmatri";
-import { useAuth } from "@/app/contexts/AuthContext";
-
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/app/components/ui/dropdown-menu";
+import { useAuth } from "./context/AuthContext";
 
 type HeaderProps = {
   onUserClick?: () => void;
@@ -23,6 +21,8 @@ type HeaderProps = {
 
 export function Header({ onUserClick }: HeaderProps) {
   const [showTopBar, setShowTopBar] = useState(true);
+  const [cartCount] = useState<number>(0);
+
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const [sheetSearchOpen, setSheetSearchOpen] = useState(false);
 
@@ -31,12 +31,6 @@ export function Header({ onUserClick }: HeaderProps) {
   const pathname = usePathname();
   const searchRef = useRef<HTMLDivElement>(null);
   const [, startTransition] = useTransition();
-
-  /* ❌ AUTH PAGES PE HEADER HIDE */
-  const hideHeader =
-    pathname.startsWith("/seller") ||
-     pathname.startsWith("/superadmin/login") ||
-    pathname.startsWith("/userauth");
 
   /* ⏱️ TOP BAR AUTO HIDE */
   useEffect(() => {
@@ -52,7 +46,7 @@ export function Header({ onUserClick }: HeaderProps) {
     });
   }, [pathname]);
 
-  /* 👆 CLICK OUTSIDE */
+  /* 👆 CLICK OUTSIDE (MOBILE SEARCH) */
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (
@@ -64,17 +58,16 @@ export function Header({ onUserClick }: HeaderProps) {
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
-    return () =>
-      document.removeEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [mobileSearchOpen]);
 
-  /* 🔄 IMPORTANT FIX:
-     logout ke baad authToken delete hota hai,
-     isLoggedIn false hota hai,
-     aur header automatically guest mode me aa jata hai
-  */
-
-  if (hideHeader) return null;
+  if (
+    pathname.startsWith("/userauth") ||
+    pathname.startsWith("/seller") ||
+    pathname.startsWith("/superadmin")
+  ) {
+    return null;
+  }
 
   return (
     <>
@@ -82,7 +75,12 @@ export function Header({ onUserClick }: HeaderProps) {
       <Sheet open={sheetSearchOpen} onOpenChange={setSheetSearchOpen}>
         <SheetContent side="top" className="p-4 bg-[#6968A6]">
           <form action="/search" className="flex gap-2">
-            <Input autoFocus name="q" type="search" placeholder="Search products..." />
+            <Input
+              autoFocus
+              name="q"
+              type="search"
+              placeholder="Search products..."
+            />
             <Button size="icon" type="submit">
               <Search className="h-4 w-4 text-blue-500" />
             </Button>
@@ -90,7 +88,7 @@ export function Header({ onUserClick }: HeaderProps) {
         </SheetContent>
       </Sheet>
 
-      <header className="bg-[rgba(5, 62, 33, 0.5)] backdrop-blur-md sticky top-0 z-50">
+      <header className="bg-[#3D6B4F] backdrop-blur-md sticky top-0 z-50 ">
         {/* 🔹 TOP BAR */}
         <div
           className={`overflow-hidden transition-all duration-500 ${
@@ -103,12 +101,12 @@ export function Header({ onUserClick }: HeaderProps) {
         </div>
 
         {/* 🔹 MAIN HEADER */}
-        
+
         <div className="h-14">
           <div className="max-w-7xl mx-auto h-full px-4 flex items-center gap-3">
             <NirmatriLogo />
 
-            {/* SEARCH */}
+            {/* DESKTOP SEARCH */}
             <div className="hidden md:flex flex-1 justify-center">
               <form action="/search" className="relative w-full max-w-xl">
                 <Input
@@ -127,10 +125,9 @@ export function Header({ onUserClick }: HeaderProps) {
               </form>
             </div>
 
-
-
             {/* ACTIONS */}
             <div className="flex items-center gap-2 ml-auto">
+              {/* MOBILE SEARCH */}
               <Button
                 variant="ghost"
                 size="icon"
@@ -152,22 +149,34 @@ export function Header({ onUserClick }: HeaderProps) {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={() => router.push("/userauth/login")}>
+                    <DropdownMenuItem
+                      onClick={() => router.push("/userauth/login")}
+                    >
                       Continue as User
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => router.push("/seller/login")}>
+                    <DropdownMenuItem
+                      onClick={() => router.push("/seller/login")}
+                    >
                       Login as Seller
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               ) : (
+                /* 🟢 LOGGED-IN MODE */
                 <>
                   <Button
                     variant="ghost"
                     size="icon"
-                    onClick={() => router.push("/cart")}
+                    className="relative rounded-full hover:bg-white/10"
+                    onClick={() => router.push("/home/card")}
                   >
                     <ShoppingCart className="h-6 w-6 text-white" />
+
+                    {cartCount > 0 && (
+                      <span className="absolute -top-1 -right-1 h-5 min-w-[20px] rounded-full bg-orange-500 text-white text-[11px] font-bold flex items-center justify-center px-1">
+                        {cartCount}
+                      </span>
+                    )}
                   </Button>
 
                   <Button

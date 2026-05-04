@@ -3,9 +3,10 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
+import TermsModal from "@/app/components/TermsModal";
 import { Input } from "@/app/components/ui/input";
-import{
-  Clipboard,Check,
+import {
+  Clipboard, Check,
   Smartphone,
   AlertTriangle, NotebookText,
   FileUp
@@ -14,7 +15,7 @@ import{
 // ============================================
 // CONFIGURATION
 // ============================================
-const steps = ["Store Info", "KYC", "Bank","Phone Verification","Review"];
+const steps = ["Store Info", "KYC", "Bank", "Phone Verification", "Review"];
 
 export default function SellerOnboardingPage() {
   // ============================================
@@ -22,6 +23,7 @@ export default function SellerOnboardingPage() {
   // ============================================
   const [currentStep, setCurrentStep] = useState(0);
   const [showSuccess, setShowSuccess] = useState(false); // Get current theme (light/dark)
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   // Form data state for all steps
@@ -62,47 +64,62 @@ export default function SellerOnboardingPage() {
 
   // ============================================
   // NAVIGATION HANDLERS
-  // ============================================
   const nextStep = async () => {
-  if (currentStep < steps.length - 1) {
-    setCurrentStep((prev) => prev + 1);
-  } else {
-    // ✅ FINAL STEP: SUBMIT FOR APPROVAL
-    setShowSuccess(true);
+    if (currentStep < steps.length - 1) {
+      setCurrentStep((prev) => prev + 1);
+      return;
+    }
 
+    // FINAL SUBMIT
     try {
-      // 🔐 Call backend to mark onboarding complete
-      await fetch("/api/seller/onboarding/submit", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          onboardingCompleted: true,
-          status: "PENDING_APPROVAL",
-        }),
+      setLoading(true);
+
+      const token = localStorage.getItem("token");
+
+      const payload = new FormData();
+
+      Object.entries(formData).forEach(([key, value]) => {
+        if (value !== null) {
+          payload.append(key, value as any);
+        }
       });
 
-      // ⏳ show success screen briefly
+      const res = await fetch(
+        "http://127.0.0.1:8000/api/seller/info/",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(formData),
+        }
+      );
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(data.error || "Submission failed");
+        setLoading(false);
+        return;
+      }
+
+      setShowSuccess(true);
+
       setTimeout(() => {
         router.push("/seller/pending-approval");
       }, 2000);
 
-    } catch (error) {
-      console.error("Submission failed", error);
-    }
-  }
-};
-
-  const prevStep = () => {
-    if (currentStep > 0) {
-      setCurrentStep((prev) => prev - 1);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
     }
   };
 
-  // ============================================
-  // RENDER
-  // ============================================
+  const prevStep = () => {
+    if (currentStep > 0) setCurrentStep((prev) => prev - 1);
+  };
   return (
     <main className="min-h-screen bg-transparent flex items-center justify-center px-4 py-8 transition-colors duration-200">
       <div className="w-full max-w-4xl bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 md:p-8 transition-colors duration-200">
@@ -116,13 +133,12 @@ export default function SellerOnboardingPage() {
                 {/* Step Circle */}
                 <div
                   className={`h-9 w-9 md:h-10 md:w-10 rounded-full flex items-center justify-center text-xs md:text-sm font-medium transition-all duration-300
-                  ${
-                    index < currentStep
+                  ${index < currentStep
                       ? "bg-green-600 text-white" // Completed
                       : index === currentStep
-                      ? "bg-blue-600 text-white shadow-lg scale-110" // Current
-                      : "bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400" // Upcoming
-                  }`}
+                        ? "bg-blue-600 text-white shadow-lg scale-110" // Current
+                        : "bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400" // Upcoming
+                    }`}
                 >
                   {index < currentStep ? "✓" : index + 1}
                 </div>
@@ -130,11 +146,10 @@ export default function SellerOnboardingPage() {
                 {/* Step Label (hidden on small screens) */}
                 <span
                   className={`ml-2 md:ml-3 text-xs md:text-sm font-medium hidden sm:block transition-colors duration-300
-                  ${
-                    index <= currentStep
+                  ${index <= currentStep
                       ? "text-gray-900 dark:text-white"
                       : "text-gray-400 dark:text-gray-500"
-                  }`}
+                    }`}
                 >
                   {step}
                 </span>
@@ -144,9 +159,6 @@ export default function SellerOnboardingPage() {
                   <div className="flex-1 h-[2px] mx-2 md:mx-4 bg-gray-200 dark:bg-gray-700 overflow-hidden">
                     <div
                       className="h-full bg-blue-600 transition-all duration-500"
-                      style={{
-                        width: index < currentStep ? "100%" : "0%",
-                      }}
                     />
                   </div>
                 )}
@@ -203,12 +215,12 @@ export default function SellerOnboardingPage() {
               Successfully created your seller account
             </p>
             <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
-  Your details have been submitted for approval.
-</p>
+              Your details have been submitted for approval.
+            </p>
 
-<p className="text-sm text-gray-500 dark:text-gray-500 mt-1">
-  Redirecting you to approval status…
-</p>
+            <p className="text-sm text-gray-500 dark:text-gray-500 mt-1">
+              Redirecting you to approval status…
+            </p>
             <div className="mt-4">
               <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
             </div>
@@ -228,9 +240,17 @@ export default function SellerOnboardingPage() {
               ← Back
             </button>
 
-            <button
+            {/* <button
               onClick={nextStep}
-              className="px-8 py-2.5 rounded-lg bg-[#1a3a2a] text-white hover:bg-white hover:text-black font-medium transition-all duration-200 shadow-md hover:shadow-lg"
+              className="px-8 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium transition-all duration-200 shadow-md hover:shadow-lg"
+            >
+              {currentStep === steps.length - 1 ? "Submit & Finish" : "Continue →"}
+            </button> */}
+
+            <button
+              type="button"
+              onClick={nextStep}
+              className="px-8 py-2.5 rounded-lg bg-green-900 hover:bg-[#98fbcb] text-white hover:text-black font-medium transition-all duration-200 shadow-md hover:shadow-lg"
             >
               {currentStep === steps.length - 1 ? "Submit & Finish" : "Continue →"}
             </button>
@@ -286,7 +306,7 @@ function StoreInfo({ formData, updateFormData }: FormDataProps) {
   // Handle category selection/deselection
   const handleCategoryToggle = (category: string) => {
     const currentCategories = formData.storeCategory || [];
-    
+
     if (currentCategories.includes(category)) {
       // Remove category if already selected
       updateFormData(
@@ -355,7 +375,7 @@ function StoreInfo({ formData, updateFormData }: FormDataProps) {
         <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">
           Select all categories that apply to your products
         </p>
-        
+
         {/* Category Pills */}
         <div className="flex flex-wrap gap-2">
           {categories.map((cat) => (
@@ -363,11 +383,10 @@ function StoreInfo({ formData, updateFormData }: FormDataProps) {
               key={cat}
               type="button"
               onClick={() => handleCategoryToggle(cat)}
-              className={`px-4 py-2 rounded-lg border-2 text-sm font-medium transition-all duration-200 ${
-                isCategorySelected(cat)
-                  ? "bg-blue-600 border-blue-600 text-white shadow-md hover:bg-blue-700 hover:border-blue-700"
-                  : "bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-blue-400 dark:hover:border-blue-500"
-              }`}
+              className={`px-4 py-2 rounded-lg border-2 text-sm font-medium transition-all duration-200 ${isCategorySelected(cat)
+                ? "bg-blue-600 border-blue-600 text-white shadow-md hover:bg-blue-700 hover:border-blue-700"
+                : "bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-blue-400 dark:hover:border-blue-500"
+                }`}
             >
               {isCategorySelected(cat) && <span className="mr-1">✓</span>}
               {cat}
@@ -524,7 +543,7 @@ function Bank({ formData, updateFormData }: FormDataProps) {
         </p>
       </div>
 
-    {/* Bank Name */}
+      {/* Bank Name */}
       <div>
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
           Bank Name
@@ -577,7 +596,7 @@ function Bank({ formData, updateFormData }: FormDataProps) {
         </p>
       </div>
 
-      
+
       {/* Account Holder Name */}
       <div>
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -601,16 +620,18 @@ function Bank({ formData, updateFormData }: FormDataProps) {
           <strong><AlertTriangle className="inline mr-2" size={16} /> Important:</strong> Ensure bank details are accurate. All payments will be transferred to this account.
         </p>
       </div>
-      
+
     </div>
   );
 }
- // STEP 4: PHONE VERIFICATION (OTP)
-// ============================================
+// STEP 4: =======PHONE VERIFICATION (OTP)=======
+
 function PhoneVerification({ formData, updateFormData }: FormDataProps) {
   const [timer, setTimer] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  // OTP timer countdown
+  // OTP Countdown Timer
   useEffect(() => {
     if (timer > 0) {
       const interval = setInterval(() => {
@@ -620,20 +641,87 @@ function PhoneVerification({ formData, updateFormData }: FormDataProps) {
     }
   }, [timer]);
 
-  const handleSendOtp = () => {
-    if (formData.phoneNumber.length === 10) {
+  // ==============================
+  // SEND OTP
+  // ==============================
+  const handleSendOtp = async () => {
+    if (formData.phoneNumber.length !== 10) return;
+
+    setLoading(true);
+    setError("");
+
+    try {
+      const token = localStorage.getItem("token");
+
+      const res = await fetch(
+        "http://127.0.0.1:8000/api/seller/send-otp/",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            phone_number: formData.phoneNumber,
+          }),
+        }
+      );
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to send OTP");
+      }
+
       updateFormData("isOtpSent", true);
-      setTimer(60); // 60 seconds countdown
-      // TODO: Call API to send OTP
-      console.log("Sending OTP to:", formData.phoneNumber);
+      setTimer(60);
+
+
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleVerifyOtp = () => {
-    if (formData.otp.length === 6) {
+  // ==============================
+  // VERIFY OTP
+  // ==============================
+  const handleVerifyOtp = async () => {
+    if (formData.otp.length !== 6) return;
+
+    setLoading(true);
+    setError("");
+
+    try {
+      const token = localStorage.getItem("token");
+
+      const res = await fetch(
+        "http://127.0.0.1:8000/api/seller/verify-otp/",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            otp: formData.otp,
+          }),
+        }
+      );
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || "Invalid OTP");
+      }
+
       updateFormData("isOtpVerified", true);
-      // TODO: Call API to verify OTP
-      console.log("Verifying OTP:", formData.otp);
+
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -670,11 +758,23 @@ function PhoneVerification({ formData, updateFormData }: FormDataProps) {
             />
           </div>
           <button
+            type="button"
             onClick={handleSendOtp}
-            disabled={formData.phoneNumber.length !== 10 || timer > 0 || formData.isOtpVerified}
-            className="px-6 py-3 bg-green-900 hover:bg-blue-700 text-white font-medium rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+            disabled={
+              formData.phoneNumber.trim().length !== 10 ||
+              timer > 0 ||
+              formData.isOtpVerified ||
+              loading
+            }
+            className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all"
           >
-            {formData.isOtpVerified ? "Verified ✓" : timer > 0 ? `${timer}s` : "Send OTP"}
+            {loading
+              ? "Sending..."
+              : formData.isOtpVerified
+                ? "Verified ✓"
+                : timer > 0
+                  ? `${timer}s`
+                  : "Send OTP"}
           </button>
         </div>
         <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
@@ -726,7 +826,7 @@ function PhoneVerification({ formData, updateFormData }: FormDataProps) {
           className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4"
         >
           <div className="flex items-center gap-3">
-         <Check className="w-10 h-10 text-green-600" />
+            <Check className="w-10 h-10 text-green-600" />
             <div>
               <p className="text-sm font-semibold text-green-900 dark:text-green-400">
                 Phone number verified successfully!
@@ -747,15 +847,17 @@ function PhoneVerification({ formData, updateFormData }: FormDataProps) {
       </div>
     </div>
   );
-} 
+}
 // ============================================
 // STEP 5: REVIEW & SUBMIT
 // ============================================
 
 
 function Review({ formData }: any) {
-  
-  
+  const [showTerms, setShowTerms] = useState(false);
+
+
+
   const sections = [
     {
       title: "Phone Verification",
@@ -769,10 +871,11 @@ function Review({ formData }: any) {
       items: [
         { label: "Owner Name", value: formData.ownerName || "Not provided" },
         { label: "Store Name", value: formData.storeName || "Not provided" },
-        { label: "Categories", value: formData.storeCategory && formData.storeCategory.length > 0 
-        ? formData.storeCategory.join(", ") 
-        : "Not provided" 
-    },
+        {
+          label: "Categories", value: formData.storeCategory && formData.storeCategory.length > 0
+            ? formData.storeCategory.join(", ")
+            : "Not provided"
+        },
         // { label: "Description", value: formData.storeDescription || "Not provided" },
         // { label: "Address", value: formData.storeAddress || "Not provided" },
       ],
@@ -808,7 +911,13 @@ function Review({ formData }: any) {
           Please review all details before submitting
         </p>
       </div>
-       
+      <TermsModal
+        open={showTerms}
+        onClose={() => setShowTerms(false)}
+        termsContent={termsContent}
+      />
+
+
 
       {/* Review Sections */}
       <div className="space-y-4">
@@ -835,7 +944,41 @@ function Review({ formData }: any) {
           </div>
         ))}
       </div>
-      
+
+
+
+      {/* Terms and Conditions */}
+      <div className="bg-white dark:bg-gray-700 border-2 border-gray-300 dark:border-gray-600 rounded-lg p-5">
+        <label className="flex items-start gap-3 cursor-pointer">
+          <input
+            type="checkbox"
+            className="mt-1 w-5 h-5 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
+          />
+          <div className="flex-1">
+            <p className="text-sm text-gray-900 dark:text-white">
+              I agree to the{" "}
+              <button
+                type="button"
+                onClick={() => setShowTerms(true)}
+                className="text-blue-600 dark:text-blue-400 hover:underline"
+              >
+
+                Terms and Conditions
+              </button>
+              {" "}and{" "}
+              <a href="/seller/onboarding/privacy_policy" className="text-blue-600 dark:text-blue-400 hover:underline">
+                Privacy Policy
+              </a>
+            </p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+              By checking this box, you confirm that all information provided is accurate
+            </p>
+          </div>
+        </label>
+      </div>
+
+
+
       {/* Info Box */}
       <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-5">
         <p className="text-sm text-green-900 dark:text-blue-400 font-semibold mb-2">
@@ -852,49 +995,49 @@ function Review({ formData }: any) {
   );
 }
 const termsContent = [
-    {
-      title: '1. Seller Eligibility',
-      content: 'By registering as a seller on Nirmatri Crafts, you confirm that you are highlighting authentic, handcrafted items. We reserve the right to verify the origin of your products and request additional documentation if needed.'
-    },
-    {
-      title: '2. Commissions & Fees',
-      content: 'Nirmatri Crafts charges a standard 10% platform fee on every successful sale. This covers payment processing, marketing for your products, customer support, and platform maintenance. Additional fees may apply for premium features.'
-    },
-    {
-      title: '3. Product Authenticity',
-      content: 'All products must be handmade, handcrafted, or artisanal. Mass-produced items, counterfeit goods, or items misrepresented as handmade are strictly prohibited. We conduct regular quality checks to maintain marketplace integrity.'
-    },
-    {
-      title: '4. Shipping Policy',
-      content: 'Sellers are responsible for packaging products safely and securely. Orders must be dispatched within 48 hours of confirmation unless otherwise specified. Failure to ship on time may result in store penalties, reduced visibility, or account suspension.'
-    },
-    {
-      title: '5. Payout Schedule',
-      content: 'Funds from sales are held in escrow for 7 days post-delivery to handle potential returns or disputes. Payouts are processed every Monday directly to your registered bank account. Minimum payout threshold is ₹500.'
-    },
-    {
-      title: '6. Returns & Refunds',
-      content: 'Sellers must honor our 7-day return policy for damaged or defective items. Return shipping costs for seller errors will be deducted from your account. Customer satisfaction is our priority.'
-    },
-    {
-      title: '7. Prohibited Items',
-      content: 'Mass-produced industrial goods, hazardous materials, illegal substances, weapons, copyrighted designs without permission, and any items violating Indian law are strictly prohibited. Violations may result in immediate account termination.'
-    },
-    {
-      title: '8. Intellectual Property',
-      content: 'You retain ownership of your product designs. However, by listing on Nirmatri, you grant us a license to display, market, and promote your products across our platforms and marketing channels.'
-    },
-    {
-      title: '9. Account Termination',
-      content: 'We reserve the right to suspend or terminate seller accounts for policy violations, fraudulent activity, poor customer ratings, or failure to maintain quality standards. Termination procedures are outlined in our dispute resolution policy.'
-    },
-    {
-      title: '10. Changes to Terms',
-      content: 'Nirmatri reserves the right to modify these terms at any time. Sellers will be notified via email 30 days before changes take effect. Continued use of the platform constitutes acceptance of updated terms.'
-    },
-  ];
+  {
+    title: '1. Seller Eligibility',
+    content: 'By registering as a seller on Nirmatri Crafts, you confirm that you are highlighting authentic, handcrafted items. We reserve the right to verify the origin of your products and request additional documentation if needed.'
+  },
+  {
+    title: '2. Commissions & Fees',
+    content: 'Nirmatri Crafts charges a standard 10% platform fee on every successful sale. This covers payment processing, marketing for your products, customer support, and platform maintenance. Additional fees may apply for premium features.'
+  },
+  {
+    title: '3. Product Authenticity',
+    content: 'All products must be handmade, handcrafted, or artisanal. Mass-produced items, counterfeit goods, or items misrepresented as handmade are strictly prohibited. We conduct regular quality checks to maintain marketplace integrity.'
+  },
+  {
+    title: '4. Shipping Policy',
+    content: 'Sellers are responsible for packaging products safely and securely. Orders must be dispatched within 48 hours of confirmation unless otherwise specified. Failure to ship on time may result in store penalties, reduced visibility, or account suspension.'
+  },
+  {
+    title: '5. Payout Schedule',
+    content: 'Funds from sales are held in escrow for 7 days post-delivery to handle potential returns or disputes. Payouts are processed every Monday directly to your registered bank account. Minimum payout threshold is ₹500.'
+  },
+  {
+    title: '6. Returns & Refunds',
+    content: 'Sellers must honor our 7-day return policy for damaged or defective items. Return shipping costs for seller errors will be deducted from your account. Customer satisfaction is our priority.'
+  },
+  {
+    title: '7. Prohibited Items',
+    content: 'Mass-produced industrial goods, hazardous materials, illegal substances, weapons, copyrighted designs without permission, and any items violating Indian law are strictly prohibited. Violations may result in immediate account termination.'
+  },
+  {
+    title: '8. Intellectual Property',
+    content: 'You retain ownership of your product designs. However, by listing on Nirmatri, you grant us a license to display, market, and promote your products across our platforms and marketing channels.'
+  },
+  {
+    title: '9. Account Termination',
+    content: 'We reserve the right to suspend or terminate seller accounts for policy violations, fraudulent activity, poor customer ratings, or failure to maintain quality standards. Termination procedures are outlined in our dispute resolution policy.'
+  },
+  {
+    title: '10. Changes to Terms',
+    content: 'Nirmatri reserves the right to modify these terms at any time. Sellers will be notified via email 30 days before changes take effect. Continued use of the platform constitutes acceptance of updated terms.'
+  },
+];
 
-  
+
 
 /* ============================================ */
 /* 🔹 HELPER COMPONENTS */
@@ -933,11 +1076,10 @@ function FileUpload({ label, file, onChange, description }: FileUploadProps) {
         {label}
       </label>
       <div
-        className={`relative border-2 border-dashed rounded-lg p-4 transition-all ${
-          file
-            ? "border-green-500 dark:border-green-600 bg-green-50 dark:bg-green-900/20"
-            : "border-gray-300 dark:border-gray-600 hover:border-blue-500 dark:hover:border-blue-600 bg-white dark:bg-gray-700"
-        }`}
+        className={`relative border-2 border-dashed rounded-lg p-4 transition-all ${file
+          ? "border-green-500 dark:border-green-600 bg-green-50 dark:bg-green-900/20"
+          : "border-gray-300 dark:border-gray-600 hover:border-blue-500 dark:hover:border-blue-600 bg-white dark:bg-gray-700"
+          }`}
       >
         <Input
           type="file"

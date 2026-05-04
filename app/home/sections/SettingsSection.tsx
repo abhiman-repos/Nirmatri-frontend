@@ -1,28 +1,25 @@
 " use client";
 
 import { useState, useId } from "react";
-import { useTheme } from "@/app/contexts/ThemeContext";
+
 import {
-  User,
   Lock,
   Bell,
   Shield,
-  Moon,
-  Sun,
-  Laptop,
-  Trash2,
   Eye,
   EyeOff,
 } from "lucide-react";
 
+
 export function SettingsSection() {
-  const { theme, setTheme } = useTheme();
+
   const [showPassword, setShowPassword] = useState(false);
   const [notifications, setNotifications] = useState({
     email: true,
     sms: false,
     push: true,
   });
+
 
   return (
     <div className="p-6 space-y-10 text-gray-900 dark:text-gray-100">
@@ -53,51 +50,24 @@ export function SettingsSection() {
       </Section>
 
       {/* ================= APPEARANCE ================= */}
-      <Section title="Appearance" icon={<Moon />}>
-        <div className="grid grid-cols-3 gap-3">
-          <ThemeCard
-            label="Light"
-            active={theme === "light"}
-            icon={<Sun />}
-            onClick={() => setTheme("light")}
-          />
-          <ThemeCard
-            label="Dark"
-            active={theme === "dark"}
-            icon={<Moon />}
-            onClick={() => setTheme("dark")}
-          />
-          <ThemeCard
-            label="System"
-            active={theme === "system"}
-            icon={<Laptop />}
-            onClick={() => setTheme("system")}
-          />
-        </div>
-      </Section>
+     
 
       {/* ================= NOTIFICATIONS ================= */}
       <Section title="Notifications" icon={<Bell />}>
         <Toggle
           label="Email Notifications"
           value={notifications.email}
-          onChange={() =>
-            setNotifications((p) => ({ ...p, email: !p.email }))
-          }
+          onChange={() => setNotifications((p) => ({ ...p, email: !p.email }))}
         />
         <Toggle
           label="SMS Alerts"
           value={notifications.sms}
-          onChange={() =>
-            setNotifications((p) => ({ ...p, sms: !p.sms }))
-          }
+          onChange={() => setNotifications((p) => ({ ...p, sms: !p.sms }))}
         />
         <Toggle
           label="Push Notifications"
           value={notifications.push}
-          onChange={() =>
-            setNotifications((p) => ({ ...p, push: !p.push }))
-          }
+          onChange={() => setNotifications((p) => ({ ...p, push: !p.push }))}
         />
       </Section>
 
@@ -107,16 +77,7 @@ export function SettingsSection() {
         <Toggle label="Search engine visibility" value={false} />
       </Section>
 
-      {/* ================= DANGER ZONE ================= */}
-      <Section title="Danger Zone" icon={<Trash2 />} danger>
-        <button
-          className="danger-btn"
-          aria-label="Delete account permanently"
-        >
-          <Trash2 size={16} />
-          Delete Account
-        </button>
-      </Section>
+      
     </div>
   );
 }
@@ -252,11 +213,6 @@ function ThemeCard({
 }
 
 function Button({ text }: { text: string }) {
-
-  return (
-    <button className="primary-btn">
-      {text}
-    </button>
-  );
+  return <button className="primary-btn">{text}</button>;
 }
 

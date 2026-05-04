@@ -13,6 +13,12 @@ import {
   AlertTriangle,
   ShoppingCart,
 } from "lucide-react";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+
+
+
+
 
 export default function SellerDashboardPage() {
   const seller = {
@@ -27,6 +33,16 @@ export default function SellerDashboardPage() {
     totalEarnings: "₹84,560",
     pendingOrders: 6,
   };
+
+  const router = useRouter();
+
+  useEffect(() => {
+  const token = localStorage.getItem("seller_token");
+
+  if (!token) {
+    router.push("/seller/login");
+  }
+}, []);
 
   const orders = [
     { id: "ORD-1001", product: "Handmade Vase", status: "Delivered", amount: "₹1,200" },

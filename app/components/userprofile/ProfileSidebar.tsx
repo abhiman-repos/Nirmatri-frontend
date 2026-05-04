@@ -15,7 +15,10 @@ import {
   Settings,
 } from "lucide-react";
 import { cn } from "@/app/components/ui/utils";
-import { useRouter } from "next/navigation";
+import axios from "axios";
+import { googleLogout } from "@react-oauth/google";
+import { useRouter } from "next/router";
+import { useAuth } from "@/app/components/context/AuthContext";
 
 interface ProfileSidebarProps {
   activeSection: string;
@@ -35,17 +38,17 @@ const menuItems = [
   { id: "settings", label: "Settings", icon: Settings },
 ];
 
+const router = useRouter();
+const { logout } = useAuth();
+
 export function ProfileSidebar({
   activeSection,
   onSectionChange,
 }: ProfileSidebarProps) {
-  const router = useRouter();
-
   const handleLogout = () => {
-    // 🔴 future me yahan auth clear kar sakte ho
-    // localStorage.removeItem("token");
-    // cookies delete
-    router.push("/");
+    googleLogout();
+    logout(); // 🔥 must call this
+    router.replace("/"); // landing page
   };
 
   return (
@@ -107,7 +110,7 @@ export function ProfileSidebar({
                   : `
                       text-gray-700 dark:text-gray-300
                       hover:bg-orange-50 dark:hover:bg-blue-500/10
-                    `
+                    `,
               )}
             >
               <Icon className="w-5 h-5" />
@@ -116,7 +119,7 @@ export function ProfileSidebar({
               <ChevronRight
                 className={cn(
                   "w-4 h-4 transition-transform",
-                  isActive && "translate-x-1"
+                  isActive && "translate-x-1",
                 )}
               />
             </button>
@@ -133,9 +136,8 @@ export function ProfileSidebar({
           dark:text-blue-400 dark:hover:bg-blue-500/10
           transition-colors
         "
-      >
+      > 
         <LogOut className="w-5 h-5" />
-        <span className="font-medium">Logout</span>
       </button>
     </aside>
   );
