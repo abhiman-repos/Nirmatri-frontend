@@ -1,8 +1,8 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Eye, EyeOff } from "lucide-react";
-
+import { Eye, EyeOff, ShieldCheck, LockKeyhole } from "lucide-react";
+import Image from "next/image";
 export default function SuperAdminLogin() {
   const router = useRouter();
 
@@ -12,7 +12,7 @@ export default function SuperAdminLogin() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     setError("");
 
     if (!adminId || !password) {
@@ -20,93 +20,176 @@ export default function SuperAdminLogin() {
       return;
     }
 
-    // 🔐 Dummy credentials (change as needed)
-    if (adminId === "admin123" && password === "12345") {
-      setLoading(true);
+    setLoading(true);
 
-      setTimeout(() => {
+    try {
+      const res = await fetch("http://127.0.0.1:8000/api/super/login/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: adminId,
+          password: password,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.error || "Login failed");
         setLoading(false);
-        router.push("/superadmin/dashboard");
-      }, 1000);
-    } else {
-      setError("Invalid ID or Password");
+        return;
+      }
+
+      // save admin token
+      localStorage.setItem("admin_token", data.token);
+
+      // redirect to dashboard
+      router.push("/superadmin/dashboard");
+    } catch (err) {
+      console.error(err);
+      setError("Server error. Please try again.");
     }
+
+    setLoading(false);
+
   };
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-[#F5F7FF] px-6">
-      <div className="w-full max-w-md bg-white p-8 rounded-2xl shadow-lg">
+    <main className="min-h-screen w-full grid lg:grid-cols-2 bg-gradient-to-br from-white via-[#F8FAFC] to-[#F1F5F9] overflow-y-auto font-sans">
 
-        <h1 className="text-3xl font-semibold text-gray-900 mb-2 text-center">
-          Welcome to Super Admin Panel
-        </h1>
+      {/* LEFT SIDE */}
+      <div className="hidden lg:flex flex-col items-center justify-center p-10 min-h-screen relative">
 
-        <p className="text-sm text-gray-500 mb-8 text-center">
-          Manage your Seller, products and orders Approval.
-        </p>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-blue-400/5 blur-[100px] rounded-full -z-10"></div>
 
-        {/* ID */}
-        <div className="mb-4">
-          <input
-            type="text"
-            value={adminId}
-            onChange={(e) => setAdminId(e.target.value)}
-            placeholder="Super Admin ID"
-            className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
+        <div className="max-w-md w-full text-center space-y-8">
+
+          <div className="flex justify-center">
+            <Image
+              src="/admin.png"
+              alt="Admin Illustration"
+              width={350}
+              height={350}
+              className="object-contain"
+              priority
+            />
+          </div>
+
+          <div className="space-y-3">
+            <h2 className="text-3xl font-extrabold text-slate-900 leading-snug">
+              <h2 className="text-4xl font-black text-slate-900 leading-tight">
+                <span className="text-green-600 font-black">Super Admin</span>
+                <br />
+                Intelligence
+              </h2>
+            </h2>
+            <p className="text-blue-600 text-base leading-relaxed">
+              Real-time marketplace management with enterprise-grade security.
+            </p>
+          </div>
         </div>
+      </div>
 
-        {/* PASSWORD */}
-        <div className="mb-4 relative">
-          <input
-            type={showPassword ? "text" : "password"}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Password"
-            className="w-full rounded-lg border border-gray-300 px-4 py-3 pr-11 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
+      {/* RIGHT SIDE */}
+      <div className="flex flex-col items-center justify-center px-6 lg:px-16 py-12 min-h-screen relative">
 
-          <button
-            type="button"
-            onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-800"
-          >
-            {showPassword ? (
-              <EyeOff className="h-5 w-5" />
-            ) : (
-              <Eye className="h-5 w-5" />
-            )}
-          </button>
+        <div className="hidden lg:block absolute left-0 top-1/4 bottom-1/4 w-px bg-gradient-to-b from-transparent via-slate-200 to-transparent"></div>
+
+        <div className="w-full max-w-md space-y-10">
+
+          {/* Header */}
+          <div className="text-left space-y-3">
+            <div className="flex items-center gap-2 text-blue-600">
+              <ShieldCheck size={24} strokeWidth={2.5} />
+              <span className="text-xs font-bold uppercase tracking-widest">
+                Identity Verification
+              </span>
+            </div>
+
+            <h1 className="text-3xl lg:text-4xl font-black text-green-600 dark:text-green-400">
+              Super Admin Portal
+            </h1>
+
+            <p className="text-slate-400 text-base">
+              Please authorize to access the control center.
+            </p>
+          </div>
+
+          {/* Form */}
+          <div className="space-y-6">
+
+            {/* Admin ID */}
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-slate-700 uppercase tracking-wide">
+                Admin ID
+              </label>
+              <input
+                type="text"
+                value={adminId}
+                onChange={(e) => setAdminId(e.target.value)}
+                placeholder="ID-XXXXXXXX"
+                className="w-full rounded-xl border-2 border-slate-100 bg-white px-5 py-4 text-base transition-all focus:outline-none focus:ring-2 focus:ring-blue-600/10 focus:border-blue-600 placeholder:text-slate-300 shadow-sm"
+              />
+            </div>
+
+            {/* Password */}
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-black-700 uppercase tracking-wide">
+                Password
+              </label>
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                  className="w-full rounded-xl border-2 border-slate-100 bg-white px-5 py-4 text-base transition-all focus:outline-none focus:ring-2 focus:ring-blue-600/10 focus:border-blue-600 placeholder:text-slate-300 shadow-sm"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-blue-600 transition"
+                >
+                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
+              </div>
+            </div>
+
+            {/* Error */}
+            <div className="min-h-[20px]">
+              {error && (
+                <div className="flex items-center gap-2 p-3 rounded-lg bg-red-50 border border-red-100">
+                  <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></div>
+                  <p className="text-red-600 text-sm font-semibold">{error}</p>
+                </div>
+              )}
+            </div>
+
+            {/* Button */}
+            <button
+              type="button"
+              disabled={loading}
+              onClick={handleLogin}
+              className={`w-full rounded-xl py-4 text-lg font-bold text-white transition-all duration-300 transform active:scale-[0.98] flex items-center justify-center gap-3 ${loading
+                ? "bg-green-400 cursor-not-allowed"
+                : "bg-green-600 hover:bg-green-700"
+                }`}
+            >
+              {loading ? (
+                <span className="h-6 w-6 rounded-full border-4 border-white/30 border-t-white animate-spin" />
+              ) : (
+                <>
+                  <LockKeyhole size={20} />
+                  <span>Authorize Access</span>
+                </>
+              )}
+            </button>
+          </div>
+
+
         </div>
-
-        {/* ERROR MESSAGE */}
-        {error && (
-          <p className="text-red-500 text-sm mb-4 text-center">
-            {error}
-          </p>
-        )}
-
-        {/* SIGN IN */}
-        <button
-          type="button"
-          disabled={loading}
-          onClick={handleLogin}
-          className={`w-full rounded-lg py-3 font-medium text-white flex items-center justify-center gap-2 transition-all duration-300 ${
-            loading
-              ? "bg-blue-400 cursor-not-allowed"
-              : "bg-blue-600 hover:bg-blue-700 hover:shadow-lg"
-          }`}
-        >
-          {loading ? (
-            <>
-              <span className="h-5 w-5 rounded-full border-2 border-white/30 border-t-white animate-spin" />
-              Signing In...
-            </>
-          ) : (
-            "Sign In"
-          )}
-        </button>
-
       </div>
     </main>
   );

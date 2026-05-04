@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 import "./globals.css";
+
+import { ThemeProvider } from "./contexts/ThemeContext";
+import { GoogleOAuthProvider } from "@react-oauth/google";
+import { AuthProvider } from "@/app/components/context/AuthContext";
 import HeaderWrapper from "@/app/components/HeaderWrapper";
-import { ThemeProvider } from "@/app/contexts/ThemeContext";
 
 export const metadata: Metadata = {
   title: "Nirmatri",
@@ -15,14 +18,16 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="antialiased">
-        {/*  THEME PROVIDER (ROOT) */}
+      <body className="min-h-screenbg-[#EAF2EC]">
         <ThemeProvider>
-          {/*  HEADER + SIDEBAR CONTROLLER */}
-          <HeaderWrapper />
-
-          {/*  PAGE CONTENT */}
-          {children}
+          <GoogleOAuthProvider
+            clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!}
+          >
+            <AuthProvider>
+              <HeaderWrapper />
+              {children}
+            </AuthProvider>
+          </GoogleOAuthProvider>
         </ThemeProvider>
       </body>
     </html>

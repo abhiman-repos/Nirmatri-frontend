@@ -3,7 +3,6 @@ import clsx from "clsx";
 import type { Section } from "@/app/components/HeaderWrapper";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
 import {
   User,
   ShoppingBag,
@@ -14,11 +13,9 @@ import {
   LogOut,
   ChevronRight,
   MapPin,
-
   Settings,
-
-
 } from "lucide-react";
+import { useAuth } from "@/app/components/context/AuthContext";
 
 /* ===================== TYPES ===================== */
 
@@ -33,8 +30,6 @@ type AccountSidebarProps = {
   onSelect?: (section: Section) => void;
 };
 
-
-
 /* ===================== COMPONENT ===================== */
 
 export default function AccountSidebar({
@@ -43,20 +38,8 @@ export default function AccountSidebar({
   onSelect,
 }: AccountSidebarProps) {
   const router = useRouter();
+  const { logout } = useAuth();
 
-const [user] = useState<User | null>(() => {
-  try {
-    const storedUser = localStorage.getItem("user");
-
-    if (!storedUser || storedUser === "undefined") return null;
-
-    return JSON.parse(storedUser);
-  } catch (err) {
-    console.error("Invalid user in localStorage", err);
-    localStorage.removeItem("user");
-    return null;
-  }
-});
   return (
     <>
       {/* ================= OVERLAY ================= */}
@@ -81,7 +64,7 @@ const [user] = useState<User | null>(() => {
           "border-l border-gray-200 dark:border-gray-800",
           "shadow-[0_0_40px_rgba(0,0,0,0.18)]",
           "transition-transform duration-300 ease-out",
-          open ? "translate-x-0" : "translate-x-full"
+          open ? "translate-x-0" : "translate-x-full",
         )}
       >
         {/* ================= HEADER ================= */}
@@ -130,58 +113,104 @@ const [user] = useState<User | null>(() => {
                 shadow-md
               "
             >
-              {user?.name ? user.name.charAt(0).toUpperCase() : "G"}
+              RK
             </div>
 
             <div>
               <p className="font-semibold text-gray-900 dark:text-gray-100">
-                {user?.name || "Guest User"}
+                Rahul Kumar
               </p>
               <p className="text-xs text-gray-500 dark:text-gray-400">
-                {user?.email || ""}
+                +91 98765 43210
               </p>
             </div>
           </div>
 
           {/* ================= MENU ================= */}
           <div className="mt-6 space-y-1">
-            <MenuItem icon={<User />} label="My Profile" onClick={() => onSelect?.("profile")} />
-            <MenuItem icon={<ShoppingBag />} label="My Orders" onClick={() => onSelect?.("orders")} />
-            <MenuItem icon={<Heart />} label="Wishlist" onClick={() => onSelect?.("wishlist")} />
-            <MenuItem icon={<ShoppingCart />} label="Cart" onClick={() => onSelect?.("cart")} />
-            <MenuItem icon={<CreditCard />} label="Payments" onClick={() => onSelect?.("payments")} />
-            <MenuItem icon={<RefreshCcw />} label="Returns & Refunds" onClick={() => onSelect?.("returns")} />
-            <MenuItem icon={<MapPin />} label="Addresses" onClick={() => onSelect?.("addresses")} />
-            <MenuItem icon={<Settings/>} label="Settings" onClick={() => onSelect?.("settingsSection")} />
-
+            <MenuItem
+              icon={<User />}
+              label="My Profile"
+              onClick={() => onSelect?.("profile")}
+            />
+            <MenuItem
+              icon={<ShoppingBag />}
+              label="My Orders"
+              onClick={() => onSelect?.("orders")}
+            />
+            <MenuItem
+              icon={<Heart />}
+              label="Wishlist"
+              onClick={() => onSelect?.("wishlist")}
+            />
+            {/* <MenuItem
+              icon={<ShoppingCart />}
+              label="Cart"
+              onClick={() => onSelect?.("cart")}
+            /> */}
+            <MenuItem
+              icon={<CreditCard />}
+              label="Payments"
+              onClick={() => onSelect?.("payments")}
+            />
+            <MenuItem
+              icon={<RefreshCcw />}
+              label="Returns & Refunds"
+              onClick={() => onSelect?.("returns")}
+            />
+            <MenuItem
+              icon={<MapPin />}
+              label="Addresses"
+              onClick={() => onSelect?.("addresses")}
+            />
+            <MenuItem
+              icon={<Settings />}
+              label="Settings"
+              onClick={() => onSelect?.("settingsSection")}
+            />
           </div>
 
           <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-800">
-  <button
-    type="button" // ⭐ MOST IMPORTANT
-    onClick={(e) => {
-  e.preventDefault();
+            <button
+              type="button"
+              onClick={async () => {
+                try {
+                  const token = localStorage.getItem("auth_token");
 
- const handleLogout = () => {
-  localStorage.removeItem("token");
-  localStorage.removeItem("user");
-  router.push("/login");
-};         
- handleLogout();
-    }}
-    className="
-      w-full flex items-center gap-3
-      px-4 py-3 rounded-xl
-      hover:bg-red-50
-      dark:hover:bg-red-900/20
-      font-medium transition
-    "
-  >
-    <LogOut className="h-4 w-4" />
-    Logout
-  </button>
-</div>
+                  if (token) {
+                    await fetch("http://127.0.0.1:8000/api/auth/logout/", {
+                      method: "POST",
+                      headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                      },
+                    });
+                  }
+                } catch (error) {
+                  console.error("Logout API error:", error);
+                }
 
+                // 🔐 Clear Auth State (MOST IMPORTANT)
+                logout(); // ✅ from AuthContext
+
+                // close sidebar
+                onClose?.();
+
+                // redirect
+                router.replace("/");
+              }}
+              className="
+    w-full flex items-center gap-3
+    px-4 py-3 rounded-xl
+    hover:bg-red-50
+    dark:hover:bg-red-900/20
+    font-medium transition
+  "
+            >
+              <LogOut className="h-4 w-4" />
+              Logout
+            </button>
+          </div>
         </div>
       </aside>
     </>
@@ -219,6 +248,5 @@ function MenuItem({
 
       <ChevronRight className="h-4 w-4 opacity-40 group-hover:opacity-100" />
     </div>
-    
   );
 }

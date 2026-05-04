@@ -5,6 +5,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import TermsModal from "@/app/components/TermsModal";
 import { Input } from "@/app/components/ui/input";
+import {
+  Clipboard, Check,
+  Smartphone,
+  AlertTriangle, NotebookText,
+  FileUp
+} from "lucide-react";
 
 // ============================================
 // CONFIGURATION
@@ -17,6 +23,7 @@ export default function SellerOnboardingPage() {
   // ============================================
   const [currentStep, setCurrentStep] = useState(0);
   const [showSuccess, setShowSuccess] = useState(false); // Get current theme (light/dark)
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   // Form data state for all steps
@@ -55,51 +62,66 @@ export default function SellerOnboardingPage() {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-// ============================================
-// NAVIGATION HANDLERS
-// ============================================
-const nextStep = () => {
-  if (currentStep < steps.length - 1) {
-    setCurrentStep((prev) => prev + 1);
-  } else {
-    // ✅ SEND DATA TO BACKEND
-    const submitForm = async () => {
+  // ============================================
+  // NAVIGATION HANDLERS
+  const nextStep = async () => {
+    if (currentStep < steps.length - 1) {
+      setCurrentStep((prev) => prev + 1);
+      return;
+    }
+
+    // FINAL SUBMIT
+    try {
+      setLoading(true);
+
+      const token = localStorage.getItem("token");
+
+      const payload = new FormData();
+
+      Object.entries(formData).forEach(([key, value]) => {
+        if (value !== null) {
+          payload.append(key, value as any);
+        }
+      });
+
       const res = await fetch(
         "http://127.0.0.1:8000/api/seller/info/",
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify(formData),
         }
       );
 
       const data = await res.json();
-      console.log(data);
+
+      if (!res.ok) {
+        alert(data.error || "Submission failed");
+        setLoading(false);
+        return;
+      }
 
       setShowSuccess(true);
 
       setTimeout(() => {
-        router.push("/");
+        router.push("/seller/pending-approval");
       }, 2000);
-    };
 
-    submitForm();
-  }
-};
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-const prevStep = () => {
-  if (currentStep > 0) {
-    setCurrentStep((prev) => prev - 1);
-  }
-};
-
-  // ============================================
-  // RENDER
-  // ============================================
+  const prevStep = () => {
+    if (currentStep > 0) setCurrentStep((prev) => prev - 1);
+  };
   return (
-    <main className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center px-4 py-8 transition-colors duration-200">
+    <main className="min-h-screen bg-transparent flex items-center justify-center px-4 py-8 transition-colors duration-200">
       <div className="w-full max-w-4xl bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 md:p-8 transition-colors duration-200">
         {/* ============================================ */}
         {/* 🔹 STEPPER HEADER */}
@@ -184,7 +206,7 @@ const prevStep = () => {
             className="py-12 text-center"
           >
             <div className="w-20 h-20 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center mx-auto mb-4">
-              <span className="text-4xl">✅</span>
+              <Check className="w-10 h-10 text-green-600" />
             </div>
             <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
               Welcome to Nirmatri!
@@ -193,7 +215,11 @@ const prevStep = () => {
               Successfully created your seller account
             </p>
             <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
-              Redirecting you to your dashboard…
+              Your details have been submitted for approval.
+            </p>
+
+            <p className="text-sm text-gray-500 dark:text-gray-500 mt-1">
+              Redirecting you to approval status…
             </p>
             <div className="mt-4">
               <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
@@ -214,12 +240,20 @@ const prevStep = () => {
               ← Back
             </button>
 
-<button
-  onClick={nextStep}
-  className="px-8 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium transition-all duration-200 shadow-md hover:shadow-lg"
->
-  {currentStep === steps.length - 1 ? "Submit & Finish" : "Continue →"}
-</button>
+            {/* <button
+              onClick={nextStep}
+              className="px-8 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium transition-all duration-200 shadow-md hover:shadow-lg"
+            >
+              {currentStep === steps.length - 1 ? "Submit & Finish" : "Continue →"}
+            </button> */}
+
+            <button
+              type="button"
+              onClick={nextStep}
+              className="px-8 py-2.5 rounded-lg bg-green-900 hover:bg-[#98fbcb] text-white hover:text-black font-medium transition-all duration-200 shadow-md hover:shadow-lg"
+            >
+              {currentStep === steps.length - 1 ? "Submit & Finish" : "Continue →"}
+            </button>
           </div>
         )}
       </div>
@@ -318,7 +352,7 @@ function StoreInfo({ formData, updateFormData }: FormDataProps) {
         </p>
       </div>
       {/* Store Name */}
-      <div>
+      {/* <div>
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
           Store Name
         </label>
@@ -331,7 +365,7 @@ function StoreInfo({ formData, updateFormData }: FormDataProps) {
         <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
           Choose a unique name for your store
         </p>
-      </div>
+      </div> */}
 
       {/* Store Categories - Multi-select */}
       <div>
@@ -350,8 +384,8 @@ function StoreInfo({ formData, updateFormData }: FormDataProps) {
               type="button"
               onClick={() => handleCategoryToggle(cat)}
               className={`px-4 py-2 rounded-lg border-2 text-sm font-medium transition-all duration-200 ${isCategorySelected(cat)
-                  ? "bg-blue-600 border-blue-600 text-white shadow-md hover:bg-blue-700 hover:border-blue-700"
-                  : "bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-blue-400 dark:hover:border-blue-500"
+                ? "bg-blue-600 border-blue-600 text-white shadow-md hover:bg-blue-700 hover:border-blue-700"
+                : "bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-blue-400 dark:hover:border-blue-500"
                 }`}
             >
               {isCategorySelected(cat) && <span className="mr-1">✓</span>}
@@ -485,8 +519,8 @@ function KYC({ formData, updateFormData }: FormDataProps) {
 
       {/* Info Box */}
       <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
-        <p className="text-sm text-blue-900 dark:text-blue-400">
-          <strong>📌 Note:</strong> All documents information must be clear.
+        <p className="text-sm text-green-900 dark:text-blue-400">
+          <strong><NotebookText className="inline mr-2" size={16} /> Note:</strong> All documents information must be clear.
         </p>
       </div>
     </div>
@@ -582,20 +616,22 @@ function Bank({ formData, updateFormData }: FormDataProps) {
 
       {/* Warning Box */}
       <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
-        <p className="text-sm text-yellow-900 dark:text-yellow-400">
-          <strong>⚠️ Important:</strong> Ensure bank details are accurate. All payments will be transferred to this account.
+        <p className="text-sm text-red-900 dark:text-red-400">
+          <strong><AlertTriangle className="inline mr-2" size={16} /> Important:</strong> Ensure bank details are accurate. All payments will be transferred to this account.
         </p>
       </div>
 
     </div>
   );
 }
-// STEP 4: PHONE VERIFICATION (OTP)
-// ============================================
+// STEP 4: =======PHONE VERIFICATION (OTP)=======
+
 function PhoneVerification({ formData, updateFormData }: FormDataProps) {
   const [timer, setTimer] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  // OTP timer countdown
+  // OTP Countdown Timer
   useEffect(() => {
     if (timer > 0) {
       const interval = setInterval(() => {
@@ -605,20 +641,87 @@ function PhoneVerification({ formData, updateFormData }: FormDataProps) {
     }
   }, [timer]);
 
-  const handleSendOtp = () => {
-    if (formData.phoneNumber.length === 10) {
+  // ==============================
+  // SEND OTP
+  // ==============================
+  const handleSendOtp = async () => {
+    if (formData.phoneNumber.length !== 10) return;
+
+    setLoading(true);
+    setError("");
+
+    try {
+      const token = localStorage.getItem("token");
+
+      const res = await fetch(
+        "http://127.0.0.1:8000/api/seller/send-otp/",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            phone_number: formData.phoneNumber,
+          }),
+        }
+      );
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to send OTP");
+      }
+
       updateFormData("isOtpSent", true);
-      setTimer(60); // 60 seconds countdown
-      // TODO: Call API to send OTP
-      console.log("Sending OTP to:", formData.phoneNumber);
+      setTimer(60);
+
+
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleVerifyOtp = () => {
-    if (formData.otp.length === 6) {
+  // ==============================
+  // VERIFY OTP
+  // ==============================
+  const handleVerifyOtp = async () => {
+    if (formData.otp.length !== 6) return;
+
+    setLoading(true);
+    setError("");
+
+    try {
+      const token = localStorage.getItem("token");
+
+      const res = await fetch(
+        "http://127.0.0.1:8000/api/seller/verify-otp/",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            otp: formData.otp,
+          }),
+        }
+      );
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || "Invalid OTP");
+      }
+
       updateFormData("isOtpVerified", true);
-      // TODO: Call API to verify OTP
-      console.log("Verifying OTP:", formData.otp);
+
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -655,11 +758,23 @@ function PhoneVerification({ formData, updateFormData }: FormDataProps) {
             />
           </div>
           <button
+            type="button"
             onClick={handleSendOtp}
-            disabled={formData.phoneNumber.length !== 10 || timer > 0 || formData.isOtpVerified}
+            disabled={
+              formData.phoneNumber.trim().length !== 10 ||
+              timer > 0 ||
+              formData.isOtpVerified ||
+              loading
+            }
             className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all"
           >
-            {formData.isOtpVerified ? "Verified ✓" : timer > 0 ? `${timer}s` : "Send OTP"}
+            {loading
+              ? "Sending..."
+              : formData.isOtpVerified
+                ? "Verified ✓"
+                : timer > 0
+                  ? `${timer}s`
+                  : "Send OTP"}
           </button>
         </div>
         <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
@@ -711,7 +826,7 @@ function PhoneVerification({ formData, updateFormData }: FormDataProps) {
           className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4"
         >
           <div className="flex items-center gap-3">
-            <span className="text-2xl">✅</span>
+            <Check className="w-10 h-10 text-green-600" />
             <div>
               <p className="text-sm font-semibold text-green-900 dark:text-green-400">
                 Phone number verified successfully!
@@ -726,8 +841,8 @@ function PhoneVerification({ formData, updateFormData }: FormDataProps) {
 
       {/* Info Box */}
       <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
-        <p className="text-sm text-blue-900 dark:text-blue-400">
-          <strong>📱 Why verify?</strong> We need to confirm your identity and send order updates via SMS.
+        <p className="text-sm text-green-900 dark:text-blue-400">
+          <strong><Smartphone className="inline mr-2" size={16} /> Why verify?</strong> We need to confirm your identity and send order updates via SMS.
         </p>
       </div>
     </div>
@@ -741,12 +856,14 @@ function PhoneVerification({ formData, updateFormData }: FormDataProps) {
 function Review({ formData }: any) {
   const [showTerms, setShowTerms] = useState(false);
 
+
+
   const sections = [
     {
       title: "Phone Verification",
       items: [
         { label: "Mobile Number", value: formData.phoneNumber ? `+91 ${formData.phoneNumber}` : "Not provided" },
-        { label: "Verification Status", value: formData.isOtpVerified ? "✅ Verified" : "❌ Not verified" },
+        { label: "Verification Status", value: formData.isOtpVerified ? " Verified" : " Not verified" },
       ],
     },
     {
@@ -768,8 +885,8 @@ function Review({ formData }: any) {
       items: [
         { label: "PAN Number", value: formData.panNumber || "Not provided" },
         { label: "Aadhaar Number", value: formData.aadhaarNumber ? formData.aadhaarNumber.replace(/\d(?=\d{4})/g, "X") : "Not provided" },
-        { label: "PAN Document", value: formData.panDocument ? "✅ Uploaded" : "❌ Not uploaded" },
-        { label: "Aadhaar Document", value: formData.aadhaarDocument ? "✅ Uploaded" : "❌ Not uploaded" },
+        { label: "PAN Document", value: formData.panDocument ? " Uploaded" : " Not uploaded" },
+        { label: "Aadhaar Document", value: formData.aadhaarDocument ? " Uploaded" : "Not uploaded" },
       ],
     },
     {
@@ -799,6 +916,8 @@ function Review({ formData }: any) {
         onClose={() => setShowTerms(false)}
         termsContent={termsContent}
       />
+
+
 
       {/* Review Sections */}
       <div className="space-y-4">
@@ -858,12 +977,15 @@ function Review({ formData }: any) {
         </label>
       </div>
 
+
+
       {/* Info Box */}
       <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-5">
-        <p className="text-sm text-blue-900 dark:text-blue-400 font-semibold mb-2">
-          📋 What happens next?
+        <p className="text-sm text-green-900 dark:text-blue-400 font-semibold mb-2">
+          <Clipboard className="inline mr-2" size={16} />
+          What happens next?
         </p>
-        <ul className="text-sm text-blue-800 dark:text-blue-300 space-y-1 list-disc list-inside">
+        <ul className="text-sm text-green-900 dark:text-blue-300 space-y-1 list-disc list-inside">
           <li>Your application will be reviewed within 24-48 hours</li>
           <li>You will receive an email confirmation once approved</li>
           <li>You can then start adding products and receiving orders</li>
@@ -955,8 +1077,8 @@ function FileUpload({ label, file, onChange, description }: FileUploadProps) {
       </label>
       <div
         className={`relative border-2 border-dashed rounded-lg p-4 transition-all ${file
-            ? "border-green-500 dark:border-green-600 bg-green-50 dark:bg-green-900/20"
-            : "border-gray-300 dark:border-gray-600 hover:border-blue-500 dark:hover:border-blue-600 bg-white dark:bg-gray-700"
+          ? "border-green-500 dark:border-green-600 bg-green-50 dark:bg-green-900/20"
+          : "border-gray-300 dark:border-gray-600 hover:border-blue-500 dark:hover:border-blue-600 bg-white dark:bg-gray-700"
           }`}
       >
         <Input
@@ -979,7 +1101,7 @@ function FileUpload({ label, file, onChange, description }: FileUploadProps) {
           ) : (
             <div>
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                📁 Click to upload or drag and drop
+                <FileUp className="inline mr-2" size={16} /> Click to upload or drag and drop
               </p>
               <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
                 {description}

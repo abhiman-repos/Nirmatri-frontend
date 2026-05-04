@@ -47,7 +47,12 @@
 
 :root {
   --font-size: 16px;
-  --background: #ffffff;
+  --background: linear-gradient(
+    135deg,
+    #f0fdf4 0%,
+    #dcfce7 40%,
+    #bbf7d0 70%,
+    #86efac 100%);
   --foreground: oklch(0.145 0 0);
   --card: #ffffff;
   --card-foreground: oklch(0.145 0 0);
@@ -87,7 +92,13 @@
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
+  --background: linear-gradient(
+    135deg,
+    #052e16 0%,
+    #064e3b 40%,
+    #065f46 70%,
+    #022c22 100%
+  );;
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.205 0 0);
   --card-foreground: oklch(0.985 0 0);

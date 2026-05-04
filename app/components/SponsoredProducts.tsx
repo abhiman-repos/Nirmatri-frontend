@@ -65,7 +65,7 @@ export function SponsoredProducts() {
     Math.round(((original - current) / original) * 100);
 
   return (
-    <section className="py-12 px-4 bg-gradient-to-b from-blue-50/30 to-white dark:from-gray-950 dark:to-gray-900">
+    <section className="py-12 px-4 bg-transparent">
       <div className="max-w-7xl mx-auto">
         {/* HEADER */}
         <div className="flex items-center gap-3 mb-8">
@@ -88,7 +88,7 @@ export function SponsoredProducts() {
           {sponsoredProducts.map((product) => (
             <Card
               key={product.id}
-              className="group overflow-hidden bg-white dark:bg-gray-800 transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl"
+              className="group overflow-hidden bg-green-100 dark:bg-gray-800 transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl"
             >
               {/* IMAGE (clean – no cart icon) */}
               <div className="relative h-[200px] md:h-[230px] lg:h-[260px] overflow-hidden bg-gray-100">
@@ -105,14 +105,14 @@ export function SponsoredProducts() {
                 </div>
 
                 <Badge
-  className="
+                  className="
     absolute top-3 right-3
     bg-black text-white
     dark:bg-white dark:text-blue-950
   "
->
-  {product.badge}
-</Badge>
+                >
+                  {product.badge}
+                </Badge>
 
 
                 {/* Discount */}
@@ -156,7 +156,7 @@ export function SponsoredProducts() {
                   {/* ADD TO CART */}
                   <Button
                     size="sm"
-                    className="flex-1 bg-blue-900 hover:bg-blue-950 text-sm"
+                    className="flex-1 bg-green-900 hover:bg-blue-950 text-sm"
                     disabled={loading.id === product.id}
                     onClick={() => {
                       setLoading({ id: product.id, type: "cart" });
@@ -167,7 +167,7 @@ export function SponsoredProducts() {
                     }}
                   >
                     {loading.id === product.id &&
-                    loading.type === "cart" ? (
+                      loading.type === "cart" ? (
                       <span className="flex items-center gap-2">
                         <Loader2 className="h-4 w-4 animate-spin" />
                         Adding
@@ -181,7 +181,7 @@ export function SponsoredProducts() {
                   <Button
                     size="sm"
                     variant="outline"
-                    className="flex-1 text-sm border-blue-900 text-blue-900 hover:bg-blue-50 dark:border-blue-400 dark:text-blue-400"
+                    className="flex-1 text-sm border-bluen-900 text-blue-900 hover:bg-blue-50 dark:border-blue-400 dark:text-blue-400"
                     disabled={loading.id === product.id}
                     onClick={() => {
                       setLoading({ id: product.id, type: "buy" });
@@ -192,7 +192,7 @@ export function SponsoredProducts() {
                     }}
                   >
                     {loading.id === product.id &&
-                    loading.type === "buy" ? (
+                      loading.type === "buy" ? (
                       <span className="flex items-center gap-2">
                         <Loader2 className="h-4 w-4 animate-spin" />
                         Processing

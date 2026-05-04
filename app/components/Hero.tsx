@@ -12,7 +12,7 @@ export function Hero() {
           alt="Hero Background"
           className="w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-black/50" />
+        <div className="bg-transparent" />
       </div>
 
       {/* Content */}

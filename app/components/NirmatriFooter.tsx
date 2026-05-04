@@ -41,9 +41,9 @@ export function NirmatriFooter() {
   };
 
   return (
-    <footer className="bg-gray-900 dark:bg-gray-950 text-gray-300 transition-colors duration-300">
+    <footer className="bg-transparent transition-colors duration-300">
       {/* Newsletter */}
-      <div className="bg-gradient-to-r from-blue-900 to-blue-800 py-8 px-4 sm:px-6 lg:px-8">
+      <div className="bg-gradient-to-r from-green-900 to-olive-800 py-8 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="text-center md:text-left">
@@ -96,7 +96,7 @@ export function NirmatriFooter() {
           <div className="grid grid-cols-2 md:grid-cols-6 gap-8 mb-12">
             {/* Brand */}
             <div className="col-span-2">
-              <h3 className="text-3xl bg-gradient-to-r from-blue-400 to-blue-300 bg-clip-text text-transparent mb-4">
+              <h3 className="text-3xl  bg-clip-text text-green-900 mb-4">
                 Nirmatri
               </h3>
               <p className="text-sm mb-6">
@@ -106,15 +106,15 @@ export function NirmatriFooter() {
 
               <div className="space-y-3 text-sm">
                 <div className="flex items-center gap-2">
-                  <Mail className="h-4 w-4 text-blue-400" />
+                  <Mail className="h-4 w-4 text-green-900" />
                   <span>support@nirmatri.com</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Phone className="h-4 w-4 text-blue-400" />
+                  <Phone className="h-4 w-4 text-green-900" />
                   <span>+91 1800-123-4567</span>
                 </div>
                 <div className="flex items-start gap-2">
-                  <MapPin className="h-4 w-4 text-blue-400 mt-1" />
+                  <MapPin className="h-4 w-4 text-green-900 mt-1" />
                   <span>
                     123 Artisan Street, Craft District,
                     <br />
@@ -127,7 +127,7 @@ export function NirmatriFooter() {
             {/* Links */}
             {Object.entries(footerLinks).map(([category, links]) => (
               <div key={category}>
-                <h4 className="text-white mb-4">{category}</h4>
+                <h4 className="text-black mb-4">{category}</h4>
                 <ul className="space-y-2 text-sm">
                   {links.map((link) => (
                     <li key={link}>
@@ -152,7 +152,7 @@ export function NirmatriFooter() {
                       key={social.label}
                       href={social.href}
                       aria-label={social.label}
-                      className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-blue-900 transition-colors"
+                      className="w-10 h-10 rounded-full bg-transparent flex items-center justify-center hover:bg-green-900 transition-colors"
                     >
                       <Icon className="h-5 w-5" />
                     </a>
@@ -160,11 +160,11 @@ export function NirmatriFooter() {
                 })}
               </div>
 
-              <p className="text-sm text-gray-400">
+              <p className="text-sm text-black-400">
                 © 2026 Nirmatri. Crafted with ❤️ for artisans.
               </p>
 
-              <div className="flex items-center gap-2 text-xs text-gray-400">
+              <div className="flex items-center gap-2 text-xs text-black-400">
                 <span>We Accept:</span>
                 <div className="flex gap-2">
                   <div className="bg-white rounded px-2 py-1 text-gray-900">VISA</div>

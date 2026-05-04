@@ -28,15 +28,15 @@ export default function Page() {
 
 
   return (
-    <ThemeProvider>
-      <div className="min-h-screen bg-black transition-colors duration-300">
+    
+      <div className="min-h-screen bg-transparent transition-colors duration-300">
         <VideoLikeCarousel />
         <CategoryShowcase />
         <SponsoredProducts />
         <ArtisanSpotlight />
         <WhyShopWithUs />
         <NirmatriFooter />
-      </div>
-    </ThemeProvider>
+      </div> 
+
   );
 }

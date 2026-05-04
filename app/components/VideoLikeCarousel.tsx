@@ -51,7 +51,7 @@ export function VideoLikeCarousel() {
   const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
 
   return (
-    <section className="relative h-[300px] md:h-[300px] overflow-hidden bg-[#FAF9F6]">
+    <section className="relative h-[300px] md:h-[300px] overflow-hidden bg-transparent">
       {/* Slides */}
       {slides.map((slide, index) => (
         <div
@@ -131,7 +131,7 @@ export function VideoLikeCarousel() {
     
         <Button
           onClick={prevSlide}
-          className="bg-white/10 backdrop-blur-md hover:bg-amber-600 text-white p-4 rounded-full border border-white/20 transition-all duration-300"
+          className="bg-white/10 backdrop-blur-md hover:bg-[#acd8a7] text-white p-4 rounded-full border border-white/20 transition-all duration-300"
         >
           <ChevronLeft className="h-5 w-5" />
 
@@ -142,7 +142,7 @@ export function VideoLikeCarousel() {
 
         <Button
           onClick={nextSlide}
-          className="bg-white/10 backdrop-blur-md hover:bg-amber-600 text-white p-4 rounded-full border border-white/20 transition-all duration-300"
+          className="bg-white/10 backdrop-blur-md hover:bg-[#acd8a7] text-white p-4 rounded-full border border-white/20 transition-all duration-300"
         >
           <ChevronRight className="h-5 w-5" />
         </Button>
