@@ -375,7 +375,7 @@ function StatCard({
   );
 }
 
-function OrderDetailsModal({ order, onClose, onUpdateStatus, darkMode }: {
+function OrderDetailsModal({ order, onClose }: {
   order: any;
   onClose: () => void;
   onUpdateStatus: (orderId: string, status: string) => void;

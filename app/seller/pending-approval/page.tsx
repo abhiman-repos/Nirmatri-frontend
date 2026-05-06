@@ -68,7 +68,7 @@ export default function PendingApprovalPage() {
 
           <button
             onClick={handleLogout}
-            className="flex items-center justify-center gap-2 w-full rounded-lg bg-green-900 py-2.5 text-sm font-medium text-white hover:bg-green-700"
+            className="flex items-center justify-center gap-2 w-full rounded-lg bg-[#1a3a2a] py-2.5 text-sm font-medium text-white hover:bg-white hover:text-black"
           >
             <LogOut size={16} />
             Go Home

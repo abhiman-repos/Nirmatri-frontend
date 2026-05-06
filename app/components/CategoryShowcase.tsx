@@ -53,19 +53,19 @@
           : categories.filter((c) => c.slug === activeFilter);
 
       return (
-        <section className="py-12 px-4 sm:px-7 lg:px-8 bg-transparent transition-colors">
+        <section className="py-12 px-4 sm:px-7 lg:px-8 bg-white dark:bg-gray-950 transition-colors">
           <div className="max-w-7xl mx-auto">
 
             {/* HEADER */}
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl md:text-3xl dark:text-gray-100">
+              <h2 className="text-2xl md:text-3xl dark:text-brown">
                 Shop by Category
               </h2>
 
               <a
                 href="/shop-here"
-                className="text-black-900 dark:text-blue-400 flex items-center gap-1 text-sm hover:gap-2 transition-all"
-              > 
+                className="text-blue-900 dark:text-blue-400 flex items-center gap-1 text-sm hover:gap-2 transition-all"
+              >
                 View More <ArrowRight className="h-4 w-4" />
               </a>
             </div>

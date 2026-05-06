@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
+// @ts-ignore
 import "./globals.css";
 
-import { ThemeProvider } from "./contexts/ThemeContext";
+import { CartProvider } from "@/app/components/context/CartContext";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { AuthProvider } from "@/app/components/context/AuthContext";
 import HeaderWrapper from "@/app/components/HeaderWrapper";
@@ -19,16 +20,17 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="min-h-screenbg-[#EAF2EC]">
-        <ThemeProvider>
+       
           <GoogleOAuthProvider
             clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!}
           >
             <AuthProvider>
               <HeaderWrapper />
+              <CartProvider>
               {children}
+              </CartProvider>
             </AuthProvider>
           </GoogleOAuthProvider>
-        </ThemeProvider>
       </body>
     </html>
   );

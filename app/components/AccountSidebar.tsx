@@ -3,6 +3,8 @@ import clsx from "clsx";
 import type { Section } from "@/app/components/HeaderWrapper";
 
 import { useRouter } from "next/navigation";
+import { useAuth } from "./context/AuthContext"; // ✅ FIX
+
 import {
   User,
   ShoppingBag,
@@ -15,7 +17,7 @@ import {
   MapPin,
   Settings,
 } from "lucide-react";
-import { useAuth } from "@/app/components/context/AuthContext";
+import axios from "axios";
 
 /* ===================== TYPES ===================== */
 
@@ -30,6 +32,15 @@ type AccountSidebarProps = {
   onSelect?: (section: Section) => void;
 };
 
+
+const userName = localStorage.getItem("name");
+const email = localStorage.getItem("email");
+
+const initials = userName
+  ?.split(" ")
+  .map((n) => n[0])
+  .join("")
+  .toUpperCase();
 /* ===================== COMPONENT ===================== */
 
 export default function AccountSidebar({
@@ -38,7 +49,7 @@ export default function AccountSidebar({
   onSelect,
 }: AccountSidebarProps) {
   const router = useRouter();
-  const { logout } = useAuth();
+  const { logout } = useAuth(); // ✅ FIX
 
   return (
     <>
@@ -47,7 +58,7 @@ export default function AccountSidebar({
         <div
           className="
             fixed inset-0 z-[60]
-            bg-black/40 backdrop-blur-sm
+            bg-transparent backdrop-blur-sm
             lg:top-14
           "
           onClick={onClose}
@@ -60,7 +71,7 @@ export default function AccountSidebar({
           "fixed inset-0 z-[70]",
           "lg:inset-auto lg:right-0 lg:top-14 lg:bottom-0",
           "w-full lg:w-[330px]",
-          "bg-white dark:bg-gray-900",
+          "bg-[#EAF2EC]",
           "border-l border-gray-200 dark:border-gray-800",
           "shadow-[0_0_40px_rgba(0,0,0,0.18)]",
           "transition-transform duration-300 ease-out",
@@ -68,25 +79,12 @@ export default function AccountSidebar({
         )}
       >
         {/* ================= HEADER ================= */}
-        <div
-          className="
-            h-14 px-5
-            flex items-center justify-between
-            border-b border-gray-200 dark:border-gray-800
-          "
-        >
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-            My Account
-          </h2>
+        <div className="h-14 px-5 flex items-center justify-between border-b">
+          <h2 className="text-lg font-semibold">My Account</h2>
 
           <button
             onClick={onClose}
-            aria-label="Close sidebar"
-            className="
-              rounded-full p-2
-              hover:bg-gray-100 dark:hover:bg-gray-800
-              transition
-            "
+            className="rounded-full p-2 hover:bg-gray-100 transition"
           >
             ✕
           </button>
@@ -113,20 +111,20 @@ export default function AccountSidebar({
                 shadow-md
               "
             >
-              RK
+            {initials}
             </div>
 
             <div>
               <p className="font-semibold text-gray-900 dark:text-gray-100">
-                Rahul Kumar
+                {userName}
               </p>
               <p className="text-xs text-gray-500 dark:text-gray-400">
-                +91 98765 43210
+                {email}
               </p>
             </div>
           </div>
 
-          {/* ================= MENU ================= */}
+          {/* MENU */}
           <div className="mt-6 space-y-1">
             <MenuItem
               icon={<User />}
@@ -155,7 +153,7 @@ export default function AccountSidebar({
             />
             <MenuItem
               icon={<RefreshCcw />}
-              label="Returns & Refunds"
+              label="Track Order & Refunds"
               onClick={() => onSelect?.("returns")}
             />
             <MenuItem
@@ -178,13 +176,16 @@ export default function AccountSidebar({
                   const token = localStorage.getItem("auth_token");
 
                   if (token) {
-                    await fetch("http://127.0.0.1:8000/api/auth/logout/", {
-                      method: "POST",
-                      headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${token}`,
+                    await axios.post(
+                      "http://127.0.0.1:8000/api/user/logOut/",
+                      {},
+                      {
+                        headers: {
+                          Authorization: `Bearer ${token}`,
+                          "Content-Type": "application/json",
+                        },
                       },
-                    });
+                    );
                   }
                 } catch (error) {
                   console.error("Logout API error:", error);
@@ -199,13 +200,7 @@ export default function AccountSidebar({
                 // redirect
                 router.replace("/");
               }}
-              className="
-    w-full flex items-center gap-3
-    px-4 py-3 rounded-xl
-    hover:bg-red-50
-    dark:hover:bg-red-900/20
-    font-medium transition
-  "
+              className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-red-50 dark:hover:bg-red-900/20 font-medium transition"
             >
               <LogOut className="h-4 w-4" />
               Logout
@@ -231,22 +226,14 @@ function MenuItem({
   return (
     <div
       onClick={onClick}
-      className="
-        group flex items-center justify-between
-        px-4 py-3 rounded-xl
-        cursor-pointer
-        transition-all duration-200
-        hover:bg-gray-100 dark:hover:bg-gray-800
-      "
+      className="flex items-center justify-between px-4 py-3 rounded-xl cursor-pointer hover:bg-gray-100 transition"
     >
-      <div className="flex items-center gap-3 text-sm font-medium text-gray-800 dark:text-gray-200">
-        <span className="text-gray-500 group-hover:text-blue-600 transition">
-          {icon}
-        </span>
+      <div className="flex items-center gap-3 text-sm font-medium">
+        {icon}
         {label}
       </div>
 
-      <ChevronRight className="h-4 w-4 opacity-40 group-hover:opacity-100" />
+      <ChevronRight className="h-4 w-4 opacity-40" />
     </div>
   );
 }

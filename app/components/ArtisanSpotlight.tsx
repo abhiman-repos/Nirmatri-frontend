@@ -1,4 +1,3 @@
-import { ImageWithFallback } from "@/app/components/figma/ImageWithFallback";
 import { MapPin, Award, Heart } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
 import { Card } from "@/app/components/ui/card";

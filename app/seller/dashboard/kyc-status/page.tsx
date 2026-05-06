@@ -1,7 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useTheme } from "@/app/contexts/ThemeContext";
 import {
   Check,
   Hourglass,
@@ -18,7 +17,7 @@ const SELLER_ID = "SELLER-1023";
 
 export default function KYCStatusPage() {
   const router = useRouter();
-  const { effectiveTheme } = useTheme();
+
   const [selectedDocument, setSelectedDocument] = useState<string | null>(null);
 
   const [kycStatus, setKycStatus] = useState<

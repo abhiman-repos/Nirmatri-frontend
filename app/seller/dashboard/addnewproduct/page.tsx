@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useTheme } from "@/app/contexts/ThemeContext";
 import { motion } from "framer-motion";
 import { Select } from "react-day-picker";
 import { Button } from "@/app/components/ui/button";
@@ -12,7 +11,6 @@ export default function AddProductPage() {
   // STATE & HOOKS
   // ============================================
   const router = useRouter();
-  const { effectiveTheme } = useTheme();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [currentTab, setCurrentTab] = useState(0);
 

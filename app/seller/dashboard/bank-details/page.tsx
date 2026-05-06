@@ -10,14 +10,12 @@ import {
 } from "lucide-react";
 
 import { useState, useEffect } from "react";
-import { useTheme } from "@/app/contexts/ThemeContext";
-
 const API = "http://127.0.0.1:8000/api/seller";
 const SELLER_ID = "SELLER-1023";
 
 export default function BankDetailsPage() {
 
-  const { effectiveTheme } = useTheme();
+
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 

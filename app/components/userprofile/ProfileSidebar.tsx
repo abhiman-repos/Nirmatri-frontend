@@ -137,7 +137,7 @@ export function ProfileSidebar({
           dark:text-blue-400 dark:hover:bg-blue-500/10
           transition-colors
         "
-      >
+      > 
         <LogOut className="w-5 h-5" />
       </button>
     </aside>

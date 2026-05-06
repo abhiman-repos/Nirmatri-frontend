@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useTheme } from "@/app/contexts/ThemeContext";
 import Link from "next/link";
 import { Button } from "@/app/components/ui/button";
 import { Input } from "@/app/components/ui/input";
@@ -23,7 +22,6 @@ export default function ManageProductsPage() {
   // STATE & HOOKS
   // ============================================
   const router = useRouter();
-  const { effectiveTheme = "light" } = useTheme();
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");

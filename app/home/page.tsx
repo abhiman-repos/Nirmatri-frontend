@@ -1,4 +1,4 @@
-"use client";
+  "use client";
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -9,7 +9,6 @@ import { SponsoredProducts } from "@/app/components/SponsoredProducts";
 import { ArtisanSpotlight } from "@/app/components/ArtisanSpotlight";
 import { WhyShopWithUs } from "@/app/components/WhyShopWithUs";
 import { NirmatriFooter } from "@/app/components/NirmatriFooter";
-import { ThemeProvider } from "@/app/contexts/ThemeContext";
 
 export default function Page() {
   const router = useRouter();
